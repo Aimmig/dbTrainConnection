@@ -447,7 +447,7 @@ public class DBGuiAPI extends JFrame {
         //dep or arrival unneccessary
         prevLength=stations.size();
         try{
-            InformationControll.getInformation(locInp,false);
+            Information.getInformation(locInp,false);
         }
         catch(IOException ex){
             JOptionPane.showMessageDialog(DBApi.frame,"Es scheint keine Verbindung zum Internet zu bestehen","Netzwerk-Fehler",JOptionPane.ERROR_MESSAGE);
@@ -487,7 +487,7 @@ public class DBGuiAPI extends JFrame {
                 //stop List is not available yet
                 if(history.get(showIndex).getConArray()[connectionIndex].getStopList()==null){
                     //getting stops from url and adding it to history at index
-                    InformationControll.addStopsToList(mapLabel.getSize(),showIndex,connectionIndex,history.get(showIndex).getConnectionAtIndex(connectionIndex).getDetails());
+                    Information.addStopsToList(mapLabel.getSize(),showIndex,connectionIndex,history.get(showIndex).getConnectionAtIndex(connectionIndex).getDetails());
                 }    
                           
                 //write stops to info List
@@ -558,11 +558,11 @@ public class DBGuiAPI extends JFrame {
             //sending request, getting information
             String [] input= new String [] {id,LAN,date};
             try{
-                if(InformationControll.getInformation(input,departure)){
+                if(Information.getInformation(input,departure)){
                
                     //show Connections in List 
                     showConnectionsInList(history.size()-1);
-                    String formatted=InformationControll.formatDateForOutput(date);
+                    String formatted=Formatter.formatDateForOutput(date);
                     setLabelText(formatted,s.getName(),departure);
                     //save changes to index
                     showIndex=history.size()-1;
@@ -629,10 +629,10 @@ public class DBGuiAPI extends JFrame {
                 }
                 String [] dateInput={id,LAN,date};
                 try{
-                    if(InformationControll.getInformation(dateInput,departure)){
+                    if(Information.getInformation(dateInput,departure)){
                         //show connections in list
                         showConnectionsInList(length);
-                        setLabelText(InformationControll.formatDateForOutput(date),stations.get(prevLength+sel),departure);
+                        setLabelText(Formatter.formatDateForOutput(date),stations.get(prevLength+sel),departure);
                         showIndex=history.size()-1;
                     }
                     else{
@@ -725,16 +725,16 @@ public class DBGuiAPI extends JFrame {
     //adds given amount to first entry of dep/arrival table and request dep/arrival
     private void getConnectionAtShiftedTime(int hourShift){
         try {
-            String shifted=InformationControll.addHoursToCalendar(InformationControll.getFormattedDate(showIndex),hourShift);
+            String shifted=Formatter.addHoursToCalendar(Formatter.getFormattedDate(showIndex),hourShift);
             String id=history.get(showIndex).getConArray()[0].getStopID();
             boolean departure=dep.isSelected();
             String [] input=new String [] {id,LAN,shifted};
             try{
-                if(InformationControll.getInformation(input, departure)){
+                if(Information.getInformation(input, departure)){
                     //show Connections in List 
                     showConnectionsInList(history.size()-1);
                     String name=history.get(showIndex).getConArray()[0].getStop();
-                    String formatted=InformationControll.formatDateForOutput(shifted);
+                    String formatted=Formatter.formatDateForOutput(shifted);
                     setLabelText(formatted,name,departure);
                     //save changes to index
                     showIndex=history.size()-1;

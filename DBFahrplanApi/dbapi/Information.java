@@ -15,9 +15,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
@@ -33,36 +30,7 @@ import org.xml.sax.SAXException;
  */
 //class that handles network-connection, extracting data from wesite using xml ,writes data to public variables
 
-public class InformationControll {
-        
-    //takes a date String yyyy-MM-dd and format its to dd.MM.yyyy
-    public static String formatDateForOutput(String date){
-        String [] splitted=date.replace(" ","-").split("-");
-        StringBuilder formatted=new StringBuilder(splitted[2]);
-        formatted.append(".").append(splitted[1]).append(".").append(splitted[0]).append(" ").append(splitted[3]);
-        return formatted.toString();
-    }
-    
-    //takes a formatted Date, adds given hours to date and returns formatted date
-    public static String addHoursToCalendar(String formatted,int hours) throws ParseException{
-        Date date=DBGuiAPI.dateFormat.parse(formatted);
-        Calendar c=Calendar.getInstance();
-        c.setTime(date);
-        c.add(Calendar.HOUR,hours);
-        return DBGuiAPI.dateFormat.format(c.getTime());
-    }
-    
-    //gets the indexed formatted Date from Dep/Arrival table
-    public static String getFormattedDate(int index){
-        int beginOfDate=history.get(index).getLabelText().lastIndexOf("m")+2;
-        String replaced=history.get(index).getLabelText().substring(beginOfDate).replace(".", "-").replace(" ", "-");
-        String [] splitted=replaced.split("-");
-        StringBuilder formatted=new StringBuilder(splitted[2]);
-        formatted.append("-").append(splitted[1]).append("-").append(splitted[0]);
-        formatted.append(" ").append(splitted[3]);
-        return formatted.toString();
-    }
-    
+public class Information {   
     
     //writes stop from detail url to according connection object specifed by index
     public static void addStopsToList(Dimension d,int showIndex,int connectionIndex,String URLString) throws ParserConfigurationException, SAXException, IOException{
