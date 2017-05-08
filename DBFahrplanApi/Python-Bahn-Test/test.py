@@ -175,7 +175,22 @@ class FormWidget(qw.QWidget):
         else:
             isDeparture=True
         #request    
-        print(req.getXMLStringConnectionRequest(date,time,identifier,isDeparture)) 
+        xmlString=req.getXMLStringConnectionRequest(date,time,identifier,isDeparture)
+        if xmlString:
+            root=ET.fromstring(xmlString)
+            #TO-Do handle key-error: if input invalid or tags does not exist
+            for con in root:
+                print(con.attrib['name'])
+                print(con.attrib['type'])
+                print(con.attrib['stopid'])
+                print(con.attrib['stop'])
+                print(con.attrib['time'])
+                print(con.attrib['date'])
+                if isDeparture:
+                     print(con.attrib['direction'])
+                print(con.attrib['track'])
+                for details in con :
+                     print(details.attrib['ref'])
 
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
