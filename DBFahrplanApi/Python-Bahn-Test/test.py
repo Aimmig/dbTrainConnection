@@ -1,15 +1,12 @@
 import sys
 import time as tm
+
 from PyQt5 import QtCore as qc
 from PyQt5 import QtGui as qg
 from PyQt5 import QtWidgets as qw
 
-import urllib.request as url_req
 import xml.etree.ElementTree as ET
-
-KEY="DBhackFrankfurt0316"
-LANGUAGE="de"
-BASE_URL="https://open-api.bahn.de/bin/rest.exe/"
+import Request as req
 
 class FormWidget(qw.QWidget):
 
@@ -65,10 +62,20 @@ class FormWidget(qw.QWidget):
         request_layout.addWidget(self.request_now)
         request_layout.addWidget(self.request_choosenTime)
 
+        #create checkboxes for departure/arrival selection and group them
+        self.depart=qw.QCheckBox("Departure")
+        self.arriv=qw.QCheckBox("Arrival")
+        self.depart.clicked.connect(self.changeCheckboxes)
+        self.arriv.clicked.connect(self.changeCheckboxes)
+        checkbox_layout=qw.QHBoxLayout()
+        checkbox_layout.addWidget(self.depart)
+        checkbox_layout.addWidget(self.arriv)
+
         #add layouts and widgets to layout for left part
         box1.addLayout(input1_layout)
         box1.addLayout(input2_layout)
         box1.addWidget(self.date_chooser)
+        box1.addLayout(checkbox_layout)
         box1.addLayout(request_layout)
 
         #layout for middle part of gui
@@ -93,7 +100,7 @@ class FormWidget(qw.QWidget):
         box2.addWidget(self.connection_label)
         box2.addWidget(self.connection_list)
         box2.addLayout(navigation_layout)
-        
+ 
         #add all layouts to form-Layout
         layout.addLayout(box1)
         layout.addLayout(box2)
@@ -101,15 +108,26 @@ class FormWidget(qw.QWidget):
         #set formLayout
         self.setLayout(layout)
 
+    #use correct methods to set/unset checkboxes
+    def changeCheckboxes(self):
+        if self.depart.selected():
+            print("Test")
+        else:
+            print("bla")
+
     #retrieves list all all matching stations to input and displays them
     def getStations(self):
         loc=self.inp.text()
-        root=ET.fromstring(getXMLStringStationRequest(loc))
-        self.StationList=[]
-        self.railStations.clear()
-        for child in root:
-            self.StationList.append(child.attrib['id'])
-            self.railStations.addItem(child.attrib['name'])
+        #check for empty input -better checking!!!
+        if(loc==""):
+             return 
+        else:
+             root=ET.fromstring(req.getXMLStringStationRequest(loc))
+             self.StationList=[]
+             self.railStations.clear()
+             for child in root:
+                 self.StationList.append(child.attrib['id'])
+                 self.railStations.addItem(child.attrib['name'])
 
     def getConnectionsNow(self):
         self.getConnections(True)
@@ -128,58 +146,11 @@ class FormWidget(qw.QWidget):
             date=self.date_chooser.selectedDate()
             time=self.time_chooser.time()
         index=self.railStations.currentIndex()
-        identifier=self.StationList[index]
         if index<0:
             return
         else:
-            print(getXMLStringConnectionRequest(date,time,identifier,True))
-
-#returns the XML-String representation of the requested ressource
-def getXMLStringStationRequest(loc):
-        url=createStationRequestURL(loc)
-        req=url_req.Request(url)
-        try:
-            with url_req.urlopen(req) as response:
-                result=response.read()
-                return result
-        except HTTPError as e:
-             print('The server couldn\'t fulfill the request.')
-             print('Error code: ', e.code)
-        except URLError as e:
-             print('We failed to reach a server.')
-             print('Reason: ', e.reason)
-        return ""
-
-def getXMLStringConnectionRequest(date,time,identifier,isDeparture):
-        url=createConnectionRequestURL(date,time,identifier,isDeparture)
-        req=url_req.Request(url)
-        try:
-            with url_req.urlopen(req) as response:
-                result=response.read()
-                return result
-        except HTTPError as e:
-             print('The server couldn\'t fulfill the request.')
-             print('Error code: ', e.code)
-        except URLError as e:
-             print('We failed to reach a server.')
-             print('Reason: ', e.reason)
-        return ""
-
-#creates the URL for requesting Connections
-def createConnectionRequestURL(date,time,identifier,isDeparture):
-        #build date-String
-        dateString=str(date.year())+"-"+str(date.month())+"-"+str(date.day())
-        #build and encode timeString
-        timeString=str(time.hour())+"%3A"+str(time.minute())
-        lastPart=KEY+"&lang="+LANGUAGE+"&id="+str(identifier)+"&date="+dateString+"&time"+timeString
-        if isDeparture:
-             return BASE_URL+"departureBoard?authKey="+lastPart
-        else:
-             return BASE_URL+"arrivalBoard?authKey="+lastPart
-
-#creates the URL for requesting Stations
-def createStationRequestURL(loc):
-        return BASE_URL+"location.name?authKey="+KEY+"&lang="+LANGUAGE+"&input="+loc 
+            identifier=self.StationList[index]
+            print(req.getXMLStringConnectionRequest(date,time,identifier,True)) 
 
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
