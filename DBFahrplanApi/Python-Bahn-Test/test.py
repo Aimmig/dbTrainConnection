@@ -1,23 +1,29 @@
 import sys
 import time as tm
 
+#import qt-stuff
 from PyQt5 import QtCore as qc
 from PyQt5 import QtGui as qg
 from PyQt5 import QtWidgets as qw
 
+#import xml stuff
 import xml.etree.ElementTree as ET
+#import class for requests
 import Request as req
 
+#Class that defines gui
 class FormWidget(qw.QWidget):
 
+    #constructor for gui
     def __init__(self):
+
         #super constructor
         super(FormWidget,self).__init__()
         
         #set some properties
         self.setAutoFillBackground(True)
         self.setWindowTitle("Fahrplanzeige")
-        self.StationList=[]
+        self.stationId=[]
 
         #overall layout for gui
         layout=qw.QHBoxLayout()
@@ -62,20 +68,23 @@ class FormWidget(qw.QWidget):
         request_layout.addWidget(self.request_now)
         request_layout.addWidget(self.request_choosenTime)
 
-        #create checkboxes for departure/arrival selection and group them
-        self.depart=qw.QCheckBox("Departure")
-        self.arriv=qw.QCheckBox("Arrival")
-        self.depart.clicked.connect(self.changeCheckboxes)
-        self.arriv.clicked.connect(self.changeCheckboxes)
-        checkbox_layout=qw.QHBoxLayout()
-        checkbox_layout.addWidget(self.depart)
-        checkbox_layout.addWidget(self.arriv)
+        #create RadioButtons for departure/arrival selection
+        self.depart=qw.QRadioButton("Departure")
+        self.arriv=qw.QRadioButton("Arrival")
+        #group RadioButtons
+        radioButton_layout=qw.QHBoxLayout()
+        radioButton_layout.addWidget(self.depart)
+        radioButton_layout.addWidget(self.arriv)
+        #make RadioButtons checkable and set departure to default checked
+        self.depart.setCheckable(True)
+        self.arriv.setCheckable(True)
+        self.depart.setChecked(True)
 
         #add layouts and widgets to layout for left part
         box1.addLayout(input1_layout)
         box1.addLayout(input2_layout)
         box1.addWidget(self.date_chooser)
-        box1.addLayout(checkbox_layout)
+        box1.addLayout(radioButton_layout)
         box1.addLayout(request_layout)
 
         #layout for middle part of gui
@@ -108,30 +117,36 @@ class FormWidget(qw.QWidget):
         #set formLayout
         self.setLayout(layout)
 
-    #use correct methods to set/unset checkboxes
-    def changeCheckboxes(self):
-        if self.depart.selected():
-            print("Test")
-        else:
-            print("bla")
-
     #retrieves list all all matching stations to input and displays them
     def getStations(self):
         loc=self.inp.text()
-        #check for empty input -better checking!!!
-        if(loc==""):
-             return 
-        else:
-             root=ET.fromstring(req.getXMLStringStationRequest(loc))
-             self.StationList=[]
-             self.railStations.clear()
-             for child in root:
-                 self.StationList.append(child.attrib['id'])
-                 self.railStations.addItem(child.attrib['name'])
+        #check for empty input
+        if loc.strip():
+             #create xml-object
+             xmlString=req.getXMLStringStationRequest(loc)
+             #xmlString might be empty if HTTP-Error occured
+             if xmlString:
+                  root=ET.fromstring(xmlString)
+                  #write id and names to temporary variable
+                  newStationsId=[]
+                  newStations=[]
+                  #iterate over all childs and add attributes to lists
+                  for child in root:
+                      newStationsId.append(child.attrib['id'])
+                      newStations.append(child.attrib['name'])
+                  #if something was actually found replace everything
+                  if len(newStations)>0:
+                      self.stationId=[]
+                      self.railStations.clear()
+                      self.stationId=newStationsId
+                      self.railStations.addItems(newStations)
+        return
 
+    #Encapsulation for calling from Button
     def getConnectionsNow(self):
         self.getConnections(True)
 
+    #Encapsulation for calling from Button
     def getConnectionsWithTime(self):
         self.getConnections(False)
 
@@ -139,18 +154,28 @@ class FormWidget(qw.QWidget):
     #isnow=TRUE use system time 
     #isnow=FALSE use choosen time
     def getConnections(self,isnow):
+        #get selected Index from ComboBox
+        index=self.railStations.currentIndex()
+        #check invalid Index
+        if index<0:
+            return
+        #use System-Time
         if isnow:
             date=qc.QDate.currentDate()
-            time=qc.QTime.currentTime()          
+            time=qc.QTime.currentTime()
+        #use selected time from gui        
         else:
             date=self.date_chooser.selectedDate()
             time=self.time_chooser.time()
-        index=self.railStations.currentIndex()
-        if index<0:
-            return
+        #get id to selected station
+        identifier=self.stationId[index]
+        #arrival or departure checked
+        if self.arriv.isChecked():
+            isDeparture=False
         else:
-            identifier=self.StationList[index]
-            print(req.getXMLStringConnectionRequest(date,time,identifier,True)) 
+            isDeparture=True
+        #request    
+        print(req.getXMLStringConnectionRequest(date,time,identifier,isDeparture)) 
 
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)

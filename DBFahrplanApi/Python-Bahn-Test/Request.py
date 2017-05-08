@@ -1,4 +1,5 @@
 import urllib.request as url_req
+import urllib.error as err
 from PyQt5 import QtCore as qc
 
 KEY="DBhackFrankfurt0316"
@@ -15,10 +16,10 @@ def getXMLStringStationRequest(loc):
             with url_req.urlopen(req) as response:
                 result=response.read()
                 return result
-        except HTTPError as e:
+        except err.HTTPError as e:
              print('The server couldn\'t fulfill the request.')
              print('Error code: ', e.code)
-        except URLError as e:
+        except err.URLError as e:
              print('We failed to reach a server.')
              print('Reason: ', e.reason)
         return ""
@@ -26,15 +27,16 @@ def getXMLStringStationRequest(loc):
 #returns the XML-String representation of the Connection Request
 def getXMLStringConnectionRequest(date,time,identifier,isDeparture):
         url=createConnectionRequestURL(date,time,identifier,isDeparture)
+        print(url)
         req=url_req.Request(url)
         try:
             with url_req.urlopen(req) as response:
                 result=response.read()
                 return result
-        except HTTPError as e:
+        except err.HTTPError as e:
              print('The server couldn\'t fulfill the request.')
              print('Error code: ', e.code)
-        except URLError as e:
+        except err.URLError as e:
              print('We failed to reach a server.')
              print('Reason: ', e.reason)
         return ""
@@ -45,11 +47,14 @@ def createConnectionRequestURL(date,time,identifier,isDeparture):
         dateString=str(date.year())+"-"+str(date.month())+"-"+str(date.day())
         #build and encode timeString
         timeString=str(time.hour())+"%3A"+str(time.minute())
-        lastPart=KEY+"&lang="+LANGUAGE+"&id="+str(identifier)+"&date="+dateString+"&time"+timeString
+        #build last part of url
+        lastPart="authKey="+KEY+"&lang="+LANGUAGE+"&id="
+        lastPart=lastPart+str(identifier)+"&date="+dateString+"&time"+timeString
+        #build complete url
         if isDeparture:
-             return BASE_URL+"departureBoard?authKey="+lastPart
+             return BASE_URL+"departureBoard?"+lastPart
         else:
-             return BASE_URL+"arrivalBoard?authKey="+lastPart
+             return BASE_URL+"arrivalBoard?"+lastPart
 
 #creates the URL for requesting Stations
 def createStationRequestURL(loc):
