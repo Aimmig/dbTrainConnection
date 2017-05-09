@@ -11,6 +11,24 @@ import xml.etree.ElementTree as ET
 #import class for requests
 import Request as req
 
+class Connection:
+        
+    def __init__(self,name,typ,stopid,stop,time,date,direction,track,ref):
+        self.name=name
+        self.type=typ
+        self.stopid=stopid
+        self.stop=stop
+        self.time=time
+        self.date=date
+        self.direction=direction
+        self.track=track
+        self.ref=ref
+
+    def debug(self):
+        res=self.name+" "+self.stop+" "+self.date
+        res=res+""+self.time+" "+self.direction+" "+self.track
+        print(res)
+
 #Class that defines gui
 class FormWidget(qw.QWidget):
 
@@ -179,26 +197,38 @@ class FormWidget(qw.QWidget):
         if xmlString:
             root=ET.fromstring(xmlString)
             #iterate over all connections
+            connections=[]
             for con in root:
-                     print(con.attrib['name'])
-                     # check if type exist --spelling mistake in xml
-                     if 'type' in con.attrib:
-                         print(con.attrib['type'])
-                     print(con.attrib['stopid'])
-                     print(con.attrib['stop'])
-                     print(con.attrib['time'])
-                     print(con.attrib['date'])
-                     #read direction if departure
-                     if isDeparture:
-                         print(con.attrib['direction'])
-                     #track might not be set in xml
-                     if 'track' in con.attrib:
-                         print(con.attrib['track'])
-                     #read reference link
-                     for details in con :
-                         if 'ref' in details.attrib:
-                             print(details.attrib['ref'])
-
+                   name=con.attrib['name']
+                   # check if type exist --spelling mistake in xml
+                   if 'type' in con.attrib:
+                       typ=con.attrib['type']
+                   else:
+                       typ=""
+                   stopid=con.attrib['stopid']
+                   stop=con.attrib['stop']
+                   time=con.attrib['time']
+                   date=con.attrib['date']
+                   #read direction if departure
+                   if isDeparture:
+                       direction=con.attrib['direction']
+                   else:
+                       direction=""
+                   #track might not be set in xml
+                   if 'track' in con.attrib:
+                       track=con.attrib['track']
+                   else:
+                       track=""
+                   #read reference link
+                   for details in con :
+                       if 'ref' in details.attrib:
+                           ref=details.attrib['ref']
+                       else:
+                           ref=""
+                   connections.append(Connection(name,typ,stopid,stop,time,date,direction,track,ref))
+            for c in connections:
+                c.debug()
+                     
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
         formwidget=FormWidget()

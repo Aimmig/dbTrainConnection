@@ -27,7 +27,6 @@ def getXMLStringStationRequest(loc):
 #returns the XML-String representation of the Connection Request
 def getXMLStringConnectionRequest(date,time,identifier,isDeparture):
         url=createConnectionRequestURL(date,time,identifier,isDeparture)
-        print(url)
         req=url_req.Request(url)
         try:
             with url_req.urlopen(req) as response:
