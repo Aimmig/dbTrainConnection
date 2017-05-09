@@ -24,10 +24,10 @@ class Connection:
         self.track=track
         self.ref=ref
 
-    def debug(self):
+    def toString(self):
         res=self.name+" "+self.stop+" "+self.date
-        res=res+""+self.time+" "+self.direction+" "+self.track
-        print(res)
+        res=res+" "+self.time+" "+self.direction+" "+self.track
+        return res
 
 #Class that defines gui
 class FormWidget(qw.QWidget):
@@ -42,6 +42,8 @@ class FormWidget(qw.QWidget):
         self.setAutoFillBackground(True)
         self.setWindowTitle("Fahrplanzeige")
         self.stationId=[]
+        self.connectionPages=[]
+        self.displayedIndex=-1
 
         #overall layout for gui
         layout=qw.QHBoxLayout()
@@ -114,8 +116,10 @@ class FormWidget(qw.QWidget):
         self.connection_list=qw.QListWidget()
         #button for navigating
         self.prev=qw.QPushButton("Vorherige")
+        self.prev.clicked.connect(self.showPreviousPage)
         #button for navigating
         self.next=qw.QPushButton("Nächste")
+        self.next.clicked.connect(self.showNextPage)
 
         #layout for connection_list navigation
         navigation_layout=qw.QHBoxLayout()
@@ -134,6 +138,26 @@ class FormWidget(qw.QWidget):
         
         #set formLayout
         self.setLayout(layout)
+
+    #previous navigation
+    def showPreviousPage(self):
+        #on first page do nothing
+        #else go one page back and display
+        if self.displayedIndex>0:
+              self.displayedIndex=self.displayedIndex-1
+              self.connection_list.clear()
+              for k in self.connectionPages[self.displayedIndex]:
+                    self.connection_list.addItem(k.toString())                
+
+    #next navigation
+    def showNextPage(self):
+        #on last page do nothing
+        #else go one page forward and display
+        if self.displayedIndex<len(self.connectionPages)-1:
+              self.displayedIndex=self.displayedIndex+1
+              self.connection_list.clear()
+              for k in self.connectionPages[self.displayedIndex]:
+                    self.connection_list.addItem(k.toString())               
 
     #retrieves list all all matching stations to input and displays them
     def getStations(self):
@@ -226,8 +250,15 @@ class FormWidget(qw.QWidget):
                        else:
                            ref=""
                    connections.append(Connection(name,typ,stopid,stop,time,date,direction,track,ref))
-            for c in connections:
-                c.debug()
+            #clear displayed list
+            self.connection_list.clear()
+            #for every connection add connection display it
+            for k in connections:
+                self.connection_list.addItem(k.toString())
+            #Add list of connections to pages
+            self.connectionPages.append(connections)
+            #set index to last entry of pages
+            self.displayedIndex=len(self.connectionPages)-1
                      
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
