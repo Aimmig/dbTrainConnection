@@ -35,7 +35,7 @@ class Connection:
 
 class Stop:
 
-    def __init__self(self,name,identifier,arrTime,arrDate,depTime,depDate,track,lon,lat):
+    def __init__(self,name,identifier,arrTime,arrDate,depTime,depDate,track,lon,lat):
         self.name=name
         self.id=identifier
         self.arrTime=arrTime
@@ -47,7 +47,8 @@ class Stop:
         self.lat=lat;
 
     def toString(self):
-        return self.name+" "+self.depTime
+        res=self.name+" "+self.track+" "+self.depTime+" "+self.depDate
+        return res
 
 #Class that defines gui
 class FormWidget(qw.QWidget):
@@ -94,7 +95,6 @@ class FormWidget(qw.QWidget):
         
         #calendar for selecting date
         self.date_chooser=qw.QCalendarWidget()
-        #self.date_chooser.gridVisible(True)
 
         #buttons for getting all connections with System Time
         self.request_now=qw.QPushButton("Jetzt") 
@@ -172,31 +172,45 @@ class FormWidget(qw.QWidget):
         
     def getDetails(self):
         index=self.connection_list.currentRow()
-        urlString=self.connectionPages[self.displayedIndex][index].ref
-        print(urlString)
-        xmlString=req.getXMLStringConnectionDetails(urlString)
-        if xmlString and self.connectionPages[self.displayedIndex][index].stopList==[]:
-              root=ET.fromstring(xmlString)
-              stopList=[]
-              #TO-DO: Iterate corectly over xml- object !!!
-              for 'Stop' in root.attrib['Stops']:
-                        name=root.attrib['Stops'].attrib['name']
-                        print(name)
-                        identifier=child.attrib['id']
-                        arrTime=child.attrib['arrTime']
-                        arrDate=child.attrib['arrDate']
-                        depTime=child.attrib['depTime']
-                        depDate=child.attrib['depDate']
-                        track=child.attrib['track']
-                        lon=child.attrib['lon']
-                        lat=child.attrib['lat']
-                        stop=Stop(name,identifier,arrTime,arrDate,depTime,depDate,track,lon,lat)
-                        stopList.append(Stop)
-                        print(name)
-              self.connectionPages[self.displayedIndex][index].addStopList(stopList)
+        if  self.connectionPages[self.displayedIndex][index].stopList==[]:
+              urlString=self.connectionPages[self.displayedIndex][index].ref
+              xmlString=req.getXMLStringConnectionDetails(urlString)
+              if xmlString:
+                    root=ET.fromstring(xmlString)
+                    stopList=[]
+                    for c in root:
+                        if c.tag=="Stops":
+                              for child in c:                  
+                                  name=child.attrib['name']
+                                  identifier=child.attrib['id']
+                                  if 'arrTime' in child.attrib:
+                                      arrTime=child.attrib['arrTime']
+                                  else:
+                                      arrTime=""
+                                  if 'arrDate' in child.attrib:
+                                      arrDate=child.attrib['arrDate']
+                                  else:
+                                      arrDate=""
+                                  if 'depTime' in child.attrib:
+                                      depTime=child.attrib['depTime']
+                                  else:
+                                      depTime=""
+                                  if 'depDate' in child.attrib:
+                                      depDate=child.attrib['depDate']
+                                  else:
+                                      depDate=""
+                                  if 'track' in child.attrib:
+                                      track=child.attrib['track']
+                                  else:
+                                      track=""
+                                  lon=child.attrib['lon']
+                                  lat=child.attrib['lat']
+                                  stop=Stop(name,identifier,arrTime,arrDate,depTime,depDate,track,lon,lat)
+                                  stopList.append(stop)
+                    self.connectionPages[self.displayedIndex][index].addStopList(stopList)
         self.connection_details.clear()
         for s in self.connectionPages[self.displayedIndex][index].stopList:
-              print(s.toString())
+             self.connection_details.addItem(s.toString())
 
     #previous navigation
     def showPreviousPage(self):
@@ -265,9 +279,10 @@ class FormWidget(qw.QWidget):
             date=qc.QDate.currentDate()
             time=qc.QTime.currentTime()
         #use selected time from gui        
+
         else:
-            date=self.date_chooser.selectedDate()
             time=self.time_chooser.time()
+            date=self.date_chooser.selectedDate()
         #get id to selected station
         identifier=self.stationId[index]
         #arrival or departure checked

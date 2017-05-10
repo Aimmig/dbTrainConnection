@@ -62,7 +62,7 @@ def createConnectionRequestURL(date,time,identifier,isDeparture):
         timeString=str(time.hour())+"%3A"+str(time.minute())
         #build last part of url
         lastPart="authKey="+KEY+"&lang="+LANGUAGE+"&id="
-        lastPart=lastPart+str(identifier)+"&date="+dateString+"&time"+timeString
+        lastPart=lastPart+str(identifier)+"&date="+dateString+"&time="+timeString
         #build complete url
         if isDeparture:
              return BASE_URL+"departureBoard?"+lastPart
