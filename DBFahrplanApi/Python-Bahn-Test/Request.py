@@ -6,7 +6,21 @@ KEY="DBhackFrankfurt0316"
 LANGUAGE="de"
 BASE_URL="https://open-api.bahn.de/bin/rest.exe/"
 
-#TO-DO use proper HTTP, and URL errors, at the moment not working as intended
+#returns the XML-String 
+def getXMLStringConnectionDetails(urlString):
+        req=url_req.Request(urlString)
+        try:
+            with url_req.urlopen(req) as response:
+                result=response.read()
+                return result
+        except err.HTTPError as e:
+             print('The server couldn\'t fulfill the request.')
+             print('Error code: ', e.code)
+        except err.URLError as e:
+             print('We failed to reach a server.')
+             print('Reason: ', e.reason)
+        return ""
+        
 
 #returns the XML-String representation of the requested ressource
 def getXMLStringStationRequest(loc):

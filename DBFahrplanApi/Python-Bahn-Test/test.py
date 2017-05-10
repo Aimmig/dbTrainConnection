@@ -114,6 +114,8 @@ class FormWidget(qw.QWidget):
         self.connection_label=qw.QLabel("Fahrplantabelle")
         #list for all connections
         self.connection_list=qw.QListWidget()
+        self.connection_list.setMinimumSize(450,100)
+        self.connection_list.clicked.connect(self.getDetails)
         #button for navigating
         self.prev=qw.QPushButton("Vorherige")
         self.prev.clicked.connect(self.showPreviousPage)
@@ -131,13 +133,28 @@ class FormWidget(qw.QWidget):
         box2.addWidget(self.connection_label)
         box2.addWidget(self.connection_list)
         box2.addLayout(navigation_layout)
+        
+        box3=qw.QVBoxLayout()
+        
+        self.details_label=qw.QLabel("Details")
+        self.connection_details=qw.QListWidget()
+        self.connection_details.setMinimumSize(450,100)
+        box3.addWidget(self.details_label)
+        box3.addWidget(self.connection_details)
  
         #add all layouts to form-Layout
         layout.addLayout(box1)
         layout.addLayout(box2)
+        layout.addLayout(box3)
         
         #set formLayout
         self.setLayout(layout)
+        
+    def getDetails(self):
+        index=self.connection_list.currentRow()
+        urlString=self.connectionPages[self.displayedIndex][index].ref
+        xmlString=req.getXMLStringConnectionDetails(urlString)
+        print(xmlString)
 
     #previous navigation
     def showPreviousPage(self):
