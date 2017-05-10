@@ -13,21 +13,41 @@ import Request as req
 
 class Connection:
         
-    def __init__(self,name,typ,stopid,stop,time,date,direction,track,ref):
+    def __init__(self,name,typ,stopid,stopName,time,date,direction,track,ref):
         self.name=name
         self.type=typ
         self.stopid=stopid
-        self.stop=stop
+        self.stopName=stopName
         self.time=time
         self.date=date
         self.direction=direction
         self.track=track
         self.ref=ref
+        self.stopList=[]
+
+    def addStopList(self,l):
+        self.stopList=l    
 
     def toString(self):
-        res=self.name+" "+self.stop+" "+self.date
+        res=self.name+" "+self.stopName
         res=res+" "+self.time+" "+self.direction+" "+self.track
         return res
+
+class Stop:
+
+    def __init__self(self,name,identifier,arrTime,arrDate,depTime,depDate,track,lon,lat):
+        self.name=name
+        self.id=identifier
+        self.arrTime=arrTime
+        self.arrDate=arrDate
+        self.depTime=depTime
+        self.depDate=depDate
+        self.track=track
+        self.lon=lon
+        self.lat=lat;
+
+    def toString(self):
+        return self.name+" "+self.depTime
 
 #Class that defines gui
 class FormWidget(qw.QWidget):
@@ -153,8 +173,30 @@ class FormWidget(qw.QWidget):
     def getDetails(self):
         index=self.connection_list.currentRow()
         urlString=self.connectionPages[self.displayedIndex][index].ref
+        print(urlString)
         xmlString=req.getXMLStringConnectionDetails(urlString)
-        print(xmlString)
+        if xmlString and self.connectionPages[self.displayedIndex][index].stopList==[]:
+              root=ET.fromstring(xmlString)
+              stopList=[]
+              #TO-DO: Iterate corectly over xml- object !!!
+              for 'Stop' in root.attrib['Stops']:
+                        name=root.attrib['Stops'].attrib['name']
+                        print(name)
+                        identifier=child.attrib['id']
+                        arrTime=child.attrib['arrTime']
+                        arrDate=child.attrib['arrDate']
+                        depTime=child.attrib['depTime']
+                        depDate=child.attrib['depDate']
+                        track=child.attrib['track']
+                        lon=child.attrib['lon']
+                        lat=child.attrib['lat']
+                        stop=Stop(name,identifier,arrTime,arrDate,depTime,depDate,track,lon,lat)
+                        stopList.append(Stop)
+                        print(name)
+              self.connectionPages[self.displayedIndex][index].addStopList(stopList)
+        self.connection_details.clear()
+        for s in self.connectionPages[self.displayedIndex][index].stopList:
+              print(s.toString())
 
     #previous navigation
     def showPreviousPage(self):
@@ -247,7 +289,7 @@ class FormWidget(qw.QWidget):
                    else:
                        typ=""
                    stopid=con.attrib['stopid']
-                   stop=con.attrib['stop']
+                   stopName=con.attrib['stop']
                    time=con.attrib['time']
                    date=con.attrib['date']
                    #read direction if departure
@@ -266,7 +308,7 @@ class FormWidget(qw.QWidget):
                            ref=details.attrib['ref']
                        else:
                            ref=""
-                   connections.append(Connection(name,typ,stopid,stop,time,date,direction,track,ref))
+                   connections.append(Connection(name,typ,stopid,stopName,time,date,direction,track,ref))
             #clear displayed list
             self.connection_list.clear()
             #for every connection add connection display it
