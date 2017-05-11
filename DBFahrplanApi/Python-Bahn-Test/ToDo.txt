@@ -1,0 +1,7 @@
+#To-Do Stuff:
+
+1. make only rows selectable in connection_list QTableWidget!
+2. Generalize/split getConnections into to part for use in number 3
+3. Implement function to request connections on click in details QTableWidgets
+   -Differentiate between default departure at the date/time/stop or optional arrvial
+4. clean up gui, proper sizes of QTableWidget columns, proper resizing etc...
