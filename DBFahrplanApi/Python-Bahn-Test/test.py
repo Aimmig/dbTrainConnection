@@ -13,7 +13,7 @@ import Request as req
 
 class Connection:
         
-    def __init__(self,name,typ,stopid,stopName,time,date,direction,track,ref):
+    def __init__(self,name,typ,stopid,stopName,time,date,direction,origin,track,ref):
         self.name=name
         self.type=typ
         self.stopid=stopid
@@ -21,17 +21,13 @@ class Connection:
         self.time=time
         self.date=date
         self.direction=direction
+        self.origin=origin
         self.track=track
         self.ref=ref
         self.stopList=[]
 
     def addStopList(self,l):
-        self.stopList=l    
-
-    def toString(self):
-        res=self.name+" "+self.stopName
-        res=res+" "+self.time+" "+self.direction+" "+self.track
-        return res
+        self.stopList=l
 
 class Stop:
 
@@ -133,8 +129,11 @@ class FormWidget(qw.QWidget):
         #label for connection list
         self.connection_label=qw.QLabel("Fahrplantabelle")
         #list for all connections
-        self.connection_list=qw.QListWidget()
-        self.connection_list.setMinimumSize(450,100)
+        self.connection_list=qw.QTableWidget()
+        self.connection_list.setColumnCount(6)
+        self.header_list=["Zugnummer","von","nach","Datum","Uhrzeit","Gleis"]
+        self.connection_list.setHorizontalHeaderLabels(self.header_list)
+        self.connection_list.setMinimumSize(600,100)
         self.connection_list.clicked.connect(self.getDetails)
         #button for navigating
         self.prev=qw.QPushButton("Vorherige")
@@ -157,7 +156,8 @@ class FormWidget(qw.QWidget):
         box3=qw.QVBoxLayout()
         
         self.details_label=qw.QLabel("Details")
-        self.connection_details=qw.QListWidget()
+        self.connection_details=qw.QTableWidget()
+        self.connection_details.setItem(2,2,qw.QTableWidgetItem("Test"))
         self.connection_details.setMinimumSize(450,100)
         box3.addWidget(self.details_label)
         box3.addWidget(self.connection_details)
@@ -219,8 +219,11 @@ class FormWidget(qw.QWidget):
         if self.displayedIndex>0:
               self.displayedIndex=self.displayedIndex-1
               self.connection_list.clear()
-              for k in self.connectionPages[self.displayedIndex]:
-                    self.connection_list.addItem(k.toString())                
+              self.connection_list.setRowCount(0)
+              self.connection_list.setHorizontalHeaderLabels(self.header_list)
+              #for every connection add connection display it
+              for c in self.connectionPages[self.displayedIndex]:
+                   self.addConnectionToTable(c)            
 
     #next navigation
     def showNextPage(self):
@@ -229,8 +232,26 @@ class FormWidget(qw.QWidget):
         if self.displayedIndex<len(self.connectionPages)-1:
               self.displayedIndex=self.displayedIndex+1
               self.connection_list.clear()
-              for k in self.connectionPages[self.displayedIndex]:
-                    self.connection_list.addItem(k.toString())               
+              self.connection_list.setRowCount(0)
+              self.connection_list.setHorizontalHeaderLabels(self.header_list)
+              #for every connection add connection display it
+              for c in self.connectionPages[self.displayedIndex]:
+                   self.addConnectionToTable(c)
+
+    def addConnectionToTable(self,con):
+        self.connection_list.insertRow(self.connection_list.rowCount())
+        column=self.connection_list.rowCount()-1
+        self.connection_list.setItem(column,0,qw.QTableWidgetItem(con.name))
+        if con.direction:
+                self.connection_list.setItem(column,2,qw.QTableWidgetItem(con.direction))
+                self.connection_list.setItem(column,1,qw.QTableWidgetItem(con.stopName))
+        if con.origin:
+                self.connection_list.setItem(column,1,qw.QTableWidgetItem(con.origin))
+                self.connection_list.setItem(column,2,qw.QTableWidgetItem(con.stopName))
+        self.connection_list.setItem(column,3,qw.QTableWidgetItem(con.date))
+        self.connection_list.setItem(column,4,qw.QTableWidgetItem(con.time))
+        if con.track:
+                self.connection_list.setItem(column,5,qw.QTableWidgetItem(con.track))
 
     #retrieves list all all matching stations to input and displays them
     def getStations(self):
@@ -308,10 +329,15 @@ class FormWidget(qw.QWidget):
                    time=con.attrib['time']
                    date=con.attrib['date']
                    #read direction if departure
-                   if isDeparture:
+                   if isDeparture and 'direction' in con.attrib:
                        direction=con.attrib['direction']
-                   else:
+                       origin=""
+                   elif not isDeparture and 'origin' in con.attrib:
+                       origin=con.attrib['origin']
                        direction=""
+                   else:
+                        origin=""
+                        direction=""
                    #track might not be set in xml
                    if 'track' in con.attrib:
                        track=con.attrib['track']
@@ -323,12 +349,14 @@ class FormWidget(qw.QWidget):
                            ref=details.attrib['ref']
                        else:
                            ref=""
-                   connections.append(Connection(name,typ,stopid,stopName,time,date,direction,track,ref))
+                   connections.append(Connection(name,typ,stopid,stopName,time,date,direction,origin,track,ref))
             #clear displayed list
             self.connection_list.clear()
+            self.connection_list.setRowCount(0)
+            self.connection_list.setHorizontalHeaderLabels(self.header_list)
             #for every connection add connection display it
-            for k in connections:
-                self.connection_list.addItem(k.toString())
+            for c in connections:
+                   self.addConnectionToTable(c)
             #Add list of connections to pages
             self.connectionPages.append(connections)
             #set index to last entry of pages
