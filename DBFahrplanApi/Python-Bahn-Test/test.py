@@ -133,7 +133,14 @@ class FormWidget(qw.QWidget):
         self.connection_list.setColumnCount(5)
         self.header_list=["Zugnummer","von","nach","Uhrzeit","Gleis"]
         self.connection_list.setHorizontalHeaderLabels(self.header_list)
-        self.connection_list.setMinimumSize(600,100)
+        self.connection_list.setColumnWidth(0,100)
+        self.connection_list.setColumnWidth(1,120)
+        self.connection_list.setColumnWidth(2,100)
+        self.connection_list.setColumnWidth(3,80)
+        self.connection_list.setColumnWidth(4,80)
+        self.connection_list.setMinimumSize(80+300+40,100)
+        self.connection_list.setShowGrid(False)
+        self.connection_list.verticalHeader().setVisible(False)
         self.connection_list.clicked.connect(self.getDetails)
         #button for navigating
         self.prev=qw.QPushButton("Vorherige")
@@ -158,9 +165,13 @@ class FormWidget(qw.QWidget):
         self.details_label=qw.QLabel("Details")
         self.connection_details=qw.QTableWidget()
         self.connection_details.setColumnCount(6)
+        self.connection_details.setColumnWidth(0,150)
+        self.connection_details.setColumnWidth(1,80)
         self.connection_details.setMinimumSize(450,100)
-        self.header_details_list=["Halt","AnkunftsZeit","Ankunftsdatum","Abfahrtszeit","Abfahrtsdatum","Gleis"]
+        self.connection_details.setShowGrid(False)
+        self.header_details_list=["Halt","Ankunft","","Abfahrt","","Gleis"]
         self.connection_details.setHorizontalHeaderLabels(self.header_details_list)
+        self.connection_details.clicked.connect(self.test)
         box3.addWidget(self.details_label)
         box3.addWidget(self.connection_details)
  
@@ -171,6 +182,10 @@ class FormWidget(qw.QWidget):
         
         #set formLayout
         self.setLayout(layout)
+
+    def test(self):
+        print(self.connection_details.currentRow())
+        print(self.connection_details.currentColumn())
         
     def getDetails(self):
         index=self.connection_list.currentRow()
@@ -224,7 +239,7 @@ class FormWidget(qw.QWidget):
               self.connection_list.setRowCount(0)
               #for every connection add connection display it
               for c in self.connectionPages[self.displayedIndex]:
-                   self.addConnectionToTable(c)            
+                   self.addConnectionToTable(c)          
 
     #next navigation
     def showNextPage(self):
@@ -264,9 +279,9 @@ class FormWidget(qw.QWidget):
         if stop.arrDate:
                 self.connection_details.setItem(column,2,qw.QTableWidgetItem(stop.arrDate))
         if stop.depDate:
-                self.connection_details.setItem(column,3,qw.QTableWidgetItem(stop.depDate))
+                self.connection_details.setItem(column,4,qw.QTableWidgetItem(stop.depDate))
         if stop.depTime:
-                self.connection_details.setItem(column,4,qw.QTableWidgetItem(stop.depTime))
+                self.connection_details.setItem(column,3,qw.QTableWidgetItem(stop.depTime))
         if stop.track:
                 self.connection_details.setItem(column,5,qw.QTableWidgetItem(stop.track))
 
