@@ -11,40 +11,65 @@ import xml.etree.ElementTree as ET
 #import class for requests
 import Request as req
 
+#clas representing a single train connection
 class Connection:
         
     def __init__(self,name,typ,stopid,stopName,time,date,direction,origin,track,ref):
+        #Name IC10250,ICE516
         self.name=name
+        #Typ: IC,ICE, EC,..
         self.type=typ
+        #id of the station which the connection was requested from        
         self.stopid=stopid
+        #name of station which the connection was requested from
         self.stopName=stopName
+        #time corresponding to requested connection and station
         self.time=time
+        #date of the connection
         self.date=date
+        #direction of connection
         self.direction=direction
+        #origin of the connection
         self.origin=origin
+        #track of the connection corresponding to requested station
         self.track=track
+        #reference link for more details
         self.ref=ref
+        #list of all Stops of this connection
         self.stopList=[]
 
+    #sets the list of stops to the given list
     def addStopList(self,l):
         self.stopList=l
 
+    #string representation of a connection for details label
+    def toStringDetails(self):
+        print(self.name)
+        detailsString="Zugverlauf von " + self.name +" am " + self.date
+        return detailsString
+    
+    def toStringGenerall(self):
+        res="Fahrplantabelle für "+self.stopName+" am "+self.date
+        return res
+            
+#class representing a single train stop of a connection
 class Stop:
 
     def __init__(self,name,identifier,arrTime,arrDate,depTime,depDate,track,lon,lat):
+        #name of the stop-station
         self.name=name
+        #id of the stop-station
         self.id=identifier
+        #arrival and departure Time and Date
         self.arrTime=arrTime
         self.arrDate=arrDate
         self.depTime=depTime
         self.depDate=depDate
+        #Track from wich the connection starts
         self.track=track
+        #Longitude and latiude of the station
         self.lon=lon
-        self.lat=lat;
-
-    def toString(self):
-        res=self.name+" "+self.track+" "+self.depTime+" "+self.depDate
-        return res
+        self.lat=lat
 
 #Class that defines gui
 class FormWidget(qw.QWidget):
@@ -128,20 +153,28 @@ class FormWidget(qw.QWidget):
 
         #label for connection list
         self.connection_label=qw.QLabel("")
-        #list for all connections
+        #QTableWidget for displaying connections
         self.connection_list=qw.QTableWidget()
+        #use 5 columns to present data
         self.connection_list.setColumnCount(5)
-        self.header_list=["Zugnummer","von","nach","Uhrzeit","Gleis"]
-        self.connection_list.setHorizontalHeaderLabels(self.header_list)
+        #set Horizontal Header for QTableWidget
+        header_list=["Zugnummer","von","nach","Uhrzeit","Gleis"]
+        self.connection_list.setHorizontalHeaderLabels(header_list)
+        #set minimal sizes for every column
         self.connection_list.setColumnWidth(0,100)
         self.connection_list.setColumnWidth(1,120)
         self.connection_list.setColumnWidth(2,100)
         self.connection_list.setColumnWidth(3,80)
         self.connection_list.setColumnWidth(4,80)
-        self.connection_list.setMinimumSize(80+300+40,100)
+        #self.connection_list.setMinimumSize(80+300+40,100)
+        #do not show grind and vertical Headers
         self.connection_list.setShowGrid(False)
         self.connection_list.verticalHeader().setVisible(False)
+        #set Horizontal Resize mode to interactive
+        self.connection_list.horizontalHeader().setSectionResizeMode(qw.QHeaderView.Interactive)
+        #connect QTableWidget with function
         self.connection_list.clicked.connect(self.getDetails)
+        
         #button for navigating
         self.prev=qw.QPushButton("Vorherige")
         self.prev.clicked.connect(self.showPreviousPage)
@@ -160,19 +193,30 @@ class FormWidget(qw.QWidget):
         box2.addWidget(self.connection_list)
         box2.addLayout(navigation_layout)
         
+        #layout for right part of gui
         box3=qw.QVBoxLayout()
         
-        self.details_label=qw.QLabel("Details")
+        #label for details of a connection
+        self.details_label=qw.QLabel("")
+        #QTableWidget for presenting detailed data of a connection
         self.connection_details=qw.QTableWidget()
-        self.connection_details.setColumnCount(6)
+        #use for columns to present data
+        self.connection_details.setColumnCount(4)
+        #set Horizontal Headers for QTableWidget
+        header_details_list=["Halt","Ankunft","Abfahrt","Gleis"]
+        self.connection_details.setHorizontalHeaderLabels(header_details_list)
+        #set minimal sizes of ever Column
         self.connection_details.setColumnWidth(0,150)
         self.connection_details.setColumnWidth(1,80)
         self.connection_details.setMinimumSize(450,100)
+        #do not show grid
         self.connection_details.setShowGrid(False)
-        self.header_details_list=["Halt","Ankunft","","Abfahrt","","Gleis"]
-        self.connection_details.setHorizontalHeaderLabels(self.header_details_list)
+        #connect QTableWidget with function
         self.connection_details.clicked.connect(self.test)
+        
+        #add label to box3
         box3.addWidget(self.details_label)
+        #add QTableWidget to box3
         box3.addWidget(self.connection_details)
  
         #add all layouts to form-Layout
@@ -182,24 +226,38 @@ class FormWidget(qw.QWidget):
         
         #set formLayout
         self.setLayout(layout)
-
+        
+    #called on click of connection_details
     def test(self):
         print(self.connection_details.currentRow())
         print(self.connection_details.currentColumn())
-        
+    
+    #called on click of connection_list
+    #request connection details if needed and displays them  
     def getDetails(self):
+        #get the selected Index
         index=self.connection_list.currentRow()
-        if  self.connectionPages[self.displayedIndex][index].stopList==[]:
-              urlString=self.connectionPages[self.displayedIndex][index].ref
+        #get the connection according to the index
+        connection=self.connectionPages[self.displayedIndex][index]
+        #if stopList is empty request details
+        if  connection.stopList==[]:
+              #get reference link of connection
+              urlString=connection.ref
+              #request xml String
               xmlString=req.getXMLStringConnectionDetails(urlString)
+              #check if valid
               if xmlString:
+                    #create xml object from string
                     root=ET.fromstring(xmlString)
                     stopList=[]
                     for c in root:
                         if c.tag=="Stops":
-                              for child in c:                  
+                              #iterate over all Stops
+                              for child in c:        
+                                  #name and id of the station are mandatory         
                                   name=child.attrib['name']
                                   identifier=child.attrib['id']
+                                  #departure and arrive time and date might not be set
                                   if 'arrTime' in child.attrib:
                                       arrTime=child.attrib['arrTime']
                                   else:
@@ -216,19 +274,29 @@ class FormWidget(qw.QWidget):
                                       depDate=child.attrib['depDate']
                                   else:
                                       depDate=""
+                                  #track might not be set
                                   if 'track' in child.attrib:
                                       track=child.attrib['track']
                                   else:
                                       track=""
+                                  #longitude, latitude are mandatory
                                   lon=child.attrib['lon']
                                   lat=child.attrib['lat']
+                                  #create stop with all these informations
                                   stop=Stop(name,identifier,arrTime,arrDate,depTime,depDate,track,lon,lat)
+                                  #add it to local list
                                   stopList.append(stop)
-                    self.connectionPages[self.displayedIndex][index].addStopList(stopList)
+                    #set the stopList of the connection to the local list
+                    connection.addStopList(stopList)
+        #remove all Elements from details QTableWidget
         self.connection_details.setRowCount(0)
-        self.connection_details.setHorizontalHeaderLabels(self.header_details_list)
-        for s in self.connectionPages[self.displayedIndex][index].stopList:
+        #for every stop in stopList add it to QTableWidget
+        for s in connection.stopList:
              self.addStopToDetails(s)
+        #set details_label text to connection information
+        self.details_label.setText(connection.toStringDetails())
+        #resize QTableWidget to contents
+        self.connection_details.resizeColumnsToContents()
 
     #previous navigation
     def showPreviousPage(self):
@@ -236,10 +304,14 @@ class FormWidget(qw.QWidget):
         #else go one page back and display
         if self.displayedIndex>0:
               self.displayedIndex=self.displayedIndex-1
+              #remove old elements from QTableWidget
               self.connection_list.setRowCount(0)
               #for every connection add connection display it
               for c in self.connectionPages[self.displayedIndex]:
-                   self.addConnectionToTable(c)          
+                   self.addConnectionToTable(c)
+              #resize colums to contens
+              self.connection_list.resizeColumnsToContents()
+              self.setConnectionLabel()          
 
     #next navigation
     def showNextPage(self):
@@ -247,43 +319,56 @@ class FormWidget(qw.QWidget):
         #else go one page forward and display
         if self.displayedIndex<len(self.connectionPages)-1:
               self.displayedIndex=self.displayedIndex+1
+              #remove all elements from QTableWidget
               self.connection_list.setRowCount(0)
               #for every connection add connection display it
               for c in self.connectionPages[self.displayedIndex]:
                    self.addConnectionToTable(c)
+              #resize columns to contens
+              self.connection_list.resizeColumnsToContents()
+              self.setConnectionLabel()
 
+    #sets the connection label to string repr. of the first displayed connection
+    def setConnectionLabel(self):
+        self.connection_label.setText(self.connectionPages[self.displayedIndex][0].toStringGenerall())
+
+    #adds a connection to QTableWidget
     def addConnectionToTable(self,con):
-        labelString="Fahrplantabelle für "+con.stopName+" am "+con.date
-        self.connection_label.setText(labelString)
+        #add new row to QTableWidget
         self.connection_list.insertRow(self.connection_list.rowCount())
-        column=self.connection_list.rowCount()-1
-        self.connection_list.setItem(column,0,qw.QTableWidgetItem(con.name))
+        #select last row of QTableWidget
+        row=self.connection_list.rowCount()-1
+        #add name of connection
+        self.connection_list.setItem(row,0,qw.QTableWidgetItem(con.name))
+        #check if direction and origin are valid and add them
+        #not that direction (departure) an origin (arrival) are exclusive only one can be set!
         if con.direction:
-                self.connection_list.setItem(column,2,qw.QTableWidgetItem(con.direction))
-                self.connection_list.setItem(column,1,qw.QTableWidgetItem(con.stopName))
+                self.connection_list.setItem(row,2,qw.QTableWidgetItem(con.direction))
+                self.connection_list.setItem(row,1,qw.QTableWidgetItem(con.stopName))
         if con.origin:
-                self.connection_list.setItem(column,1,qw.QTableWidgetItem(con.origin))
-                self.connection_list.setItem(column,2,qw.QTableWidgetItem(con.stopName))
-        self.connection_list.setItem(column,3,qw.QTableWidgetItem(con.time))
+                self.connection_list.setItem(row,1,qw.QTableWidgetItem(con.origin))
+                self.connection_list.setItem(row,2,qw.QTableWidgetItem(con.stopName))
+        #add time of connection
+        self.connection_list.setItem(row,3,qw.QTableWidgetItem(con.time))
+        #if track is set add track of connection
         if con.track:
-                self.connection_list.setItem(column,4,qw.QTableWidgetItem(con.track))
+                self.connection_list.setItem(row,4,qw.QTableWidgetItem(con.track))
 
+    #adds a stop to QTableWidget details
     def addStopToDetails(self,stop):
-        labelString="Zugverlauf "
-        self.connection_label.setText(labelString)
+        #insert new row in QTableWidget details
         self.connection_details.insertRow(self.connection_details.rowCount())
-        column=self.connection_details.rowCount()-1
-        self.connection_details.setItem(column,0,qw.QTableWidgetItem(stop.name))
+        #select last row of QTableWidget details
+        row=self.connection_details.rowCount()-1
+        #add stopName 
+        self.connection_details.setItem(row,0,qw.QTableWidgetItem(stop.name))
+        #check if times and track are valid and add them
         if stop.arrTime:
-                self.connection_details.setItem(column,1,qw.QTableWidgetItem(stop.arrTime))
-        if stop.arrDate:
-                self.connection_details.setItem(column,2,qw.QTableWidgetItem(stop.arrDate))
-        if stop.depDate:
-                self.connection_details.setItem(column,4,qw.QTableWidgetItem(stop.depDate))
+                self.connection_details.setItem(row,1,qw.QTableWidgetItem(stop.arrTime))
         if stop.depTime:
-                self.connection_details.setItem(column,3,qw.QTableWidgetItem(stop.depTime))
+                self.connection_details.setItem(row,2,qw.QTableWidgetItem(stop.depTime))
         if stop.track:
-                self.connection_details.setItem(column,5,qw.QTableWidgetItem(stop.track))
+                self.connection_details.setItem(row,3,qw.QTableWidgetItem(stop.track))
 
     #retrieves list all all matching stations to input and displays them
     def getStations(self):
@@ -308,7 +393,6 @@ class FormWidget(qw.QWidget):
                       self.railStations.clear()
                       self.stationId=newStationsId
                       self.railStations.addItems(newStations)
-        return
 
     #Encapsulation for calling from Button
     def getConnectionsNow(self):
@@ -332,7 +416,6 @@ class FormWidget(qw.QWidget):
             date=qc.QDate.currentDate()
             time=qc.QTime.currentTime()
         #use selected time from gui        
-
         else:
             time=self.time_chooser.time()
             date=self.date_chooser.selectedDate()
@@ -350,12 +433,14 @@ class FormWidget(qw.QWidget):
             #iterate over all connections
             connections=[]
             for con in root:
+                   #connection name is mandatory
                    name=con.attrib['name']
                    # check if type exist --spelling mistake in xml
                    if 'type' in con.attrib:
                        typ=con.attrib['type']
                    else:
                        typ=""
+                   #stop, id and time, date are mandatory
                    stopid=con.attrib['stopid']
                    stopName=con.attrib['stop']
                    time=con.attrib['time']
@@ -381,16 +466,21 @@ class FormWidget(qw.QWidget):
                            ref=details.attrib['ref']
                        else:
                            ref=""
+                   #add connection with these information to local list of connections
                    connections.append(Connection(name,typ,stopid,stopName,time,date,direction,origin,track,ref))
             #clear displayed list
             self.connection_list.setRowCount(0)
             #for every connection add connection display it
             for c in connections:
                    self.addConnectionToTable(c)
+            #resize columns to contents
+            self.connection_list.resizeColumnsToContents()
             #Add list of connections to pages
             self.connectionPages.append(connections)
             #set index to last entry of pages
             self.displayedIndex=len(self.connectionPages)-1
+            #set connection label
+            self.setConnectionLabel()
                      
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
