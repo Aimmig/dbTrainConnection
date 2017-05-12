@@ -1,13 +1,11 @@
 #To-Do Stuff:
 
 1. make only rows selectable in connection_list QTableWidget!
-2. Generalize/split getConnections into to part for use in number 3
-3. Implement function to request connections on click in details QTableWidgets
+2. Implement function to request connections on click in details QTableWidgets
    -Differentiate between default departure at the date/time/stop or optional arrvial
-4. clean up gui, proper sizes of QTableWidget columns, proper resizing etc...
-5. change classes to hold qc.QDate and qc.QTime objects instead of formatted Strings!!
-
+3. clean up gui, proper sizes of QTableWidget columns, proper resizing etc...
+4. Move xml parsing stuff to anothe file maybe request ...?
 
 #Already partially done
-2. Almost done, 3. working but to be commentend and refactored
+3. working but to be commentend and refactored
 
