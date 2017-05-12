@@ -44,10 +44,9 @@ class Connection:
 
     #string representation of a connection for details label
     def toStringDetails(self):
-        print(self.name)
         detailsString="Zugverlauf von " + self.name +" am " + self.date
         return detailsString
-    
+
     def toStringGenerall(self):
         res="Fahrplantabelle für "+self.stopName+" am "+self.date
         return res
@@ -86,6 +85,7 @@ class FormWidget(qw.QWidget):
         self.stationId=[]
         self.connectionPages=[]
         self.displayedIndex=-1
+        self.displayedDetailedIndex=(-1,-1)
 
         #overall layout for gui
         layout=qw.QHBoxLayout()
@@ -212,7 +212,7 @@ class FormWidget(qw.QWidget):
         #do not show grid
         self.connection_details.setShowGrid(False)
         #connect QTableWidget with function
-        self.connection_details.clicked.connect(self.test)
+        self.connection_details.clicked.connect(self.getConnectionsOnClickInDetails)
         
         #add label to box3
         box3.addWidget(self.details_label)
@@ -228,9 +228,25 @@ class FormWidget(qw.QWidget):
         self.setLayout(layout)
         
     #called on click of connection_details
-    def test(self):
-        print(self.connection_details.currentRow())
-        print(self.connection_details.currentColumn())
+    def getConnectionsOnClickInDetails(self):
+        #use index to get corresponding page and with row get the stop
+        row=self.connection_details.currentRow()
+        (a,b)=self.displayedIndexDetails
+        s=self.connectionPages[a][b].stopList[row]
+        date=s.arrDate
+        time=s.arrTime
+        if not date and not time:
+              date=s.depDate
+              time=s.depTime
+        splittedDate=date.split("-")
+        year=int(splittedDate[0])
+        month=int(splittedDate[1])
+        day=int(splittedDate[2])
+        splittedTime=time.split(":")
+        hours=int(splittedTime[0])
+        minutes=int(splittedTime[1])
+        identifier=s.id
+        self.getConnections(qc.QDate(year,month,day),qc.QTime(hours,minutes),identifier,True)
     
     #called on click of connection_list
     #request connection details if needed and displays them  
@@ -297,6 +313,7 @@ class FormWidget(qw.QWidget):
         self.details_label.setText(connection.toStringDetails())
         #resize QTableWidget to contents
         self.connection_details.resizeColumnsToContents()
+        self.displayedIndexDetails=(self.displayedIndex,index)
 
     #previous navigation
     def showPreviousPage(self):
@@ -396,16 +413,16 @@ class FormWidget(qw.QWidget):
 
     #Encapsulation for calling from Button
     def getConnectionsNow(self):
-        self.getConnections(True)
+        self.getConnectionsFromInput(True)
 
     #Encapsulation for calling from Button
     def getConnectionsWithTime(self):
-        self.getConnections(False)
+        self.getConnectionFromInputs(False)
 
     #retrieves all Connections matching to the inputs and displays them
     #isnow=TRUE use system time 
     #isnow=FALSE use choosen time
-    def getConnections(self,isnow):
+    def getConnectionsFromInput(self,isnow):
         #get selected Index from ComboBox
         index=self.railStations.currentIndex()
         #check invalid Index
@@ -426,6 +443,10 @@ class FormWidget(qw.QWidget):
             isDeparture=False
         else:
             isDeparture=True
+        self.getConnections(date,time,identifier,isDeparture)
+        
+        
+    def getConnections(self,date,time,identifier,isDeparture):
         #request    
         xmlString=req.getXMLStringConnectionRequest(date,time,identifier,isDeparture)
         if xmlString:
@@ -481,7 +502,8 @@ class FormWidget(qw.QWidget):
             self.displayedIndex=len(self.connectionPages)-1
             #set connection label
             self.setConnectionLabel()
-                     
+
+                      
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
         formwidget=FormWidget()

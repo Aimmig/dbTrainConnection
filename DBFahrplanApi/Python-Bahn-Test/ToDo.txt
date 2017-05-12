@@ -5,3 +5,9 @@
 3. Implement function to request connections on click in details QTableWidgets
    -Differentiate between default departure at the date/time/stop or optional arrvial
 4. clean up gui, proper sizes of QTableWidget columns, proper resizing etc...
+5. change classes to hold qc.QDate and qc.QTime objects instead of formatted Strings!!
+
+
+#Already partially done
+2. Almost done, 3. working but to be commentend and refactored
+
