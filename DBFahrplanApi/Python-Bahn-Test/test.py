@@ -11,6 +11,23 @@ import xml.etree.ElementTree as ET
 #import class for requests
 import Request as req
 
+#converts String formatted as hh:mm to QTime object
+def timeStringToQTime(timeString):
+     splittedTime=timeString.split(":")
+     hours=int(splittedTime[0])
+     minutes=int(splittedTime[1])
+     time=qc.QTime(hours,minutes)
+     return time
+    
+#converts String formatted as yyyy-mm-dd to QDate object
+def dateStringToQDate(dateString):
+     splittedDate=dateString.split("-")
+     year=int(splittedDate[0])
+     month=int(splittedDate[1])
+     day=int(splittedDate[2])
+     date=qc.QDate(year,month,day)
+     return date
+
 #clas representing a single train connection
 class Connection:
         
@@ -42,13 +59,23 @@ class Connection:
     def addStopList(self,l):
         self.stopList=l
 
+    #String representation of the time of the connection
+    def timeToString(self):
+        timeString=str(self.time.hour())+":"+str(self.time.minute())
+        return timeString
+
+    #String representation of the date of the connection
+    def dateToString(self):
+        dateString=str(self.date.day())+"/"+str(self.date.month())+"/"+str(self.date.year())
+        return dateString
+
     #string representation of a connection for details label
     def toStringDetails(self):
-        detailsString="Zugverlauf von " + self.name +" am " + self.date
+        detailsString="Zugverlauf von " + self.name +" am " +self.dateToString()
         return detailsString
 
     def toStringGenerall(self):
-        res="Fahrplantabelle für "+self.stopName+" am "+self.date
+        res="Fahrplantabelle für "+self.stopName+" am "+self.dateToString()
         return res
             
 #class representing a single train stop of a connection
@@ -70,6 +97,14 @@ class Stop:
         self.lon=lon
         self.lat=lat
 
+    def arrTimeToString(self):
+        timeString=str(self.arrTime.hour())+":"+str(self.arrTime.minute())
+        return timeString
+    
+    def depTimeToString(self):
+        timeString=str(self.depTime.hour())+":"+str(self.depTime.minute())
+        return timeString
+
 #Class that defines gui
 class FormWidget(qw.QWidget):
 
@@ -82,6 +117,7 @@ class FormWidget(qw.QWidget):
         #set some properties
         self.setAutoFillBackground(True)
         self.setWindowTitle("Fahrplanzeige")
+        self.errorMsg="Keine Verbindungen gefunden"
         self.stationId=[]
         self.connectionPages=[]
         self.displayedIndex=-1
@@ -238,15 +274,8 @@ class FormWidget(qw.QWidget):
         if not date and not time:
               date=s.depDate
               time=s.depTime
-        splittedDate=date.split("-")
-        year=int(splittedDate[0])
-        month=int(splittedDate[1])
-        day=int(splittedDate[2])
-        splittedTime=time.split(":")
-        hours=int(splittedTime[0])
-        minutes=int(splittedTime[1])
         identifier=s.id
-        self.getConnections(qc.QDate(year,month,day),qc.QTime(hours,minutes),identifier,True)
+        self.getConnections(date,time,identifier,True)
     
     #called on click of connection_list
     #request connection details if needed and displays them  
@@ -275,19 +304,23 @@ class FormWidget(qw.QWidget):
                                   identifier=child.attrib['id']
                                   #departure and arrive time and date might not be set
                                   if 'arrTime' in child.attrib:
-                                      arrTime=child.attrib['arrTime']
+                                      arrTimeString=child.attrib['arrTime']
+                                      arrTime=timeStringToQTime(arrTimeString)
                                   else:
                                       arrTime=""
                                   if 'arrDate' in child.attrib:
-                                      arrDate=child.attrib['arrDate']
+                                      arrDateString=child.attrib['arrDate']
+                                      arrDate=dateStringToQDate(arrDateString)
                                   else:
                                       arrDate=""
                                   if 'depTime' in child.attrib:
-                                      depTime=child.attrib['depTime']
+                                      depTimeString=child.attrib['depTime']
+                                      depTime=timeStringToQTime(depTimeString)
                                   else:
                                       depTime=""
                                   if 'depDate' in child.attrib:
-                                      depDate=child.attrib['depDate']
+                                      depDateString=child.attrib['depDate']
+                                      depDate=dateStringToQDate(depDateString)
                                   else:
                                       depDate=""
                                   #track might not be set
@@ -366,7 +399,7 @@ class FormWidget(qw.QWidget):
                 self.connection_list.setItem(row,1,qw.QTableWidgetItem(con.origin))
                 self.connection_list.setItem(row,2,qw.QTableWidgetItem(con.stopName))
         #add time of connection
-        self.connection_list.setItem(row,3,qw.QTableWidgetItem(con.time))
+        self.connection_list.setItem(row,3,qw.QTableWidgetItem(con.timeToString()))
         #if track is set add track of connection
         if con.track:
                 self.connection_list.setItem(row,4,qw.QTableWidgetItem(con.track))
@@ -381,9 +414,9 @@ class FormWidget(qw.QWidget):
         self.connection_details.setItem(row,0,qw.QTableWidgetItem(stop.name))
         #check if times and track are valid and add them
         if stop.arrTime:
-                self.connection_details.setItem(row,1,qw.QTableWidgetItem(stop.arrTime))
+                self.connection_details.setItem(row,1,qw.QTableWidgetItem(stop.arrTimeToString()))
         if stop.depTime:
-                self.connection_details.setItem(row,2,qw.QTableWidgetItem(stop.depTime))
+                self.connection_details.setItem(row,2,qw.QTableWidgetItem(stop.depTimeToString()))
         if stop.track:
                 self.connection_details.setItem(row,3,qw.QTableWidgetItem(stop.track))
 
@@ -417,7 +450,7 @@ class FormWidget(qw.QWidget):
 
     #Encapsulation for calling from Button
     def getConnectionsWithTime(self):
-        self.getConnectionFromInputs(False)
+        self.getConnectionsFromInput(False)
 
     #retrieves all Connections matching to the inputs and displays them
     #isnow=TRUE use system time 
@@ -445,7 +478,8 @@ class FormWidget(qw.QWidget):
             isDeparture=True
         self.getConnections(date,time,identifier,isDeparture)
         
-        
+    #date and time as QDate and QTime object!
+    #request the connection from or to the train station with given id at date and time    
     def getConnections(self,date,time,identifier,isDeparture):
         #request    
         xmlString=req.getXMLStringConnectionRequest(date,time,identifier,isDeparture)
@@ -464,8 +498,11 @@ class FormWidget(qw.QWidget):
                    #stop, id and time, date are mandatory
                    stopid=con.attrib['stopid']
                    stopName=con.attrib['stop']
-                   time=con.attrib['time']
-                   date=con.attrib['date']
+                   #convert time and date string to Qt Objects
+                   timeString=con.attrib['time']
+                   time=timeStringToQTime(timeString)
+                   dateString=con.attrib['date']
+                   date=dateStringToQDate(dateString)
                    #read direction if departure
                    if isDeparture and 'direction' in con.attrib:
                        direction=con.attrib['direction']
@@ -491,19 +528,24 @@ class FormWidget(qw.QWidget):
                    connections.append(Connection(name,typ,stopid,stopName,time,date,direction,origin,track,ref))
             #clear displayed list
             self.connection_list.setRowCount(0)
-            #for every connection add connection display it
-            for c in connections:
-                   self.addConnectionToTable(c)
-            #resize columns to contents
-            self.connection_list.resizeColumnsToContents()
-            #Add list of connections to pages
-            self.connectionPages.append(connections)
-            #set index to last entry of pages
-            self.displayedIndex=len(self.connectionPages)-1
-            #set connection label
-            self.setConnectionLabel()
+            if connections==[]:
+                #set index to last entry of pages
+                self.displayedIndex=len(self.connectionPages)-1
+                #set connection label
+                self.connection_label.setText(self.errorMsg)
+            else:
+                #for every connection add connection display it
+                for c in connections:
+                     self.addConnectionToTable(c)
+                #resize columns to contents
+                self.connection_list.resizeColumnsToContents()
+                #Add list of connections to pages
+                self.connectionPages.append(connections)
+                #set index to last entry of pages
+                self.displayedIndex=len(self.connectionPages)-1
+                #set connection label
+                self.setConnectionLabel()
 
-                      
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
         formwidget=FormWidget()
