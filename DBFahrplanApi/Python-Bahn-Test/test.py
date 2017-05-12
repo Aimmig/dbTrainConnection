@@ -6,6 +6,9 @@ from PyQt5 import QtCore as qc
 from PyQt5 import QtGui as qg
 from PyQt5 import QtWidgets as qw
 
+from Connection import Connection
+from Stop import Stop
+
 #import xml stuff
 import xml.etree.ElementTree as ET
 #import class for requests
@@ -27,83 +30,6 @@ def dateStringToQDate(dateString):
      day=int(splittedDate[2])
      date=qc.QDate(year,month,day)
      return date
-
-#clas representing a single train connection
-class Connection:
-        
-    def __init__(self,name,typ,stopid,stopName,time,date,direction,origin,track,ref):
-        #Name IC10250,ICE516
-        self.name=name
-        #Typ: IC,ICE, EC,..
-        self.type=typ
-        #id of the station which the connection was requested from        
-        self.stopid=stopid
-        #name of station which the connection was requested from
-        self.stopName=stopName
-        #time corresponding to requested connection and station
-        self.time=time
-        #date of the connection
-        self.date=date
-        #direction of connection
-        self.direction=direction
-        #origin of the connection
-        self.origin=origin
-        #track of the connection corresponding to requested station
-        self.track=track
-        #reference link for more details
-        self.ref=ref
-        #list of all Stops of this connection
-        self.stopList=[]
-
-    #sets the list of stops to the given list
-    def addStopList(self,l):
-        self.stopList=l
-
-    #String representation of the time of the connection
-    def timeToString(self):
-        timeString=str(self.time.hour())+":"+str(self.time.minute())
-        return timeString
-
-    #String representation of the date of the connection
-    def dateToString(self):
-        dateString=str(self.date.day())+"/"+str(self.date.month())+"/"+str(self.date.year())
-        return dateString
-
-    #string representation of a connection for details label
-    def toStringDetails(self):
-        detailsString="Zugverlauf von " + self.name +" am " +self.dateToString()
-        return detailsString
-
-    def toStringGenerall(self):
-        res="Fahrplantabelle für "+self.stopName+" am "+self.dateToString()
-        return res
-            
-#class representing a single train stop of a connection
-class Stop:
-
-    def __init__(self,name,identifier,arrTime,arrDate,depTime,depDate,track,lon,lat):
-        #name of the stop-station
-        self.name=name
-        #id of the stop-station
-        self.id=identifier
-        #arrival and departure Time and Date
-        self.arrTime=arrTime
-        self.arrDate=arrDate
-        self.depTime=depTime
-        self.depDate=depDate
-        #Track from wich the connection starts
-        self.track=track
-        #Longitude and latiude of the station
-        self.lon=lon
-        self.lat=lat
-
-    def arrTimeToString(self):
-        timeString=str(self.arrTime.hour())+":"+str(self.arrTime.minute())
-        return timeString
-    
-    def depTimeToString(self):
-        timeString=str(self.depTime.hour())+":"+str(self.depTime.minute())
-        return timeString
 
 #Class that defines gui
 class FormWidget(qw.QWidget):
@@ -265,16 +191,21 @@ class FormWidget(qw.QWidget):
         
     #called on click of connection_details
     def getConnectionsOnClickInDetails(self):
-        #use index to get corresponding page and with row get the stop
+        #get selected Row in connection details
         row=self.connection_details.currentRow()
-        (a,b)=self.displayedIndexDetails
-        s=self.connectionPages[a][b].stopList[row]
+        #get the displayedIndex Information
+        (pageIndex,connectionIndexOnPage)=self.displayedIndexDetails
+        #select the clicked stop from the displayed Connection (Details)
+        s=self.connectionPages[pageIndex][connectionIndexOnPage].stopList[row]
+        #default use arrival Date and Time
         date=s.arrDate
         time=s.arrTime
-        if not date and not time:
+        #if date or time are invalid try using depDate/time 
+        if not date or not time:
               date=s.depDate
               time=s.depTime
         identifier=s.id
+        #request information and display it
         self.getConnections(date,time,identifier,True)
     
     #called on click of connection_list
@@ -303,6 +234,7 @@ class FormWidget(qw.QWidget):
                                   name=child.attrib['name']
                                   identifier=child.attrib['id']
                                   #departure and arrive time and date might not be set
+                                  # convert all times and dates to QDate and QTime objects
                                   if 'arrTime' in child.attrib:
                                       arrTimeString=child.attrib['arrTime']
                                       arrTime=timeStringToQTime(arrTimeString)
@@ -528,10 +460,11 @@ class FormWidget(qw.QWidget):
                    connections.append(Connection(name,typ,stopid,stopName,time,date,direction,origin,track,ref))
             #clear displayed list
             self.connection_list.setRowCount(0)
+            #check if something was actually found 
             if connections==[]:
-                #set index to last entry of pages
+                #if not set index to last entry of pages so this page can never be reached again
                 self.displayedIndex=len(self.connectionPages)-1
-                #set connection label
+                #set connection label to error Message
                 self.connection_label.setText(self.errorMsg)
             else:
                 #for every connection add connection display it
