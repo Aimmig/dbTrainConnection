@@ -127,8 +127,14 @@ class FormWidget(qw.QWidget):
         #do not show grind and vertical Headers
         self.connection_list.setShowGrid(False)
         self.connection_list.verticalHeader().setVisible(False)
-        #set Horizontal Resize mode to interactive
-        self.connection_list.horizontalHeader().setSectionResizeMode(qw.QHeaderView.Interactive)
+        header=self.connection_list.horizontalHeader()
+        header.setSectionResizeMode(connection_name_Index,qw.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(connection_from_Index,qw.QHeaderView.Stretch)
+        header.setSectionResizeMode(connection_to_Index,qw.QHeaderView.Stretch)
+        header.setSectionResizeMode(connection_time_Index,qw.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(connection_track_Index,qw.QHeaderView.ResizeToContents)
+        self.connection_list.setMinimumSize(qc.QSize(420,320))
+        self.connection_list.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
         #connect QTableWidget with function
         self.connection_list.clicked.connect(self.getDetails)
         
@@ -167,8 +173,17 @@ class FormWidget(qw.QWidget):
         self.connection_details.setColumnCount(4)
         #set Horizontal Headers for QTableWidget
         self.connection_details.setHorizontalHeaderLabels(header_details_list)
+        header=self.connection_details.horizontalHeader()
+        #only stretch first colum, resize other columns to contents
+        header.setSectionResizeMode(details_stop_Index,qw.QHeaderView.Stretch)
+        header.setSectionResizeMode(details_arr_Index,qw.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(details_dep_Index,qw.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(details_track_Index,qw.QHeaderView.ResizeToContents)
         #do not show grid
         self.connection_details.setShowGrid(False)
+        self.connection_details.setMinimumSize(qc.QSize(420,320))
+        #set size policy to minimalExpanding
+        self.connection_details.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
         #connect QTableWidget with function
         self.connection_details.clicked.connect(self.getConnectionsOnClickInDetails)
         
@@ -270,20 +285,20 @@ class FormWidget(qw.QWidget):
         #select last row of QTableWidget
         row=self.connection_list.rowCount()-1
         #add name of connection
-        self.connection_list.setItem(row,0,qw.QTableWidgetItem(con.name))
+        self.connection_list.setItem(row,connection_name_Index,qw.QTableWidgetItem(con.name))
         #check if direction and origin are valid and add them
         #not that direction (departure) an origin (arrival) are exclusive only one can be set!
         if con.direction:
-                self.connection_list.setItem(row,2,qw.QTableWidgetItem(con.direction))
-                self.connection_list.setItem(row,1,qw.QTableWidgetItem(con.stopName))
+                self.connection_list.setItem(row,connection_to_Index,qw.QTableWidgetItem(con.direction))
+                self.connection_list.setItem(row,connection_from_Index,qw.QTableWidgetItem(con.stopName))
         if con.origin:
-                self.connection_list.setItem(row,1,qw.QTableWidgetItem(con.origin))
-                self.connection_list.setItem(row,2,qw.QTableWidgetItem(con.stopName))
+                self.connection_list.setItem(row,connection_from_Index,qw.QTableWidgetItem(con.origin))
+                self.connection_list.setItem(row,connection_to_Index,qw.QTableWidgetItem(con.stopName))
         #add time of connection
-        self.connection_list.setItem(row,3,qw.QTableWidgetItem(con.timeToString()))
+        self.connection_list.setItem(row,connection_time_Index,qw.QTableWidgetItem(con.timeToString()))
         #if track is set add track of connection
         if con.track:
-                self.connection_list.setItem(row,4,qw.QTableWidgetItem(con.track))
+                self.connection_list.setItem(row,connection_track_Index,qw.QTableWidgetItem(con.track))
 
     #adds a stop to QTableWidget details
     def addStopToDetails(self,stop):
@@ -381,6 +396,7 @@ class FormWidget(qw.QWidget):
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
         formwidget=FormWidget()
+        formwidget.move(100,100)
         formwidget.show()
         sys.exit(app.exec_())
 
