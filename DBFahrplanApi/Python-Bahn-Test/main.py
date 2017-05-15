@@ -25,6 +25,10 @@ connection_to_Index=2
 connection_time_Index=3
 connection_track_Index=4
 header_list=["Zugnummer","von","nach","Uhrzeit","Gleis"]
+minimumWidth=420
+minimumHeight=320
+start_x_pos=100
+start_y_pos=100
 
 
 #Class that defines gui
@@ -45,7 +49,7 @@ class FormWidget(qw.QWidget):
         self.displayedIndex=-1
         self.displayedDetailedIndex=(-1,-1)
 
-        #overall layout for gui
+        #overall layout for gui 
         layout=qw.QHBoxLayout()
 
         #layout for left part of gui
@@ -133,7 +137,7 @@ class FormWidget(qw.QWidget):
         header.setSectionResizeMode(connection_to_Index,qw.QHeaderView.Stretch)
         header.setSectionResizeMode(connection_time_Index,qw.QHeaderView.ResizeToContents)
         header.setSectionResizeMode(connection_track_Index,qw.QHeaderView.ResizeToContents)
-        self.connection_list.setMinimumSize(qc.QSize(420,320))
+        self.connection_list.setMinimumSize(qc.QSize(minimumWidth,minimumHeight))
         self.connection_list.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
         #connect QTableWidget with function
         self.connection_list.clicked.connect(self.getDetails)
@@ -181,7 +185,7 @@ class FormWidget(qw.QWidget):
         header.setSectionResizeMode(details_track_Index,qw.QHeaderView.ResizeToContents)
         #do not show grid
         self.connection_details.setShowGrid(False)
-        self.connection_details.setMinimumSize(qc.QSize(420,320))
+        self.connection_details.setMinimumSize(qc.QSize(minimumWidth,minimumHeight))
         #set size policy to minimalExpanding
         self.connection_details.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
         #connect QTableWidget with function
@@ -396,7 +400,7 @@ class FormWidget(qw.QWidget):
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
         formwidget=FormWidget()
-        formwidget.move(100,100)
+        formwidget.move(start_x_pos,start_y_pos)
         formwidget.show()
         sys.exit(app.exec_())
 

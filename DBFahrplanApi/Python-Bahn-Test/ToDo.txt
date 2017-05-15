@@ -1,5 +1,4 @@
 #To-Do Stuff:
 
--Clean Up QTableWidgets, for every column use a fixed amout of width, according to the propertie,
- that will be presented in that colum
-
+-If possible make colums resizable and auto-streched on resize.
+-Add buttons vor Requesting the same connection earlier/later
