@@ -238,18 +238,21 @@ class FormWidget(qw.QWidget):
               xmlString=req.getXMLStringConnectionDetails(urlString)
               #check if valid
               if xmlString:
+                    #remove all Elements from details QTableWidget
+                    self.connection_details.setRowCount(0)
                     stopList=parser.getStopListFromXMLString(xmlString)
-                    #set the stopList of the connection to the local list
-                    connection.addStopList(stopList)
-        #remove all Elements from details QTableWidget
-        self.connection_details.setRowCount(0)
-        #for every stop in stopList add it to QTableWidget
-        for s in connection.stopList:
-             self.addStopToDetails(s)
-        #set details_label text to connection information
-        self.details_label.setText(connection.toStringDetails())
-        #resize QTableWidget to contents
-        self.displayedIndexDetails=(self.displayedIndex,index)
+                    if not stopList=="":
+                        #set the stopList of the connection to the local list
+                        connection.addStopList(stopList)
+                        #for every stop in stopList add it to QTableWidget
+                        for s in connection.stopList:
+                                self.addStopToDetails(s)
+                        #set details_label text to connection information
+                        self.details_label.setText(connection.toStringDetails())
+                        #resize QTableWidget to contents
+                        self.displayedIndexDetails=(self.displayedIndex,index)
+                    else:
+                        self.details_label.setText(self.errorMsg)        
 
     #previous navigation
     def showPreviousPage(self):
@@ -378,24 +381,27 @@ class FormWidget(qw.QWidget):
         xmlString=req.getXMLStringConnectionRequest(date,time,identifier,isDeparture)
         if xmlString:
             connections=parser.getConnectionsFromXMLString(xmlString,isDeparture)
-            #clear displayed list
             self.connection_list.setRowCount(0)
-            #check if something was actually found 
-            if connections==[]:
-                #if not set index to last entry of pages so this page can never be reached again
-                self.displayedIndex=len(self.connectionPages)-1
-                #set connection label to error Message
-                self.connection_label.setText(self.errorMsg)
+            if not connections=="":
+                #clear displayed list
+                #check if something was actually found 
+                if connections==[]:
+                        #if not set index to last entry of pages so this page can never be reached again
+                        self.displayedIndex=len(self.connectionPages)-1
+                        #set connection label to error Message
+                        self.connection_label.setText(self.errorMsg)
+                else:
+                        #for every connection add connection display it
+                        for c in connections:
+                                self.addConnectionToTable(c)
+                        #Add list of connections to pages
+                        self.connectionPages.append(connections)
+                        #set index to last entry of pages
+                        self.displayedIndex=len(self.connectionPages)-1
+                        #set connection label
+                        self.setConnectionLabel()
             else:
-                #for every connection add connection display it
-                for c in connections:
-                     self.addConnectionToTable(c)
-                #Add list of connections to pages
-                self.connectionPages.append(connections)
-                #set index to last entry of pages
-                self.displayedIndex=len(self.connectionPages)-1
-                #set connection label
-                self.setConnectionLabel()
+                self.connection_label.setText(self.errorMsg) 
 
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
