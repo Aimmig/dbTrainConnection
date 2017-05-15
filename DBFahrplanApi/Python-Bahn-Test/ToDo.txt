@@ -1,11 +1,5 @@
 #To-Do Stuff:
 
-1. make only rows selectable in connection_list QTableWidget!
-2. Implement function to request connections on click in details QTableWidgets
-   -Differentiate between default departure at the date/time/stop or optional arrvial
-3. clean up gui, proper sizes of QTableWidget columns, proper resizing etc...
-4. Move xml parsing stuff to anothe file maybe request ...?
-
-#Already partially done
-3. working but to be commentend and refactored
+-Clean Up QTableWidgets, for every column use a fixed amout of width, according to the propertie,
+ that will be presented in that colum
 

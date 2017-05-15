@@ -115,25 +115,29 @@ class FormWidget(qw.QWidget):
 
         #label for connection list
         self.connection_label=qw.QLabel("")
+        self.connection_label.setSizePolicy(qw.QSizePolicy.Preferred,qw.QSizePolicy.Fixed)
         #QTableWidget for displaying connections
         self.connection_list=qw.QTableWidget()
         #use 5 columns to present data
         self.connection_list.setColumnCount(5)
+        self.connection_list.setSelectionBehavior(qw.QAbstractItemView.SelectRows)
         #set Horizontal Header for QTableWidget
         header_list=["Zugnummer","von","nach","Uhrzeit","Gleis"]
         self.connection_list.setHorizontalHeaderLabels(header_list)
         #set minimal sizes for every column
-        self.connection_list.setColumnWidth(0,100)
-        self.connection_list.setColumnWidth(1,120)
-        self.connection_list.setColumnWidth(2,100)
-        self.connection_list.setColumnWidth(3,80)
-        self.connection_list.setColumnWidth(4,80)
+        #self.connection_list.setColumnWidth(0,100)
+        #self.connection_list.setColumnWidth(1,120)
+        #self.connection_list.setColumnWidth(2,100)
+        #self.connection_list.setColumnWidth(3,80)
+        #self.connection_list.setColumnWidth(4,80)
         #self.connection_list.setMinimumSize(80+300+40,100)
         #do not show grind and vertical Headers
         self.connection_list.setShowGrid(False)
         self.connection_list.verticalHeader().setVisible(False)
+        self.connection_list.setSizePolicy(qw.QSizePolicy.Preferred,qw.QSizePolicy.Ignored)
         #set Horizontal Resize mode to interactive
         self.connection_list.horizontalHeader().setSectionResizeMode(qw.QHeaderView.Interactive)
+        self.connection_list.resizeColumnsToContents()
         #connect QTableWidget with function
         self.connection_list.clicked.connect(self.getDetails)
         
@@ -160,17 +164,20 @@ class FormWidget(qw.QWidget):
         
         #label for details of a connection
         self.details_label=qw.QLabel("")
+        self.details_label.setSizePolicy(qw.QSizePolicy.Preferred,qw.QSizePolicy.Fixed)
         #QTableWidget for presenting detailed data of a connection
         self.connection_details=qw.QTableWidget()
+        self.connection_details.setSelectionBehavior(qw.QAbstractItemView.SelectRows)
         #use for columns to present data
         self.connection_details.setColumnCount(4)
+        self.connection_details.setSizePolicy(qw.QSizePolicy.Preferred,qw.QSizePolicy.Ignored)
         #set Horizontal Headers for QTableWidget
         header_details_list=["Halt","Ankunft","Abfahrt","Gleis"]
         self.connection_details.setHorizontalHeaderLabels(header_details_list)
         #set minimal sizes of ever Column
-        self.connection_details.setColumnWidth(0,150)
-        self.connection_details.setColumnWidth(1,80)
-        self.connection_details.setMinimumSize(450,100)
+        #self.connection_details.setColumnWidth(0,150)
+        #self.connection_details.setColumnWidth(1,80)
+        #self.connection_details.setMinimumSize(450,100)
         #do not show grid
         self.connection_details.setShowGrid(False)
         #connect QTableWidget with function
