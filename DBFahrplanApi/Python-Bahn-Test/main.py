@@ -43,7 +43,7 @@ class FormWidget(qw.QWidget):
         #set some properties
         self.setAutoFillBackground(True)
         self.setWindowTitle("Fahrplanzeige")
-        self.errorMsg="Keine Verbindungen gefunden"
+        self.errorMsg="Keine Information  vorhanden"
         self.stationId=[]
         self.connectionPages=[]
         self.displayedIndex=-1
@@ -200,7 +200,7 @@ class FormWidget(qw.QWidget):
         self.connection_details.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
         #connect QTableWidget with function
         self.connection_details.clicked.connect(self.getConnectionsOnClickInDetails)
-        
+                
         #add label to box3
         box3.addWidget(self.details_label)
         #add QTableWidget to box3
@@ -358,19 +358,40 @@ class FormWidget(qw.QWidget):
     def getConnectionsWithTime(self):
         self.getConnectionsFromInput(False)
 
+    #ealier means subtract hours
     def getConnectionsEarlier(self):
         self.getConnectionsWithShiftedTime(-1)
 
+    #later means add hours
     def getConnectionsLater(self):
         self.getConnectionsWithShiftedTime(1)
 
-    def getConnectionsWithShiftedTime(self,shift):
+    #
+    def getConnectionsWithShiftedTime(self,shift,numbersOfHoursShifted=3):
+        #something has to be displayed at the moment or nothing can be read from table
         if self.displayedIndex>-1:
-                print(shift)
-                #To-Do retrieve time, date and id of first Connection in QTableWidget
-                # and arrival or departure etc...
-                # shift time and if needed date
-                #request connections with exsisting method..
+                #get the first connection
+                con=self.connectionPages[self.displayedIndex][0]
+                #get id, date and time
+                identifier=con.stopid
+                date=con.date
+                time=con.time
+                # direction is not set means it is a arrival
+                if con.direction=="":
+                        isDeparture=False
+                # origin is not set so it is a departure
+                if con.origin=="":
+                        isDeparture=True
+                #add shift to requested time
+                newTime=time.addSecs(shift*3600*numbersOfHoursShifted)
+                #added hours but new Time less than before -> day overflow, thus add one day
+                if newTime < time and shift>0:
+                        date=date.addDays(1)
+                #subtracted hours but new Time greater than before -> day underflow, thus subtract one day
+                if newTime > time and shift<0:
+                        date=date.addDays(-1)
+                #request new connections
+                self.getConnections(date,newTime,identifier,isDeparture)
 
     #retrieves all Connections matching to the inputs and displays them
     #isnow=TRUE use system time 

@@ -4,7 +4,13 @@ from PyQt5 import QtCore as qc
 
 KEY="DBhackFrankfurt0316"
 LANGUAGE="de"
-BASE_URL="https://open-api.bahn.de/bin/rest.exe/"
+DB_BASE_URL="https://open-api.bahn.de/bin/rest.exe/"
+GOOGLE_MAPS_BASE_URL="https://maps.googleapis.com/maps/api/staticmap?"
+MAP_WIDTH="400"
+MAP_HEIGHT="400"
+PATH_COLOR="0xff0000ff"
+LAT_INDEX=0
+LON_INDEX=1
 
 #returns the XML-String 
 def getXMLStringConnectionDetails(urlString):
@@ -66,10 +72,17 @@ def createConnectionRequestURL(date,time,identifier,isDeparture):
         lastPart=lastPart+str(identifier)+"&date="+dateString+"&time="+timeString
         #build complete url
         if isDeparture:
-             return BASE_URL+"departureBoard?"+lastPart
+             return DB_BASE_URL+"departureBoard?"+lastPart
         else:
-             return BASE_URL+"arrivalBoard?"+lastPart
+             return DB_BASE_URL+"arrivalBoard?"+lastPart
 
 #creates the URL for requesting Stations
 def createStationRequestURL(loc):
-        return BASE_URL+"location.name?authKey="+KEY+"&lang="+LANGUAGE+"&input="+loc
+        return DB_BASE_URL+"location.name?authKey="+KEY+"&lang="+LANGUAGE+"&input="+loc
+
+#creates URL  for requesting the map with path of given locations
+def createMapURL(coordinates):
+        res=GOOGLE_MAPS_BASE_URL+"&size="+MAP_WIDTH+"x"+MAP_HEIGHT+"&language="+LANGUAGE+"&sensor=false&path=color:"+PATH_COLOR
+        for loc in coordinates:
+                res+="|"+str(loc[LAT_INDEX])+","+str(loc[LON_INDEX])
+        return res
