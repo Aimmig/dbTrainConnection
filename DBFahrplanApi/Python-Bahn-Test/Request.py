@@ -3,6 +3,7 @@ import urllib.error as err
 from PyQt5 import QtCore as qc
 
 KEY="DBhackFrankfurt0316"
+GOOGLEMAPS_KEY="AIzaSyAa0JAwUZMPl5DbBuUn6IRCzh9PKGGtFx4"
 LANGUAGE="de"
 DB_BASE_URL="https://open-api.bahn.de/bin/rest.exe/"
 GOOGLE_MAPS_BASE_URL="https://maps.googleapis.com/maps/api/staticmap?"
@@ -90,4 +91,5 @@ def createMapURL(coordinates):
         res=GOOGLE_MAPS_BASE_URL+"&size="+MAP_WIDTH+"x"+MAP_HEIGHT+"&language="+LANGUAGE+"&sensor=false&path=color:"+PATH_COLOR+"|weight:"+PATH_SIZE
         for loc in coordinates:
                 res+="|"+str(loc[LAT_INDEX])+","+str(loc[LON_INDEX])
+        res+="&key="+GOOGLEMAPS_KEY
         return res
