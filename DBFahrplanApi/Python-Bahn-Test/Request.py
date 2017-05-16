@@ -6,8 +6,8 @@ KEY="DBhackFrankfurt0316"
 LANGUAGE="de"
 DB_BASE_URL="https://open-api.bahn.de/bin/rest.exe/"
 GOOGLE_MAPS_BASE_URL="https://maps.googleapis.com/maps/api/staticmap?"
-MAP_WIDTH="400"
-MAP_HEIGHT="400"
+MAP_WIDTH="800"
+MAP_HEIGHT="800"
 PATH_COLOR="0xff0000ff"
 LAT_INDEX=0
 LON_INDEX=1
@@ -47,7 +47,6 @@ def getXMLStringStationRequest(loc):
 #returns the XML-String representation of the Connection Request
 def getXMLStringConnectionRequest(date,time,identifier,isDeparture):
         url=createConnectionRequestURL(date,time,identifier,isDeparture)
-        print(url)
         req=url_req.Request(url)
         try:
             with url_req.urlopen(req) as response:
@@ -60,6 +59,11 @@ def getXMLStringConnectionRequest(date,time,identifier,isDeparture):
              print('We failed to reach a server.')
              print('Reason: ', e.reason)
         return ""
+
+def getMapWithLocations(coordinates):
+        url=createMapURL(coordinates)
+        req=url_req.Request(url)
+        return url_req.urlopen(req).read() 
 
 #creates the URL for requesting Connections
 def createConnectionRequestURL(date,time,identifier,isDeparture):

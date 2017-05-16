@@ -232,7 +232,7 @@ class FormWidget(qw.QWidget):
         identifier=s.id
         #request information and display it
         self.getConnections(date,time,identifier,True)
-    
+        
     #called on click of connection_list
     #request connection details if needed and displays them  
     def getDetails(self):
@@ -254,15 +254,31 @@ class FormWidget(qw.QWidget):
                     if not stopList=="":
                         #set the stopList of the connection to the local list
                         connection.addStopList(stopList)
-                        #for every stop in stopList add it to QTableWidget
-                        for s in connection.stopList:
-                                self.addStopToDetails(s)
-                        #set details_label text to connection information
-                        self.details_label.setText(connection.toStringDetails())
-                        #resize QTableWidget to contents
-                        self.displayedIndexDetails=(self.displayedIndex,index)
                     else:
-                        self.details_label.setText(self.errorMsg)        
+                        self.details_label.setText(self.errorMsg)
+                        return
+        #for every stop in stopList add it to QTableWidget
+        coordinates=[]
+        for s in connection.stopList:
+                self.addStopToDetails(s)
+                coordinates.append((s.lat,s.lon))
+        #set details_label text to connection information
+        self.details_label.setText(connection.toStringDetails())
+        self.displayedIndexDetails=(self.displayedIndex,index)
+                    
+        result=req.getMapWithLocations(coordinates)
+        test=qg.QPixmap()
+        if test.loadFromData(result):
+                dialog=qw.QDialog()
+                dialog.setWindowTitle(connection.toStringDetails())
+                dialog.setWindowModality(qc.Qt.ApplicationModal)
+                layout = qw.QVBoxLayout()
+                label=qw.QLabel()
+                label.setPixmap(test)
+                label.setScaledContents(True)
+                layout.addWidget(label)
+                dialog.setLayout(layout)
+                dialog.exec_()
 
     #previous navigation
     def showPreviousPage(self):
