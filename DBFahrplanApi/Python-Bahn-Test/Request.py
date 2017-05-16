@@ -8,7 +8,8 @@ DB_BASE_URL="https://open-api.bahn.de/bin/rest.exe/"
 GOOGLE_MAPS_BASE_URL="https://maps.googleapis.com/maps/api/staticmap?"
 MAP_WIDTH="800"
 MAP_HEIGHT="800"
-PATH_COLOR="0xff0000ff"
+PATH_COLOR="0xff000088"
+PATH_SIZE="3"
 LAT_INDEX=0
 LON_INDEX=1
 
@@ -86,7 +87,7 @@ def createStationRequestURL(loc):
 
 #creates URL  for requesting the map with path of given locations
 def createMapURL(coordinates):
-        res=GOOGLE_MAPS_BASE_URL+"&size="+MAP_WIDTH+"x"+MAP_HEIGHT+"&language="+LANGUAGE+"&sensor=false&path=color:"+PATH_COLOR
+        res=GOOGLE_MAPS_BASE_URL+"&size="+MAP_WIDTH+"x"+MAP_HEIGHT+"&language="+LANGUAGE+"&sensor=false&path=color:"+PATH_COLOR+"|weight:"+PATH_SIZE
         for loc in coordinates:
                 res+="|"+str(loc[LAT_INDEX])+","+str(loc[LON_INDEX])
         return res

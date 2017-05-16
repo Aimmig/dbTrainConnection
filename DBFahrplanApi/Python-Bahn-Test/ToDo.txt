@@ -1,7 +1,6 @@
 #To-Do Stuff:
 
 -If possible make colums resizable and auto-streched on resize.
--Implement reading first entry of connections from QTableWidget, retrieving information and 
-        shift time, date accordingliy and request connections with existing methods
-
--Read into google maps static api and request map with all the stops connected with markers
+-Read into google maps static api and request map with all the stops
+-Improvements to display map in seperate window properly
+-Maybe use some more options from googel maps api for displaying the map?
