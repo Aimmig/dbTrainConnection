@@ -102,13 +102,23 @@ class FormWidget(qw.QWidget):
         self.depart.setCheckable(True)
         self.arriv.setCheckable(True)
         self.depart.setChecked(True)
-
+        
+        #create buttons for getting connections earlier/later and group them
+        requestEarlierLater_layout=qw.QHBoxLayout()
+        self.earlier=qw.QPushButton("Früher")
+        self.later=qw.QPushButton("Später")
+        self.later.clicked.connect(self.getConnectionsLater)
+        self.earlier.clicked.connect(self.getConnectionsEarlier)
+        requestEarlierLater_layout.addWidget(self.earlier)
+        requestEarlierLater_layout.addWidget(self.later)
+        
         #add layouts and widgets to layout for left part
         box1.addLayout(input1_layout)
         box1.addLayout(input2_layout)
         box1.addWidget(self.date_chooser)
         box1.addLayout(radioButton_layout)
         box1.addLayout(request_layout)
+        box1.addLayout(requestEarlierLater_layout)
 
         #layout for middle part of gui
         box2=qw.QVBoxLayout()
@@ -347,6 +357,20 @@ class FormWidget(qw.QWidget):
     #Encapsulation for calling from Button
     def getConnectionsWithTime(self):
         self.getConnectionsFromInput(False)
+
+    def getConnectionsEarlier(self):
+        self.getConnectionsWithShiftedTime(-1)
+
+    def getConnectionsLater(self):
+        self.getConnectionsWithShiftedTime(1)
+
+    def getConnectionsWithShiftedTime(self,shift):
+        if self.displayedIndex>-1:
+                print(shift)
+                #To-Do retrieve time, date and id of first Connection in QTableWidget
+                # and arrival or departure etc...
+                # shift time and if needed date
+                #request connections with exsisting method..
 
     #retrieves all Connections matching to the inputs and displays them
     #isnow=TRUE use system time 
