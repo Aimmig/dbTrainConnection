@@ -15,18 +15,8 @@ import Request as req
 #import class for parsing xml-String
 import XMLParser as parser
 
-details_stop_Index=0
-details_arr_Index=1
-details_dep_Index=2
-details_track_Index=3
-connection_name_Index=0
-connection_from_Index=1
-connection_to_Index=2
-connection_time_Index=3
-connection_track_Index=4
 start_x_pos=100
 start_y_pos=100
-
 
 #Class that defines gui
 class FormWidget(qw.QWidget):
@@ -201,7 +191,7 @@ class FormWidget(qw.QWidget):
         index=self.connectionTable.currentRow()
         #get the connection according to the index
         connection=self.connectionPages[self.displayedIndex][index]
-        #if stopList is empty request details
+        #if stopList is empty request details information
         if  connection.stopList==[]:
               #get reference link of connection
               urlString=connection.ref
@@ -214,7 +204,7 @@ class FormWidget(qw.QWidget):
                     stopList=parser.getStopListFromXMLString(xmlString)
                     if not stopList=="":
                         #set the stopList of the connection to the local list
-                        connection.addStopList(stopList)
+                        connection.stopList=stopList
                     else:
                         self.details_label.setText(self.errorMsg)
                         return
@@ -226,12 +216,20 @@ class FormWidget(qw.QWidget):
         #set details_label text to connection information
         self.details_label.setText(connection.toStringDetails())
         self.displayedIndexDetails=(self.displayedIndex,index)
-                    
-        result=req.getMapWithLocations(coordinates)
-        test=qg.QPixmap()
-        if test.loadFromData(result):
+
+        #check if imageData is empty        
+        if connection.imageData.isEmpty():
+                #request imageData and create QByteArray and set imageData
+                connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates))
+        #create Pixmap
+        pixmap=qg.QPixmap()
+        #load pixmap from imageData
+        if pixmap.loadFromData(connection.imageData):
+                #set window title of map Widget
                 self.map.setWindowTitle(connection.toStringDetails())
-                self.mapLabel.setPixmap(test)
+                #put pixmap on label
+                self.mapLabel.setPixmap(pixmap)
+                #show widget
                 self.map.show()
 
     #previous navigation

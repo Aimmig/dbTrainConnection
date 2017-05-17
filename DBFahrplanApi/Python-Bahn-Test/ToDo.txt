@@ -3,6 +3,3 @@
 -If possible make colums resizable and auto-streched on resize.
 -Read into google maps static api and request map with all the stops
 -Maybe use some more options from googel maps api for displaying the map?
--Create Classes for QConnectionTable and QDetailTable that set all the properites in the constructors,
- so that constructor of own gui is cleaner
--Add variable to class connection that stores raw image data so that the image is only requested once

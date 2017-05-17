@@ -4,7 +4,7 @@ from PyQt5 import QtCore as qc
 class Connection:
         
     def __init__(self,name,typ,stopid,stopName,time,date,direction,origin,track,ref):
-        #Name IC10250,ICE516
+        #Name e.g. IC10250,ICE516, etc
         self.name=name
         #Typ: IC,ICE, EC,..
         self.type=typ
@@ -26,10 +26,8 @@ class Connection:
         self.ref=ref
         #list of all Stops of this connection
         self.stopList=[]
-
-    #sets the list of stops to the given list
-    def addStopList(self,l):
-        self.stopList=l
+        #construct connection with empyt imageData
+        self.imageData=qc.QByteArray()
 
     #String representation of the time of the connection
     def timeToString(self):
