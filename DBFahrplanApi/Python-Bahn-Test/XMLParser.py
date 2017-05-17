@@ -5,6 +5,25 @@ from PyQt5 import QtCore as qc
 from Stop import Stop
 from Connection import Connection
 
+ID='id'
+NAME='name'
+TYPE='type'
+STOPID='stopid'
+STOP='stop'
+TIME='time'
+DATE='date'
+ORIGIN='origin'
+DIRECTION='direction'
+TRACK='track'
+REF='ref'
+ARRTIME='arrTime'
+ARRDATE='arrDate'
+DEPTIME='depTime'
+DEPDATE='depDate'
+LON='lon'
+LAT='lat'
+STOPS='Stops'
+
 #returns list of name and id of stops from xml-String
 def getStationsFromXMLString(xmlString):
         root=ET.fromstring(xmlString)
@@ -13,8 +32,8 @@ def getStationsFromXMLString(xmlString):
         station_ids=[]
         #iterate over all childs and add attributes to lists
         for child in root:
-                station_ids.append(child.attrib['id'])
-                stations.append(child.attrib['name'])
+                station_ids.append(child.attrib[ID])
+                stations.append(child.attrib[NAME])
         return (stations,station_ids)        
 
 #converts String formatted as hh:mm to QTime object
@@ -41,39 +60,39 @@ def getConnectionsFromXMLString(xmlString,isDeparture):
                 connections=[]
                 for con in root:
                         #connection name is mandatory
-                        name=con.attrib['name']
+                        name=con.attrib[NAME]
                         # check if type exist --spelling mistake in xml
-                        if 'type' in con.attrib:
-                                typ=con.attrib['type']
+                        if TYPE in con.attrib:
+                                typ=con.attrib[TYPE]
                         else:
                                 typ=""
                         #stop, id and time, date are mandatory
-                        stopid=con.attrib['stopid']
-                        stopName=con.attrib['stop']
+                        stopid=con.attrib[STOPID]
+                        stopName=con.attrib[STOP]
                         #convert time and date string to Qt Objects
-                        timeString=con.attrib['time']
+                        timeString=con.attrib[TIME]
                         time=timeStringToQTime(timeString)
-                        dateString=con.attrib['date']
+                        dateString=con.attrib[DATE]
                         date=dateStringToQDate(dateString)
                         #read direction if departure
-                        if isDeparture and 'direction' in con.attrib:
-                                direction=con.attrib['direction']
+                        if isDeparture and DIRECTION in con.attrib:
+                                direction=con.attrib[DIRECTION]
                                 origin=""
-                        elif not isDeparture and 'origin' in con.attrib:
-                                origin=con.attrib['origin']
+                        elif not isDeparture and ORIGIN in con.attrib:
+                                origin=con.attrib[ORIGIN]
                                 direction=""
                         else:
                                 origin=""
                                 direction=""
                         #track might not be set in xml
-                        if 'track' in con.attrib:
-                                track=con.attrib['track']
+                        if TRACK in con.attrib:
+                                track=con.attrib[TRACK]
                         else:
                                 track=""
                         #read reference link
                         for details in con :
-                                if 'ref' in details.attrib:
-                                        ref=details.attrib['ref']
+                                if REF in details.attrib:
+                                        ref=details.attrib[REF]
                                 else:
                                         ref=""
                         #add connection with these information to local list of connections
@@ -81,7 +100,6 @@ def getConnectionsFromXMLString(xmlString,isDeparture):
                 return connections
         except ET.ParseError  as e:
                 return ""
-           
 
 #returns a list of all stops parsed from xmlString
 def getStopListFromXMLString(xmlString):
@@ -94,38 +112,38 @@ def getStopListFromXMLString(xmlString):
                                 #iterate over all Stops
                                 for child in c:        
                                         #name and id of the station are mandatory         
-                                        name=child.attrib['name']
-                                        identifier=child.attrib['id']
+                                        name=child.attrib[NAME]
+                                        identifier=child.attrib[ID]
                                         #departure and arrive time and date might not be set
                                         # convert all times and dates to QDate and QTime objects
-                                        if 'arrTime' in child.attrib:
-                                                arrTimeString=child.attrib['arrTime']
+                                        if ARRTIME in child.attrib:
+                                                arrTimeString=child.attrib[ARRTIME]
                                                 arrTime=timeStringToQTime(arrTimeString)
                                         else:
                                                 arrTime=""
-                                        if 'arrDate' in child.attrib:
-                                                arrDateString=child.attrib['arrDate']
+                                        if ARRDATE in child.attrib:
+                                                arrDateString=child.attrib[ARRDATE]
                                                 arrDate=dateStringToQDate(arrDateString)
                                         else:
                                                 arrDate=""
-                                        if 'depTime' in child.attrib:
-                                                depTimeString=child.attrib['depTime']
+                                        if DEPTIME in child.attrib:
+                                                depTimeString=child.attrib[DEPTIME]
                                                 depTime=timeStringToQTime(depTimeString)
                                         else:
                                                 depTime=""
-                                        if 'depDate' in child.attrib:
-                                                depDateString=child.attrib['depDate']
+                                        if DEPDATE in child.attrib:
+                                                depDateString=child.attrib[DEPDATE]
                                                 depDate=dateStringToQDate(depDateString)
                                         else:
                                                 depDate=""
                                         #track might not be set
-                                        if 'track' in child.attrib:
-                                                track=child.attrib['track']
+                                        if TRACK in child.attrib:
+                                                track=child.attrib[TRACK]
                                         else:
                                                 track=""
                                         #longitude, latitude are mandatory
-                                        lon=child.attrib['lon']
-                                        lat=child.attrib['lat']
+                                        lon=child.attrib[LON]
+                                        lat=child.attrib[LAT]
                                         #create stop with all these informations
                                         stop=Stop   (name,identifier,arrTime,arrDate,depTime,depDate,track,lon,lat)
                                  #add it to local list
