@@ -270,20 +270,20 @@ class FormWidget(qw.QWidget):
         #select last row of QTableWidget
         row=self.connectionTable.rowCount()-1
         #add name of connection
-        self.connectionTable.setItem(row,self.connectionTable.name_Index,qw.QTableWidgetItem(con.name))
+        self.connectionTable.setItem(row,QConnectionTable.name_Index,qw.QTableWidgetItem(con.name))
         #check if direction and origin are valid and add them
         #not that direction (departure) an origin (arrival) are exclusive only one can be set!
         if con.direction:
-                self.connectionTable.setItem(row,self.connectionTable.to_Index,qw.QTableWidgetItem(con.direction))
-                self.connectionTable.setItem(row,self.connectionTable.from_Index,qw.QTableWidgetItem(con.stopName))
+                self.connectionTable.setItem(row,QConnectionTable.to_Index,qw.QTableWidgetItem(con.direction))
+                self.connectionTable.setItem(row,QConnectionTable.from_Index,qw.QTableWidgetItem(con.stopName))
         if con.origin:
-                self.connectionTable.setItem(row,self.connectionTable.from_Index,qw.QTableWidgetItem(con.origin))
-                self.connectionTable.setItem(row,self.connectionTable.to_Index,qw.QTableWidgetItem(con.stopName))
+                self.connectionTable.setItem(row,QConnectionTable.from_Index,qw.QTableWidgetItem(con.origin))
+                self.connectionTable.setItem(row,QConnectionTable.to_Index,qw.QTableWidgetItem(con.stopName))
         #add time of connection
-        self.connectionTable.setItem(row,self.connectionTable.time_Index,qw.QTableWidgetItem(con.timeToString()))
+        self.connectionTable.setItem(row,QConnectionTable.time_Index,qw.QTableWidgetItem(con.timeToString()))
         #if track is set add track of connection
         if con.track:
-                self.connectionTable.setItem(row,self.connectionTable.track_Index,qw.QTableWidgetItem(con.track))
+                self.connectionTable.setItem(row,QConnectionTable.track_Index,qw.QTableWidgetItem(con.track))
 
     #adds a stop to QTableWidget details
     def addStopToDetails(self,stop):
@@ -292,14 +292,14 @@ class FormWidget(qw.QWidget):
         #select last row of QTableWidget details
         row=self.detailsTable.rowCount()-1
         #add stopName 
-        self.detailsTable.setItem(row,self.detailsTable.stop_Index,qw.QTableWidgetItem(stop.name))
+        self.detailsTable.setItem(row,QDetailsTable.stop_Index,qw.QTableWidgetItem(stop.name))
         #check if times and track are valid and add them
         if stop.arrTime:
-                self.detailsTable.setItem(row,self.detailsTable.arr_Index,qw.QTableWidgetItem(stop.arrTimeToString()))
+                self.detailsTable.setItem(row,QDetailsTable.arr_Index,qw.QTableWidgetItem(stop.arrTimeToString()))
         if stop.depTime:
-                self.detailsTable.setItem(row,self.detailsTable.dep_Index,qw.QTableWidgetItem(stop.depTimeToString()))
+                self.detailsTable.setItem(row,QDetailsTable.dep_Index,qw.QTableWidgetItem(stop.depTimeToString()))
         if stop.track:
-                self.detailsTable.setItem(row,self.detailsTable.track_Index,qw.QTableWidgetItem(stop.track))
+                self.detailsTable.setItem(row,QDetailsTable.track_Index,qw.QTableWidgetItem(stop.track))
 
     #retrieves list all all matching stations to input and displays them
     def getStations(self):

@@ -2,23 +2,25 @@ from PyQt5 import QtWidgets as qw
 from PyQt5 import QtCore as qc
 
 class QConnectionTable(qw.QTableWidget):
+
+        #define some constants for later use
+        name_Index=0
+        from_Index=1
+        to_Index=2
+        time_Index=3
+        track_Index=4
+        header_list=["Zugnummer","von","nach","Uhrzeit","Gleis"]
+        minimumWidth=420
+        minimumHeight=320
+       
         #constructor
         def __init__(self):
-                #define some constants for later use
-                self.name_Index=0
-                self.from_Index=1
-                self.to_Index=2
-                self.time_Index=3
-                self.track_Index=4
-                self.header_list=["Zugnummer","von","nach","Uhrzeit","Gleis"]
-                self.minimumWidth=420
-                self.minimumHeight=320
                 #call super constructor
                 super(QConnectionTable,self).__init__()
                 #set columCount to number of entries in header list
-                self.setColumnCount(len(self.header_list))
+                self.setColumnCount(len(QConnectionTable.header_list))
                 #set Horizontal Header for QTableWidget
-                self.setHorizontalHeaderLabels(self.header_list)
+                self.setHorizontalHeaderLabels(QConnectionTable.header_list)
                 #make table not editable
                 self.setEditTriggers(qw.QAbstractItemView.NoEditTriggers)
                 #only make rows selectable
@@ -32,13 +34,13 @@ class QConnectionTable(qw.QTableWidget):
                 header=self.horizontalHeader()
                 #set all Columns to ResizeToConents 
                 #only colums with stop names are allowed to stretch
-                header.setSectionResizeMode(self.name_Index,qw.QHeaderView.ResizeToContents)
-                header.setSectionResizeMode(self.from_Index,qw.QHeaderView.Stretch)
-                header.setSectionResizeMode(self.to_Index,qw.QHeaderView.Stretch)
-                header.setSectionResizeMode(self.time_Index,qw.QHeaderView.ResizeToContents)
-                header.setSectionResizeMode(self.track_Index,qw.QHeaderView.ResizeToContents)
+                header.setSectionResizeMode(QConnectionTable.name_Index,qw.QHeaderView.ResizeToContents)
+                header.setSectionResizeMode(QConnectionTable.from_Index,qw.QHeaderView.Stretch)
+                header.setSectionResizeMode(QConnectionTable.to_Index,qw.QHeaderView.Stretch)
+                header.setSectionResizeMode(QConnectionTable.time_Index,qw.QHeaderView.ResizeToContents)
+                header.setSectionResizeMode(QConnectionTable.track_Index,qw.QHeaderView.ResizeToContents)
                 #set MimimumSize
-                self.setMinimumSize(qc.QSize(self.minimumWidth,self.minimumHeight))
+                self.setMinimumSize(qc.QSize(QConnectionTable.minimumWidth,QConnectionTable.minimumHeight))
                 #set Size Policy to MimumExpanding
                 self.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
                 
