@@ -214,6 +214,13 @@ class FormWidget(qw.QWidget):
         #set formLayout
         self.setLayout(layout)
         
+        self.map=qw.QWidget()
+        self.mapLabel=qw.QLabel()
+        self.mapLabel.setScaledContents(True)
+        mapLayout=qw.QVBoxLayout()
+        mapLayout.addWidget(self.mapLabel)
+        self.map.setLayout(mapLayout)
+        
     #called on click of connection_details
     def getConnectionsOnClickInDetails(self):
         #get selected Row in connection details
@@ -269,16 +276,9 @@ class FormWidget(qw.QWidget):
         result=req.getMapWithLocations(coordinates)
         test=qg.QPixmap()
         if test.loadFromData(result):
-                dialog=qw.QDialog()
-                dialog.setWindowTitle(connection.toStringDetails())
-                dialog.setWindowModality(qc.Qt.ApplicationModal)
-                layout = qw.QVBoxLayout()
-                label=qw.QLabel()
-                label.setPixmap(test)
-                label.setScaledContents(True)
-                layout.addWidget(label)
-                dialog.setLayout(layout)
-                dialog.exec_()
+                self.map.setWindowTitle(connection.toStringDetails())
+                self.mapLabel.setPixmap(test)
+                self.map.show()
 
     #previous navigation
     def showPreviousPage(self):
@@ -291,7 +291,7 @@ class FormWidget(qw.QWidget):
               #for every connection add connection display it
               for c in self.connectionPages[self.displayedIndex]:
                    self.addConnectionToTable(c)
-              self.setConnectionLabel()          
+              self.setConnectionLabel()      
 
     #next navigation
     def showNextPage(self):
