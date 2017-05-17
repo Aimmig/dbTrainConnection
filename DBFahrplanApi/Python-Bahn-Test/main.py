@@ -8,7 +8,8 @@ from PyQt5 import QtWidgets as qw
 
 from Connection import Connection
 from Stop import Stop
-
+from QConnectionTable import QConnectionTable
+from QDetailsTable import QDetailsTable
 #import class for requests
 import Request as req
 #import class for parsing xml-String
@@ -18,15 +19,11 @@ details_stop_Index=0
 details_arr_Index=1
 details_dep_Index=2
 details_track_Index=3
-header_details_list=["Halt","Ankunft","Abfahrt","Gleis"]
 connection_name_Index=0
 connection_from_Index=1
 connection_to_Index=2
 connection_time_Index=3
 connection_track_Index=4
-header_list=["Zugnummer","von","nach","Uhrzeit","Gleis"]
-minimumWidth=420
-minimumHeight=320
 start_x_pos=100
 start_y_pos=100
 
@@ -126,31 +123,9 @@ class FormWidget(qw.QWidget):
         #label for connection list
         self.connection_label=qw.QLabel("")
         #QTableWidget for displaying connections
-        self.connection_list=qw.QTableWidget()
-        #use 5 columns to present data
-        self.connection_list.setColumnCount(5)
-        #set Horizontal Header for QTableWidget
-        
-        self.connection_list.setHorizontalHeaderLabels(header_list)
-        #make table not editable
-        self.connection_list.setEditTriggers(qw.QAbstractItemView.NoEditTriggers)
-        #only make rows selectable
-        self.connection_list.setSelectionBehavior(qw.QAbstractItemView.SelectRows)
-        #only one selection at a time is allowed
-        self.connection_list.setSelectionMode(qw.QAbstractItemView.SingleSelection)
-        #do not show grind and vertical Headers
-        self.connection_list.setShowGrid(False)
-        self.connection_list.verticalHeader().setVisible(False)
-        header=self.connection_list.horizontalHeader()
-        header.setSectionResizeMode(connection_name_Index,qw.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(connection_from_Index,qw.QHeaderView.Stretch)
-        header.setSectionResizeMode(connection_to_Index,qw.QHeaderView.Stretch)
-        header.setSectionResizeMode(connection_time_Index,qw.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(connection_track_Index,qw.QHeaderView.ResizeToContents)
-        self.connection_list.setMinimumSize(qc.QSize(minimumWidth,minimumHeight))
-        self.connection_list.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
-        #connect QTableWidget with function
-        self.connection_list.clicked.connect(self.getDetails)
+        self.connectionTable=QConnectionTable()
+        #connect connectionTable with function
+        self.connectionTable.clicked.connect(self.getDetails)
         
         #button for navigating
         self.prev=qw.QPushButton("Vorherige")
@@ -159,7 +134,7 @@ class FormWidget(qw.QWidget):
         self.next=qw.QPushButton("Nächste")
         self.next.clicked.connect(self.showNextPage)
 
-        #layout for connection_list navigation
+        #layout for connectionTable navigation
         navigation_layout=qw.QHBoxLayout()
         #add buttons to navigation layout        
         navigation_layout.addWidget(self.prev)
@@ -167,7 +142,7 @@ class FormWidget(qw.QWidget):
          
         #add widgets and layouts to layout for middle part
         box2.addWidget(self.connection_label)
-        box2.addWidget(self.connection_list)
+        box2.addWidget(self.connectionTable)
         box2.addLayout(navigation_layout)
         
         #layout for right part of gui
@@ -176,35 +151,14 @@ class FormWidget(qw.QWidget):
         #label for details of a connection
         self.details_label=qw.QLabel("")
         #QTableWidget for presenting detailed data of a connection
-        self.connection_details=qw.QTableWidget()
-        #make table not editable
-        self.connection_details.setEditTriggers(qw.QAbstractItemView.NoEditTriggers)
-        #make only rows selectable
-        self.connection_details.setSelectionBehavior(qw.QAbstractItemView.SelectRows)
-        #make only one row selectable at a time
-        self.connection_details.setSelectionMode(qw.QAbstractItemView.SingleSelection)
-        #use for columns to present data
-        self.connection_details.setColumnCount(4)
-        #set Horizontal Headers for QTableWidget
-        self.connection_details.setHorizontalHeaderLabels(header_details_list)
-        header=self.connection_details.horizontalHeader()
-        #only stretch first colum, resize other columns to contents
-        header.setSectionResizeMode(details_stop_Index,qw.QHeaderView.Stretch)
-        header.setSectionResizeMode(details_arr_Index,qw.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(details_dep_Index,qw.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(details_track_Index,qw.QHeaderView.ResizeToContents)
-        #do not show grid
-        self.connection_details.setShowGrid(False)
-        self.connection_details.setMinimumSize(qc.QSize(minimumWidth,minimumHeight))
-        #set size policy to minimalExpanding
-        self.connection_details.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
+        self.detailsTable=QDetailsTable()
         #connect QTableWidget with function
-        self.connection_details.clicked.connect(self.getConnectionsOnClickInDetails)
+        self.detailsTable.clicked.connect(self.getConnectionsOnClickInDetails)
                 
         #add label to box3
         box3.addWidget(self.details_label)
         #add QTableWidget to box3
-        box3.addWidget(self.connection_details)
+        box3.addWidget(self.detailsTable)
  
         #add all layouts to form-Layout
         layout.addLayout(box1)
@@ -221,10 +175,10 @@ class FormWidget(qw.QWidget):
         mapLayout.addWidget(self.mapLabel)
         self.map.setLayout(mapLayout)
         
-    #called on click of connection_details
+    #called on click of detailsTable
     def getConnectionsOnClickInDetails(self):
         #get selected Row in connection details
-        row=self.connection_details.currentRow()
+        row=self.detailsTable.currentRow()
         #get the displayedIndex Information
         (pageIndex,connectionIndexOnPage)=self.displayedIndexDetails
         #select the clicked stop from the displayed Connection (Details)
@@ -240,11 +194,11 @@ class FormWidget(qw.QWidget):
         #request information and display it
         self.getConnections(date,time,identifier,True)
         
-    #called on click of connection_list
+    #called on click of connectionTable
     #request connection details if needed and displays them  
     def getDetails(self):
         #get the selected Index
-        index=self.connection_list.currentRow()
+        index=self.connectionTable.currentRow()
         #get the connection according to the index
         connection=self.connectionPages[self.displayedIndex][index]
         #if stopList is empty request details
@@ -256,7 +210,7 @@ class FormWidget(qw.QWidget):
               #check if valid
               if xmlString:
                     #remove all Elements from details QTableWidget
-                    self.connection_details.setRowCount(0)
+                    self.detailsTable.setRowCount(0)
                     stopList=parser.getStopListFromXMLString(xmlString)
                     if not stopList=="":
                         #set the stopList of the connection to the local list
@@ -287,7 +241,7 @@ class FormWidget(qw.QWidget):
         if self.displayedIndex>0:
               self.displayedIndex=self.displayedIndex-1
               #remove old elements from QTableWidget
-              self.connection_list.setRowCount(0)
+              self.connectionTable.setRowCount(0)
               #for every connection add connection display it
               for c in self.connectionPages[self.displayedIndex]:
                    self.addConnectionToTable(c)
@@ -300,7 +254,7 @@ class FormWidget(qw.QWidget):
         if self.displayedIndex<len(self.connectionPages)-1:
               self.displayedIndex=self.displayedIndex+1
               #remove all elements from QTableWidget
-              self.connection_list.setRowCount(0)
+              self.connectionTable.setRowCount(0)
               #for every connection add connection display it
               for c in self.connectionPages[self.displayedIndex]:
                    self.addConnectionToTable(c)
@@ -314,40 +268,40 @@ class FormWidget(qw.QWidget):
     #adds a connection to QTableWidget
     def addConnectionToTable(self,con):
         #add new row to QTableWidget
-        self.connection_list.insertRow(self.connection_list.rowCount())
+        self.connectionTable.insertRow(self.connectionTable.rowCount())
         #select last row of QTableWidget
-        row=self.connection_list.rowCount()-1
+        row=self.connectionTable.rowCount()-1
         #add name of connection
-        self.connection_list.setItem(row,connection_name_Index,qw.QTableWidgetItem(con.name))
+        self.connectionTable.setItem(row,self.connectionTable.name_Index,qw.QTableWidgetItem(con.name))
         #check if direction and origin are valid and add them
         #not that direction (departure) an origin (arrival) are exclusive only one can be set!
         if con.direction:
-                self.connection_list.setItem(row,connection_to_Index,qw.QTableWidgetItem(con.direction))
-                self.connection_list.setItem(row,connection_from_Index,qw.QTableWidgetItem(con.stopName))
+                self.connectionTable.setItem(row,self.connectionTable.to_Index,qw.QTableWidgetItem(con.direction))
+                self.connectionTable.setItem(row,self.connectionTable.from_Index,qw.QTableWidgetItem(con.stopName))
         if con.origin:
-                self.connection_list.setItem(row,connection_from_Index,qw.QTableWidgetItem(con.origin))
-                self.connection_list.setItem(row,connection_to_Index,qw.QTableWidgetItem(con.stopName))
+                self.connectionTable.setItem(row,self.connectionTable.from_Index,qw.QTableWidgetItem(con.origin))
+                self.connectionTable.setItem(row,self.connectionTable.to_Index,qw.QTableWidgetItem(con.stopName))
         #add time of connection
-        self.connection_list.setItem(row,connection_time_Index,qw.QTableWidgetItem(con.timeToString()))
+        self.connectionTable.setItem(row,self.connectionTable.time_Index,qw.QTableWidgetItem(con.timeToString()))
         #if track is set add track of connection
         if con.track:
-                self.connection_list.setItem(row,connection_track_Index,qw.QTableWidgetItem(con.track))
+                self.connectionTable.setItem(row,self.connectionTable.track_Index,qw.QTableWidgetItem(con.track))
 
     #adds a stop to QTableWidget details
     def addStopToDetails(self,stop):
         #insert new row in QTableWidget details
-        self.connection_details.insertRow(self.connection_details.rowCount())
+        self.detailsTable.insertRow(self.detailsTable.rowCount())
         #select last row of QTableWidget details
-        row=self.connection_details.rowCount()-1
+        row=self.detailsTable.rowCount()-1
         #add stopName 
-        self.connection_details.setItem(row,details_stop_Index,qw.QTableWidgetItem(stop.name))
+        self.detailsTable.setItem(row,self.detailsTable.stop_Index,qw.QTableWidgetItem(stop.name))
         #check if times and track are valid and add them
         if stop.arrTime:
-                self.connection_details.setItem(row,details_arr_Index,qw.QTableWidgetItem(stop.arrTimeToString()))
+                self.detailsTable.setItem(row,self.detailsTable.arr_Index,qw.QTableWidgetItem(stop.arrTimeToString()))
         if stop.depTime:
-                self.connection_details.setItem(row,details_dep_Index,qw.QTableWidgetItem(stop.depTimeToString()))
+                self.detailsTable.setItem(row,self.detailsTable.dep_Index,qw.QTableWidgetItem(stop.depTimeToString()))
         if stop.track:
-                self.connection_details.setItem(row,details_track_Index,qw.QTableWidgetItem(stop.track))
+                self.detailsTable.setItem(row,self.detailsTable.track_Index,qw.QTableWidgetItem(stop.track))
 
     #retrieves list all all matching stations to input and displays them
     def getStations(self):
@@ -442,7 +396,7 @@ class FormWidget(qw.QWidget):
         xmlString=req.getXMLStringConnectionRequest(date,time,identifier,isDeparture)
         if xmlString:
             connections=parser.getConnectionsFromXMLString(xmlString,isDeparture)
-            self.connection_list.setRowCount(0)
+            self.connectionTable.setRowCount(0)
             if not connections=="":
                 #clear displayed list
                 #check if something was actually found 
