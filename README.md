@@ -13,4 +13,5 @@ You need to have installed Pyhton3 as well as PyQt5.
 ### How to contribute? ###
 If you want to contribute feel free, to bring your ideas and implement them.
 Therefore please contact me so, that we can discuss about it.
-Some error handling is missing when Requesting the information from the web, feel free to add this yourself.
+Some error handling is missing when Requesting the information from the web.
+Some functionality from the Java version still needs to be ported to Python.
