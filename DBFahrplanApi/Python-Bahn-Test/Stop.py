@@ -15,9 +15,8 @@ class Stop:
         self.depDate=depDate
         #Track from wich the connection starts
         self.track=track
-        #Longitude and latiude of the station
-        self.lon=lon
-        self.lat=lat
+        #position of the stop
+        self.pos=Coordinate(lon,lat)
 
     #String representation of arrival Time
     def arrTimeToString(self):
@@ -28,4 +27,10 @@ class Stop:
     def depTimeToString(self):
         timeString=str(self.depTime.hour())+":"+str(self.depTime.minute())
         return timeString
+
+class Coordinate:
+
+    def __init__(self,lon,lat):
+        self.lon=lon
+        self.lat=lat 
 

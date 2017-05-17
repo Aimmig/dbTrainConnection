@@ -10,9 +10,8 @@ GOOGLE_MAPS_BASE_URL="https://maps.googleapis.com/maps/api/staticmap?"
 MAP_WIDTH="800"
 MAP_HEIGHT="800"
 PATH_COLOR="0xff000088"
+MARKER_COLOR="0xaa339988"
 PATH_SIZE="3"
-LAT_INDEX=0
-LON_INDEX=1
 
 #returns the XML-String 
 def getXMLStringConnectionDetails(urlString):
@@ -62,8 +61,8 @@ def getXMLStringConnectionRequest(date,time,identifier,isDeparture):
              print('Reason: ', e.reason)
         return ""
 
-def getMapWithLocations(coordinates):
-        url=createMapURL(coordinates)
+def getMapWithLocations(coordinates,marker_loc):
+        url=createMapURL(coordinates,marker_loc)
         req=url_req.Request(url)
         return url_req.urlopen(req).read() 
 
@@ -86,10 +85,13 @@ def createConnectionRequestURL(date,time,identifier,isDeparture):
 def createStationRequestURL(loc):
         return DB_BASE_URL+"location.name?authKey="+KEY+"&lang="+LANGUAGE+"&input="+loc
 
-#creates URL  for requesting the map with path of given locations
-def createMapURL(coordinates):
-        res=GOOGLE_MAPS_BASE_URL+"&size="+MAP_WIDTH+"x"+MAP_HEIGHT+"&language="+LANGUAGE+"&sensor=false&path=color:"+PATH_COLOR+"|weight:"+PATH_SIZE
+#creates URL  for requesting the map with path of given locations and lat lon for marker
+def createMapURL(coordinates,marker_loc):
+        res=GOOGLE_MAPS_BASE_URL+"&size="+MAP_WIDTH+"x"+MAP_HEIGHT+"&language="+LANGUAGE        
+        res+="&sensor=false&path=color:"+PATH_COLOR+"|weight:"+PATH_SIZE
         for loc in coordinates:
-                res+="|"+str(loc[LAT_INDEX])+","+str(loc[LON_INDEX])
+                res+="|"+str(loc.lat)+","+str(loc.lon)
+        res+="&markers=size:mid|color:"+MARKER_COLOR+"|"
+        res+=str(marker_loc.lat)+","+str(marker_loc.lon)
         res+="&key="+GOOGLEMAPS_KEY
         return res

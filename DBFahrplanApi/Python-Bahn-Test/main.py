@@ -212,7 +212,9 @@ class FormWidget(qw.QWidget):
         coordinates=[]
         for s in connection.stopList:
                 self.addStopToDetails(s)
-                coordinates.append((s.lat,s.lon))
+                coordinates.append(s.pos)
+                if s.id==connection.stopid:
+                        marker_loc=s.pos
         #set details_label text to connection information
         self.details_label.setText(connection.toStringDetails())
         self.displayedIndexDetails=(self.displayedIndex,index)
@@ -220,7 +222,7 @@ class FormWidget(qw.QWidget):
         #check if imageData is empty        
         if connection.imageData.isEmpty():
                 #request imageData and create QByteArray and set imageData
-                connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates))
+                connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates,marker_loc))
         #create Pixmap
         pixmap=qg.QPixmap()
         #load pixmap from imageData
