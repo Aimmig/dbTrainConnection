@@ -7,6 +7,12 @@ class Connection:
     dateFormat="dd.M.yy"
     #formate time as hh:mm
     timeFormat="hh:mm"
+    #string constants for toStringMethods
+    departureString=" (Abfahrt) "
+    arrivalString=" (Ankunft) "
+    detailsBaseString="Zugverlauf von "
+    generallBaseString="Fahrplantabelle für "
+    datePrefix=" am "
         
     def __init__(self,name,typ,stopid,stopName,time,date,direction,origin,track,ref):
         #Name e.g. IC10250,ICE516, etc
@@ -40,11 +46,16 @@ class Connection:
 
     #string representation of a connection for details label
     def toStringDetails(self):
-        detailsString="Zugverlauf von " + self.name +" am " +self.date.toString(Connection.dateFormat)
-        return detailsString
+        res=Connection.detailsBaseString + self.name + Connection.datePrefix +self.date.toString(Connection.dateFormat)
+        return res
 
     #genereall String represenatation of a connection for overview
     def toStringGenerall(self):
-        res="Fahrplantabelle für "+self.stopName+" am "+self.date.toString(Connection.dateFormat)
+        res=Connection.generallBaseString + self.stopName
+        if self.origin:
+                res+=Connection.departureString
+        else:
+                res+=Connection.arrivalString
+        res+=Connection.datePrefix +self.date.toString(Connection.dateFormat)
         return res
             

@@ -51,6 +51,7 @@ def getXMLStringStationRequest(loc):
 #returns the XML-String representation of the Connection Request
 def getXMLStringConnectionRequest(date,time,identifier,isDeparture):
         url=createConnectionRequestURL(date,time,identifier,isDeparture)
+        print(url)
         req=url_req.Request(url)
         try:
             with url_req.urlopen(req) as response:
@@ -73,8 +74,11 @@ def getMapWithLocations(coordinates,markerIndex):
 def createConnectionRequestURL(date,time,identifier,isDeparture):
         #build date-String
         dateString=str(date.year())+"-"+str(date.month())+"-"+str(date.day())
+        #print(date.toString("yyyy-M-d"))
         #build and encode timeString
         timeString=str(time.hour())+"%3A"+str(time.minute())
+        #print(timeString)
+        #print(time.toString("h:m").replace(":","%3A"))
         #build last part of url
         lastPart="authKey="+KEY+"&lang="+LANGUAGE+"&id="
         lastPart=lastPart+str(identifier)+"&date="+dateString+"&time="+timeString

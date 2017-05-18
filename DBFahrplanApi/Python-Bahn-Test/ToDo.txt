@@ -1,5 +1,4 @@
 #To-Do Stuff:
 
 -If possible make colums resizable and auto-streched on resize.
--Read into google maps static api and request map with all the stops
--Maybe use some more options from googel maps api for displaying the map?
+-Change time and date toString formatting to use the QDate/QTime toString("...") methods
