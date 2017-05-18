@@ -2,6 +2,11 @@ from PyQt5 import QtCore as qc
 
 #clas representing a single train connection
 class Connection:
+
+    #format date as dd.M.yy
+    dateFormat="dd.M.yy"
+    #formate time as hh:mm
+    timeFormat="hh:mm"
         
     def __init__(self,name,typ,stopid,stopName,time,date,direction,origin,track,ref):
         #Name e.g. IC10250,ICE516, etc
@@ -29,18 +34,17 @@ class Connection:
         #construct connection with empyt imageData
         self.imageData=qc.QByteArray()
 
-    #String representation of the date of the connection
-    def dateToString(self):
-        dateString=str(self.date.day())+"/"+str(self.date.month())+"/"+str(self.date.year())
-        return dateString
+    #returns properly formatted dateString
+    def timeToString(self):
+        return self.time.toString(Connection.timeFormat)
 
     #string representation of a connection for details label
     def toStringDetails(self):
-        detailsString="Zugverlauf von " + self.name +" am " +self.dateToString()
+        detailsString="Zugverlauf von " + self.name +" am " +self.date.toString(Connection.dateFormat)
         return detailsString
 
     #genereall String represenatation of a connection for overview
     def toStringGenerall(self):
-        res="Fahrplantabelle für "+self.stopName+" am "+self.dateToString()
+        res="Fahrplantabelle für "+self.stopName+" am "+self.date.toString(Connection.dateFormat)
         return res
             

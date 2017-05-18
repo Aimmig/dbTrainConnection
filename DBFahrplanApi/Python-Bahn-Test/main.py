@@ -282,7 +282,7 @@ class FormWidget(qw.QWidget):
                 self.connectionTable.setItem(row,QConnectionTable.from_Index,qw.QTableWidgetItem(con.origin))
                 self.connectionTable.setItem(row,QConnectionTable.to_Index,qw.QTableWidgetItem(con.stopName))
         #add time of connection
-        self.connectionTable.setItem(row,QConnectionTable.time_Index,qw.QTableWidgetItem(con.time.toString("hh:mm")))
+        self.connectionTable.setItem(row,QConnectionTable.time_Index,qw.QTableWidgetItem(con.timeToString()))
         #if track is set add track of connection
         if con.track:
                 self.connectionTable.setItem(row,QConnectionTable.track_Index,qw.QTableWidgetItem(con.track))
@@ -297,9 +297,9 @@ class FormWidget(qw.QWidget):
         self.detailsTable.setItem(row,QDetailsTable.stop_Index,qw.QTableWidgetItem(stop.name))
         #check if times and track are valid and add them
         if stop.arrTime:
-                self.detailsTable.setItem(row,QDetailsTable.arr_Index,qw.QTableWidgetItem(stop.arrTime.toString("hh:mm")))
+                self.detailsTable.setItem(row,QDetailsTable.arr_Index,qw.QTableWidgetItem(stop.arrTimeToString()))
         if stop.depTime:
-                self.detailsTable.setItem(row,QDetailsTable.dep_Index,qw.QTableWidgetItem(stop.depTime.toString("hh:mm")))
+                self.detailsTable.setItem(row,QDetailsTable.dep_Index,qw.QTableWidgetItem(stop.depTimeToString()))
         if stop.track:
                 self.detailsTable.setItem(row,QDetailsTable.track_Index,qw.QTableWidgetItem(stop.track))
 
