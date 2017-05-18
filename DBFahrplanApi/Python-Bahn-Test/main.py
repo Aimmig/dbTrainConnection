@@ -6,10 +6,12 @@ from PyQt5 import QtCore as qc
 from PyQt5 import QtGui as qg
 from PyQt5 import QtWidgets as qw
 
-from Connection import Connection
-from Stop import Stop
-from QConnectionTable import QConnectionTable
-from QDetailsTable import QDetailsTable
+from Structs import Connection
+from Structs import Stop
+from Widgets import QConnectionTable
+from Widgets import QDetailsTable
+from Widgets import QMapWidget
+
 #import class for requests
 import Request as req
 #import class for parsing xml-String
@@ -158,12 +160,8 @@ class FormWidget(qw.QWidget):
         #set formLayout
         self.setLayout(layout)
         
-        self.map=qw.QWidget()
-        self.mapLabel=qw.QLabel()
-        self.mapLabel.setScaledContents(True)
-        mapLayout=qw.QVBoxLayout()
-        mapLayout.addWidget(self.mapLabel)
-        self.map.setLayout(mapLayout)
+        #initalize Widget for map
+        self.mapWidget=QMapWidget()
         
     #called on click of detailsTable
     def getConnectionsOnClickInDetails(self):
@@ -223,16 +221,8 @@ class FormWidget(qw.QWidget):
         if connection.imageData.isEmpty():
                 #request imageData and create QByteArray and set imageData
                 connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates,markerIndex))
-        #create Pixmap
-        pixmap=qg.QPixmap()
-        #load pixmap from imageData
-        if pixmap.loadFromData(connection.imageData):
-                #set window title of map Widget
-                self.map.setWindowTitle(connection.toStringDetails())
-                #put pixmap on label
-                self.mapLabel.setPixmap(pixmap)
-                #show widget
-                self.map.show()
+        #display requested map-Data
+        self.mapWidget.showMap(connection.imageData,connection.toStringDetails())
 
     #previous navigation
     def showPreviousPage(self):

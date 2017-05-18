@@ -2,8 +2,8 @@
 import xml.etree.ElementTree as ET
 #import qt-stuff
 from PyQt5 import QtCore as qc
-from Stop import Stop
-from Connection import Connection
+from Structs import Stop
+from Structs import Connection
 
 ID='id'
 NAME='name'
@@ -23,6 +23,11 @@ DEPDATE='depDate'
 LON='lon'
 LAT='lat'
 STOPS='Stops'
+HOUR_INDEX=0
+MINUTE_INDEX=1
+YEAR_INDEX=0
+MONTH_INDEX=1
+DAY_INDEX=2
 
 #returns list of name and id of stops from xml-String
 def getStationsFromXMLString(xmlString):
@@ -39,17 +44,17 @@ def getStationsFromXMLString(xmlString):
 #converts String formatted as hh:mm to QTime object
 def timeStringToQTime(timeString):
         splittedTime=timeString.split(":")
-        hours=int(splittedTime[0])
-        minutes=int(splittedTime[1])
+        hours=int(splittedTime[HOUR_INDEX])
+        minutes=int(splittedTime[MINUTE_INDEX])
         time=qc.QTime(hours,minutes)
         return time
     
 #converts String formatted as yyyy-mm-dd to QDate object
 def dateStringToQDate(dateString):
         splittedDate=dateString.split("-")
-        year=int(splittedDate[0])
-        month=int(splittedDate[1])
-        day=int(splittedDate[2])
+        year=int(splittedDate[YEAR_INDEX])
+        month=int(splittedDate[MONTH_INDEX])
+        day=int(splittedDate[DAY_INDEX])
         date=qc.QDate(year,month,day)
         return date
 

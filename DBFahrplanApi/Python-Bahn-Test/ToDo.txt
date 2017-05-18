@@ -1,4 +1,3 @@
 #To-Do Stuff:
 
 -If possible make colums resizable and auto-streched on resize.
--Change time and date toString formatting to use the QDate/QTime toString("...") methods
