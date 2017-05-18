@@ -110,7 +110,7 @@ class FormWidget(qw.QWidget):
         #layout for middle part of gui
         box2=qw.QVBoxLayout()
 
-        #label for connection list
+        #label for connectionTable
         self.connection_label=qw.QLabel("")
         #QTableWidget for displaying connections
         self.connectionTable=QConnectionTable()
@@ -210,11 +210,11 @@ class FormWidget(qw.QWidget):
                         return
         #for every stop in stopList add it to QTableWidget
         coordinates=[]
-        for s in connection.stopList:
-                self.addStopToDetails(s)
-                coordinates.append(s.pos)
-                if s.id==connection.stopid:
-                        marker_loc=s.pos
+        for i in range(0,len(connection.stopList)):
+                self.addStopToDetails(connection.stopList[i])
+                coordinates.append(connection.stopList[i].pos)
+                if connection.stopList[i].id==connection.stopid:
+                        markerIndex=i
         #set details_label text to connection information
         self.details_label.setText(connection.toStringDetails())
         self.displayedIndexDetails=(self.displayedIndex,index)
@@ -222,7 +222,7 @@ class FormWidget(qw.QWidget):
         #check if imageData is empty        
         if connection.imageData.isEmpty():
                 #request imageData and create QByteArray and set imageData
-                connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates,marker_loc))
+                connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates,markerIndex))
         #create Pixmap
         pixmap=qg.QPixmap()
         #load pixmap from imageData
