@@ -29,11 +29,6 @@ class Connection:
         #construct connection with empyt imageData
         self.imageData=qc.QByteArray()
 
-    #String representation of the time of the connection
-    def timeToString(self):
-        timeString=str(self.time.hour())+":"+str(self.time.minute())
-        return timeString
-
     #String representation of the date of the connection
     def dateToString(self):
         dateString=str(self.date.day())+"/"+str(self.date.month())+"/"+str(self.date.year())

@@ -18,16 +18,6 @@ class Stop:
         #position of the stop
         self.pos=Coordinate(lon,lat)
 
-    #String representation of arrival Time
-    def arrTimeToString(self):
-        timeString=str(self.arrTime.hour())+":"+str(self.arrTime.minute())
-        return timeString
-    
-    #String representation of departure Time
-    def depTimeToString(self):
-        timeString=str(self.depTime.hour())+":"+str(self.depTime.minute())
-        return timeString
-
 class Coordinate:
 
     def __init__(self,lon,lat):
