@@ -81,19 +81,27 @@ class FormWidget(qw.QWidget):
         request_layout.addWidget(self.request_choosenTime)
 
         #create RadioButtons for departure/arrival selection
-        self.depart=qw.QRadioButton("Departure")
-        self.arriv=qw.QRadioButton("Arrival")
-        self.mapActive=qw.QCheckBox("Map")
+        self.depart=qw.QRadioButton("Abfahrten")
+        self.arriv=qw.QRadioButton("Ankünfte")
         #group RadioButtons
         radioButton_layout=qw.QHBoxLayout()
         radioButton_layout.addWidget(self.depart)
         radioButton_layout.addWidget(self.arriv)
-        radioButton_layout.addWidget(self.mapActive)
         #make RadioButtons checkable and set departure to default checked
         self.depart.setCheckable(True)
         self.arriv.setCheckable(True)
         self.depart.setChecked(True)
         
+        self.mapActive=qw.QCheckBox(" Karte ")
+        mapLayout=qw.QHBoxLayout()
+        mapLayout.addWidget(self.mapActive)
+        self.mapWidth=qw.QLineEdit()
+        self.mapHeight=qw.QLineEdit()
+        mapLayout.addWidget(qw.QLabel(" Breite: "))
+        mapLayout.addWidget(self.mapWidth)
+        mapLayout.addWidget(qw.QLabel(" Höhe: "))
+        mapLayout.addWidget(self.mapHeight)
+                
         #create buttons for getting connections earlier/later and group them
         requestEarlierLater_layout=qw.QHBoxLayout()
         self.earlier=qw.QPushButton("Früher")
@@ -104,11 +112,11 @@ class FormWidget(qw.QWidget):
         val=qg.QIntValidator(1,24)
         self.offsetField.setValidator(val)
         self.offsetField.setMaximumWidth(50)
-        requestEarlierLater_layout.addWidget(self.earlier)
-        label=qw.QLabel("offset:")
-        label.setMaximumWidth(50)
-        requestEarlierLater_layout.addWidget(label)
+        label=qw.QLabel(" Stunden ")
+        label.setMaximumWidth(60)
         requestEarlierLater_layout.addWidget(self.offsetField)
+        requestEarlierLater_layout.addWidget(label)
+        requestEarlierLater_layout.addWidget(self.earlier)
         requestEarlierLater_layout.addWidget(self.later)
         
         #add layouts and widgets to layout for left part
@@ -116,8 +124,9 @@ class FormWidget(qw.QWidget):
         box1.addLayout(input2_layout)
         box1.addWidget(self.date_chooser)
         box1.addLayout(radioButton_layout)
-        box1.addLayout(request_layout)
+        box1.addLayout(mapLayout)
         box1.addLayout(requestEarlierLater_layout)
+        box1.addLayout(request_layout)
 
         #layout for middle part of gui
         box2=qw.QVBoxLayout()
