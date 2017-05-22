@@ -331,12 +331,18 @@ class FormWidget(qw.QWidget):
 
     #ealier means subtract hours
     def getConnectionsEarlier(self):
-        hourShift=int(self.offsetField.text())
+        try:
+                hourShift=int(self.offsetField.text())
+        except ValueError:
+                return
         self.getConnectionsWithShiftedTime(-1,hourShift)
 
     #later means add hours
     def getConnectionsLater(self):
-        hourShift=int(self.offsetField.text())
+        try:
+                hourShift=int(self.offsetField.text())
+        except ValueError:
+                return
         self.getConnectionsWithShiftedTime(1,hourShift)
 
     #

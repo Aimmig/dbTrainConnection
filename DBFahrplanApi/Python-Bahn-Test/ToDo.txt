@@ -2,3 +2,5 @@
 
 -If possible make colums resizable and auto-streched on resize.
 -Clean up Gui: postion checkbox for map and QLineEdit for offSetShift correctly
+-Translate all Gui elements to English or German
+-Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
