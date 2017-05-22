@@ -83,10 +83,12 @@ class FormWidget(qw.QWidget):
         #create RadioButtons for departure/arrival selection
         self.depart=qw.QRadioButton("Departure")
         self.arriv=qw.QRadioButton("Arrival")
+        self.mapActive=qw.QCheckBox("Map")
         #group RadioButtons
         radioButton_layout=qw.QHBoxLayout()
         radioButton_layout.addWidget(self.depart)
         radioButton_layout.addWidget(self.arriv)
+        radioButton_layout.addWidget(self.mapActive)
         #make RadioButtons checkable and set departure to default checked
         self.depart.setCheckable(True)
         self.arriv.setCheckable(True)
@@ -98,7 +100,15 @@ class FormWidget(qw.QWidget):
         self.later=qw.QPushButton("Später")
         self.later.clicked.connect(self.getConnectionsLater)
         self.earlier.clicked.connect(self.getConnectionsEarlier)
+        self.offsetField=qw.QLineEdit("3")
+        val=qg.QIntValidator(1,24)
+        self.offsetField.setValidator(val)
+        self.offsetField.setMaximumWidth(50)
         requestEarlierLater_layout.addWidget(self.earlier)
+        label=qw.QLabel("offset:")
+        label.setMaximumWidth(50)
+        requestEarlierLater_layout.addWidget(label)
+        requestEarlierLater_layout.addWidget(self.offsetField)
         requestEarlierLater_layout.addWidget(self.later)
         
         #add layouts and widgets to layout for left part
@@ -217,12 +227,13 @@ class FormWidget(qw.QWidget):
         self.details_label.setText(connection.toStringDetails())
         self.displayedIndexDetails=(self.displayedIndex,index)
 
-        #check if imageData is empty        
-        if connection.imageData.isEmpty():
+        #check if imageData is empty and if map is selected   
+        if connection.imageData.isEmpty() and self.mapActive.isChecked():
                 #request imageData and create QByteArray and set imageData
                 connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates,markerIndex))
         #display requested map-Data
-        self.mapWidget.showMap(connection.imageData,connection.toStringDetails())
+        if self.mapActive.isChecked():
+                self.mapWidget.showMap(connection.imageData,connection.toStringDetails())
 
     #previous navigation
     def showPreviousPage(self):
@@ -320,11 +331,13 @@ class FormWidget(qw.QWidget):
 
     #ealier means subtract hours
     def getConnectionsEarlier(self):
-        self.getConnectionsWithShiftedTime(-1)
+        hourShift=int(self.offsetField.text())
+        self.getConnectionsWithShiftedTime(-1,hourShift)
 
     #later means add hours
     def getConnectionsLater(self):
-        self.getConnectionsWithShiftedTime(1)
+        hourShift=int(self.offsetField.text())
+        self.getConnectionsWithShiftedTime(1,hourShift)
 
     #
     def getConnectionsWithShiftedTime(self,shift,numbersOfHoursShifted=3):

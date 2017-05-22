@@ -1,3 +1,4 @@
 #To-Do Stuff:
 
 -If possible make colums resizable and auto-streched on resize.
+-Clean up Gui: postion checkbox for map and QLineEdit for offSetShift correctly
