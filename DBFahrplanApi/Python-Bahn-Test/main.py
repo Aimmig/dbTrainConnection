@@ -37,6 +37,11 @@ class FormWidget(qw.QWidget):
         self.connectionPages=[]
         self.displayedIndex=-1
         self.displayedDetailedIndex=(-1,-1)
+        self.defaultMapSize=300
+        self.mapSizeMin=300
+        self.mapSizeMax=800
+        self.minTimeOffset=1
+        self.maxTimeOffset=24
 
         #overall layout for gui 
         layout=qw.QHBoxLayout()
@@ -95,8 +100,11 @@ class FormWidget(qw.QWidget):
         self.mapActive=qw.QCheckBox(" Karte ")
         mapLayout=qw.QHBoxLayout()
         mapLayout.addWidget(self.mapActive)
+        val=qg.QIntValidator(self.mapSizeMin,self.mapSizeMax)
         self.mapWidth=qw.QLineEdit()
         self.mapHeight=qw.QLineEdit()
+        self.mapWidth.setValidator(val)
+        self.mapHeight.setValidator(val)
         mapLayout.addWidget(qw.QLabel(" Breite: "))
         mapLayout.addWidget(self.mapWidth)
         mapLayout.addWidget(qw.QLabel(" Höhe: "))
@@ -109,7 +117,7 @@ class FormWidget(qw.QWidget):
         self.later.clicked.connect(self.getConnectionsLater)
         self.earlier.clicked.connect(self.getConnectionsEarlier)
         self.offsetField=qw.QLineEdit("3")
-        val=qg.QIntValidator(1,24)
+        val=qg.QIntValidator(self.minTimeOffset,self.maxTimeOffset)
         self.offsetField.setValidator(val)
         self.offsetField.setMaximumWidth(50)
         label=qw.QLabel(" Stunden ")
@@ -238,8 +246,20 @@ class FormWidget(qw.QWidget):
 
         #check if imageData is empty and if map is selected   
         if connection.imageData.isEmpty() and self.mapActive.isChecked():
+                #try to convert desired height and with to int
+                try:
+                        height=int(self.mapHeight.text())
+                        width=int(self.mapWidth.text())
+                #on error use default values               
+                except ValueError:
+                        height=self.defaultMapSize
+                        width=self.defaultMapSize
+                #size to small use default size
+                if height<self.defaultMapSize or width<self.defaultMapSize:
+                        height=self.defaultMapSize
+                        width=self.defaultMapSize
                 #request imageData and create QByteArray and set imageData
-                connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates,markerIndex))
+                connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates,markerIndex,width,height))
         #display requested map-Data
         if self.mapActive.isChecked():
                 self.mapWidget.showMap(connection.imageData,connection.toStringDetails())

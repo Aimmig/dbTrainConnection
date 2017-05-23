@@ -65,7 +65,7 @@ def getXMLStringConnectionRequest(date,time,identifier,isDeparture):
              print('Reason: ', e.reason)
         return ""
 
-def getMapWithLocations(coordinates,markerIndex,mapWidth="500",mapHeight="500"):
+def getMapWithLocations(coordinates,markerIndex,mapWidth,mapHeight):
         url=createMapURL(coordinates,markerIndex,mapWidth,mapHeight)
         req=url_req.Request(url)
         return url_req.urlopen(req).read() 
@@ -91,7 +91,7 @@ def createStationRequestURL(loc):
 
 #creates URL  for requesting the map with path of given locations and lat lon for marker
 def createMapURL(coordinates,markerIndex,mapWidth,mapHeight):
-        res=GOOGLE_MAPS_BASE_URL+"&size="+mapWidth+"x"+mapHeight+"&language="+LANGUAGE        
+        res=GOOGLE_MAPS_BASE_URL+"&size="+str(mapWidth)+"x"+str(mapHeight)+"&language="+LANGUAGE        
         res+="&sensor=false&path=color:"+PATH_COLOR+"|weight:"+PATH_SIZE
         for loc in coordinates:
                 res+="|"+str(loc.lat)+","+str(loc.lon)
