@@ -1,6 +1,7 @@
 #To-Do Stuff:
 
 -If possible make colums resizable and auto-streched on resize.
--Implement filtering based on train types e.g display only ICE, IC, use QTableWidget.setColumnHidden(index,boo)
+-Clean up filtering method in Filter, a.t.m very cluttered !!
+-Add chechboxes for dynamic filtering on gui
 -Translate all Gui elements to English or German
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..

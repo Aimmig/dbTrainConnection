@@ -95,12 +95,56 @@ class Coordinate:
         self.lat=lat
 
 class Filter:
+    
+    #member variables are true if this type should be included
+    def __init__(self,ICE,IC,EC,TGV,other):
+        self.ICE=ICE
+        self.IC=IC
+        self.EC=EC
+        self.TGV=TGV
+        self.other=other
+        
+    def filterICE(self,con):
+        return con.type=="ICE" or "ICE" in con.name 
+    def filterIC(self,con):
+        return con.type==("IC" or "IC" in con.name) and not self.filterICE(con)
+    def filterEC(self,con):
+        return con.type=="EC" or "EC" in con.name
+    def filterTGV(self,con):
+        return con.type=="TGV" or "TGV" in con.name 
+    def filterOther(self,con):
+        return not(self.filterICE(con) or self.filterIC(con) or self.filterEC(con) or self.filterTGV(con))
+        
+    #this method needs clean-up !!! can be simplified and not cluttered
+    def filter(self,connections):
+        res=[]
+        for con in connections:
+                selected=False
+                if self.ICE:
+                        selected=self.filterICE(con)
+                if self.IC:
+                        selected=selected or self.filterIC(con)
+                if self.EC:
+                        selected=selected or self.filterEC(con)
+                if self.TGV:
+                        selected=selected or self.filterTGV(con)
+                if self.other:
+                        selected=selected or self.filterOther(con)
+                res.append(selected)
+        res=list(enumerate(res))
+        filterResult=[]
+        for i in range(len(res)):
+               filterResult.append(((res[i][0],i),res[i][1]))
+        for i in range(len(filterResult)):
+              if not filterResult[i][1]:
+                    for j in range(i+1,len(filterResult)):
+                        filterResult[j]=((filterResult[j][0][0]-1,filterResult[j][0][1]),filterResult[j][1])
+        indexOrder=[]
+        for tup in filterResult:
+               if tup[1]:
+                        indexOrder.append(tup[0][1])
+        return indexOrder             
 
-    def __init__(self):
-         self.test="1"
-
-    def filter(con):
-        return True
 
 class ConnectionsList:
 

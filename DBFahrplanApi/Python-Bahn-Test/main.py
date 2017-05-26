@@ -6,6 +6,7 @@ from PyQt5 import QtCore as qc
 from PyQt5 import QtGui as qg
 from PyQt5 import QtWidgets as qw
 
+from Structs import Filter
 from Structs import Connection
 from Structs import Stop
 from Structs import ConnectionsList
@@ -41,6 +42,7 @@ class FormWidget(qw.QWidget):
         self.mapSizeMax=800
         self.minTimeOffset=1
         self.maxTimeOffset=24
+        self.filterActive=True
 
         #overall layout for gui 
         layout=qw.QHBoxLayout()
@@ -272,7 +274,7 @@ class FormWidget(qw.QWidget):
               #remove old elements from QTableWidget
               self.connectionTable.setRowCount(0)
               #for every connection add connection display it
-              self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()),False)
+              self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()))
               self.setConnectionLabel()      
 
     #next navigation
@@ -284,26 +286,24 @@ class FormWidget(qw.QWidget):
               #remove all elements from QTableWidget
               self.connectionTable.setRowCount(0)
               #for every connection add connection display it
-              self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()),False)
+              self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()))
               #resize columns to contens
               self.setConnectionLabel()
 
-    def addAllConnections(self,connections):
+    def addConnections(self,connections):
+        #add all connections to table      
         for c in connections:
               self.addConnectionToTable(c)
-
-    def addFilteredConnections(self,connections):
-        for c in connectins:
-              #check fiter:
-              self.addConnectionToTable(c)
-    def addConnections(self,connections,isFilterActive=False):
-        if isFilterActive:
-              #To-Do:
-              #instanciate Filter and call method that filters and adds
-              print("not supported yet")
-        else:
-              self.addAllConnections(connections)
-             
+        #displayed connections shall be filtered
+        if self.filterActive:
+                #create Filter
+                self.TypeFilter=Filter(True,False,True,False,False)
+                #all Indices of original connections that shall be displayed
+                displayIndex=self.TypeFilter.filter(connections)
+                #for each index in the list
+                for ind in displayIndex:
+                        #display corresponding row
+                        self.connectionTable.setRowHidden(ind,False)
 
     #sets the connection label to string repr. of the first displayed connection
     def setConnectionLabel(self):
@@ -315,6 +315,9 @@ class FormWidget(qw.QWidget):
         self.connectionTable.insertRow(self.connectionTable.rowCount())
         #select last row of QTableWidget
         row=self.connectionTable.rowCount()-1
+        #for active filter hide everything on default 
+        if self.filterActive:
+                self.connectionTable.setRowHidden(row,True)
         #add name of connection
         self.connectionTable.setItem(row,QConnectionTable.name_Index,qw.QTableWidgetItem(con.name))
         #check if direction and origin are valid and add them
@@ -330,9 +333,6 @@ class FormWidget(qw.QWidget):
         #if track is set add track of connection
         if con.track:
                 self.connectionTable.setItem(row,QConnectionTable.track_Index,qw.QTableWidgetItem(con.track))
-        #this can be used for filtering
-        #if con.type=="ICE" or "ICE" in con.name:
-        #        self.connectionTable.setRowHidden(row,True)
 
     #adds a stop to QTableWidget details
     def addStopToDetails(self,stop):
