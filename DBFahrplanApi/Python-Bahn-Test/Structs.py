@@ -92,5 +92,38 @@ class Coordinate:
 
     def __init__(self,lon,lat):
         self.lon=lon
-        self.lat=lat 
-            
+        self.lat=lat
+
+class Filter:
+
+    def __init__(self):
+         self.test="1"
+
+    def filter(con):
+        return True
+
+class ConnectionsList:
+
+    def __init__(self):
+        self.connectionPages=[]
+        self.displayedIndex=-1
+        self.displayedDetailedIndex=(-1,-1)
+
+    def getSingleConnection(self,pageIndex,conIndexOnPage):
+        return self.connectionPages[pageIndex][conIndexOnPage]
+    def getStop(self,pageIndex,conIndexOnPage,row):
+        return self.connectionPages[pageIndex][conIndexOnPage].stopList[row]
+    def getConnectionPage(self,pageIndex):
+        return self.connectionPages[pageIndex]
+    def getPageCount(self):
+        return len(self.connectionPages)
+    def appendPage(self,connections):
+        self.connectionPages.append(connections)
+    def getDetailsIndices(self):
+        return self.displayedDetailedIndex
+    def getDisplayedIndex(self):
+        return self.displayedIndex
+    def setDisplayedIndex(self,val):
+        self.displayedIndex=val
+    def setDisplayedDetailedIndex(self,pageIndex,row):
+        self.displayedDetailedIndex=(pageIndex,row)

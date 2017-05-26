@@ -8,6 +8,7 @@ from PyQt5 import QtWidgets as qw
 
 from Structs import Connection
 from Structs import Stop
+from Structs import ConnectionsList
 from Widgets import QConnectionTable
 from Widgets import QDetailsTable
 from Widgets import QMapWidget
@@ -34,9 +35,7 @@ class FormWidget(qw.QWidget):
         self.setWindowTitle("Fahrplanzeige")
         self.errorMsg="Keine Information  vorhanden"
         self.stationId=[]
-        self.connectionPages=[]
-        self.displayedIndex=-1
-        self.displayedDetailedIndex=(-1,-1)
+        self.conList=ConnectionsList()
         self.defaultMapSize=300
         self.mapSizeMin=300
         self.mapSizeMax=800
@@ -195,9 +194,9 @@ class FormWidget(qw.QWidget):
         #get selected Row in connection details
         row=self.detailsTable.currentRow()
         #get the displayedIndex Information
-        (pageIndex,connectionIndexOnPage)=self.displayedIndexDetails
+        (pageIndex,connectionIndexOnPage)=self.conList.getDetailsIndices()
         #select the clicked stop from the displayed Connection (Details)
-        s=self.connectionPages[pageIndex][connectionIndexOnPage].stopList[row]
+        s=self.conList.getStop(pageIndex,connectionIndexOnPage,row)
         #default use arrival Date and Time
         date=s.arrDate
         time=s.arrTime
@@ -215,7 +214,7 @@ class FormWidget(qw.QWidget):
         #get the selected Index
         index=self.connectionTable.currentRow()
         #get the connection according to the index
-        connection=self.connectionPages[self.displayedIndex][index]
+        connection=self.conList.getSingleConnection(self.conList.getDisplayedIndex(),index)
         #if stopList is empty request details information
         if  connection.stopList==[]:
               #get reference link of connection
@@ -242,7 +241,7 @@ class FormWidget(qw.QWidget):
                         markerIndex=i
         #set details_label text to connection information
         self.details_label.setText(connection.toStringDetails())
-        self.displayedIndexDetails=(self.displayedIndex,index)
+        self.conList.setDisplayedDetailedIndex(self.conList.getDisplayedIndex(),index)
 
         #check if imageData is empty and if map is selected   
         if connection.imageData.isEmpty() and self.mapActive.isChecked():
@@ -268,32 +267,47 @@ class FormWidget(qw.QWidget):
     def showPreviousPage(self):
         #on first page do nothing
         #else go one page back and display
-        if self.displayedIndex>0:
-              self.displayedIndex=self.displayedIndex-1
+        if self.conList.getDisplayedIndex()>0:
+              self.conList.setDisplayedIndex(self.conList.getDisplayedIndex()-1)
               #remove old elements from QTableWidget
               self.connectionTable.setRowCount(0)
               #for every connection add connection display it
-              for c in self.connectionPages[self.displayedIndex]:
-                   self.addConnectionToTable(c)
+              self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()),False)
               self.setConnectionLabel()      
 
     #next navigation
     def showNextPage(self):
         #on last page do nothing
         #else go one page forward and display
-        if self.displayedIndex<len(self.connectionPages)-1:
-              self.displayedIndex=self.displayedIndex+1
+        if self.conList.getDisplayedIndex()<self.conList.getPageCount()-1:
+              self.conList.setDisplayedIndex(self.conList.getDisplayedIndex()+1)
               #remove all elements from QTableWidget
               self.connectionTable.setRowCount(0)
               #for every connection add connection display it
-              for c in self.connectionPages[self.displayedIndex]:
-                   self.addConnectionToTable(c)
+              self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()),False)
               #resize columns to contens
               self.setConnectionLabel()
 
+    def addAllConnections(self,connections):
+        for c in connections:
+              self.addConnectionToTable(c)
+
+    def addFilteredConnections(self,connections):
+        for c in connectins:
+              #check fiter:
+              self.addConnectionToTable(c)
+    def addConnections(self,connections,isFilterActive=False):
+        if isFilterActive:
+              #To-Do:
+              #instanciate Filter and call method that filters and adds
+              print("not supported yet")
+        else:
+              self.addAllConnections(connections)
+             
+
     #sets the connection label to string repr. of the first displayed connection
     def setConnectionLabel(self):
-        self.connection_label.setText(self.connectionPages[self.displayedIndex][0].toStringGenerall())
+        self.connection_label.setText(self.conList.getSingleConnection(self.conList.getDisplayedIndex(),0).toStringGenerall())
 
     #adds a connection to QTableWidget
     def addConnectionToTable(self,con):
@@ -316,6 +330,9 @@ class FormWidget(qw.QWidget):
         #if track is set add track of connection
         if con.track:
                 self.connectionTable.setItem(row,QConnectionTable.track_Index,qw.QTableWidgetItem(con.track))
+        #this can be used for filtering
+        #if con.type=="ICE" or "ICE" in con.name:
+        #        self.connectionTable.setRowHidden(row,True)
 
     #adds a stop to QTableWidget details
     def addStopToDetails(self,stop):
@@ -377,9 +394,9 @@ class FormWidget(qw.QWidget):
     #
     def getConnectionsWithShiftedTime(self,shift,numbersOfHoursShifted=3):
         #something has to be displayed at the moment or nothing can be read from table
-        if self.displayedIndex>-1:
+        if self.conList.getDisplayedIndex()>-1:
                 #get the first connection
-                con=self.connectionPages[self.displayedIndex][0]
+                con=self.conList.getSingleConnection(self.conList.getDisplayedIndex(),0)
                 #get id, date and time
                 identifier=con.stopid
                 date=con.date
@@ -440,17 +457,15 @@ class FormWidget(qw.QWidget):
                 #check if something was actually found 
                 if connections==[]:
                         #if not set index to last entry of pages so this page can never be reached again
-                        self.displayedIndex=len(self.connectionPages)-1
+                        self.conList.setDisplayedIndex(self.conList.getPageCount()-1)
                         #set connection label to error Message
                         self.connection_label.setText(self.errorMsg)
                 else:
-                        #for every connection add connection display it
-                        for c in connections:
-                                self.addConnectionToTable(c)
+                        self.addConnections(connections)
                         #Add list of connections to pages
-                        self.connectionPages.append(connections)
+                        self.conList.appendPage(connections)
                         #set index to last entry of pages
-                        self.displayedIndex=len(self.connectionPages)-1
+                        self.conList.setDisplayedIndex(self.conList.getPageCount()-1)
                         #set connection label
                         self.setConnectionLabel()
             else:
