@@ -97,11 +97,10 @@ class Coordinate:
 class Filter:
     
     #member variables are true if this type should be included
-    def __init__(self,ICE,IC,EC,TGV,other):
+    def __init__(self,ICE,IC,EC,other):
         self.ICE=ICE
         self.IC=IC
         self.EC=EC
-        self.TGV=TGV
         self.other=other
         
     def filterICE(self,con):
@@ -121,13 +120,11 @@ class Filter:
         for con in connections:
                 selected=False
                 if self.ICE:
-                        selected=self.filterICE(con)
+                        selected=self.filterICE(con) or self.filterTGV(con)
                 if self.IC:
                         selected=selected or self.filterIC(con)
                 if self.EC:
                         selected=selected or self.filterEC(con)
-                if self.TGV:
-                        selected=selected or self.filterTGV(con)
                 if self.other:
                         selected=selected or self.filterOther(con)
                 res.append(selected)

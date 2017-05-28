@@ -98,6 +98,18 @@ class FormWidget(qw.QWidget):
         self.arriv.setCheckable(True)
         self.depart.setChecked(True)
         
+        self.checkFilter=qw.QCheckBox(" Filter ")
+        filterLayout=qw.QHBoxLayout()
+        filterLayout.addWidget(self.checkFilter)
+        self.checkICE=qw.QCheckBox(" ICE/TGV ")
+        self.checkIC=qw.QCheckBox(" IC ")
+        self.checkEC=qw.QCheckBox(" EC ")
+        self.checkOther=qw.QCheckBox(" other ")
+        filterLayout.addWidget(self.checkICE)
+        filterLayout.addWidget(self.checkIC)
+        filterLayout.addWidget(self.checkEC)
+        filterLayout.addWidget(self.checkOther)
+        
         self.mapActive=qw.QCheckBox(" Karte ")
         mapLayout=qw.QHBoxLayout()
         mapLayout.addWidget(self.mapActive)
@@ -133,6 +145,7 @@ class FormWidget(qw.QWidget):
         box1.addLayout(input2_layout)
         box1.addWidget(self.date_chooser)
         box1.addLayout(radioButton_layout)
+        box1.addLayout(filterLayout)
         box1.addLayout(mapLayout)
         box1.addLayout(requestEarlierLater_layout)
         box1.addLayout(request_layout)
@@ -150,6 +163,9 @@ class FormWidget(qw.QWidget):
         #button for navigating
         self.prev=qw.QPushButton("Vorherige")
         self.prev.clicked.connect(self.showPreviousPage)
+        #button for refreshing the page using new filter
+        self.reload=qw.QPushButton("Aktualisieren")
+        self.reload.clicked.connect(self.refreshPage)
         #button for navigating
         self.next=qw.QPushButton("Nächste")
         self.next.clicked.connect(self.showNextPage)
@@ -158,6 +174,7 @@ class FormWidget(qw.QWidget):
         navigation_layout=qw.QHBoxLayout()
         #add buttons to navigation layout        
         navigation_layout.addWidget(self.prev)
+        navigation_layout.addWidget(self.reload)
         navigation_layout.addWidget(self.next)
          
         #add widgets and layouts to layout for middle part
@@ -277,6 +294,10 @@ class FormWidget(qw.QWidget):
               self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()))
               self.setConnectionLabel()      
 
+    def refreshPage(self):
+        self.connectionTable.setRowCount(0)
+        self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()))
+        
     #next navigation
     def showNextPage(self):
         #on last page do nothing
@@ -291,15 +312,23 @@ class FormWidget(qw.QWidget):
               self.setConnectionLabel()
 
     def addConnections(self,connections):
-        #add all connections to table      
+        self.filterActive=self.checkFilter.isChecked()
+        ICE=self.checkICE.isChecked()
+        IC=self.checkIC.isChecked()
+        EC=self.checkEC.isChecked()
+        Other=self.checkOther.isChecked()
+        #minimum one filter type must be selected
+        if ICE or IC or EC or Other:
+                self.typeFilter=Filter(ICE,IC,EC,Other)
+        else:
+                self.filterActive=False
+        #add all connections to table
         for c in connections:
               self.addConnectionToTable(c)
         #displayed connections shall be filtered
         if self.filterActive:
-                #create Filter
-                self.TypeFilter=Filter(True,False,True,False,False)
                 #all Indices of original connections that shall be displayed
-                displayIndex=self.TypeFilter.filter(connections)
+                displayIndex=self.typeFilter.filter(connections)
                 #for each index in the list
                 for ind in displayIndex:
                         #display corresponding row
