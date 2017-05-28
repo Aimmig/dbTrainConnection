@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
+
 import urllib.request as url_req
 import urllib.error as err
+import urllib.parse as parse
 from PyQt5 import QtCore as qc
 
 KEY="DBhackFrankfurt0316"
@@ -87,7 +90,7 @@ def createConnectionRequestURL(date,time,identifier,isDeparture):
 
 #creates the URL for requesting Stations
 def createStationRequestURL(loc):
-        return DB_BASE_URL+"location.name?authKey="+KEY+"&lang="+LANGUAGE+"&input="+loc
+        return DB_BASE_URL+"location.name?authKey="+KEY+"&lang="+LANGUAGE+"&input="+parse.quote(loc.replace(" ",""))
 
 #creates URL  for requesting the map with path of given locations and lat lon for marker
 def createMapURL(coordinates,markerIndex,mapWidth,mapHeight):
