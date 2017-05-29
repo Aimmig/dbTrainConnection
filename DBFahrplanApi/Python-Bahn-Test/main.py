@@ -33,7 +33,6 @@ class FormWidget(qw.QWidget):
         
         #set some properties
         self.setAutoFillBackground(True)
-        self.setWindowTitle("Fahrplanzeige")
         self.errorMsg="Keine Information  vorhanden"
         self.stationId=[]
         self.conList=ConnectionsList()
@@ -500,7 +499,11 @@ class FormWidget(qw.QWidget):
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
         formwidget=FormWidget()
-        formwidget.move(start_x_pos,start_y_pos)
-        formwidget.show()
+        #formwidget.move(start_x_pos,start_y_pos)
+        #formwidget.show()
+        mainWindow=qw.QMainWindow()
+        mainWindow.setCentralWidget(formwidget)
+        mainWindow.setWindowTitle("Fahrplanzeige")
+        mainWindow.show()
         sys.exit(app.exec_())
 

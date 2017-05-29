@@ -1,6 +1,6 @@
 #To-Do Stuff:
 
--If possible make colums resizable and auto-streched on resize.
--Clean up filtering method in Filter, a.t.m very cluttered !!
+-If possible make colums resizable and auto-streched on resize
+-Integrate widget into QMainWindow and maybe move some options to QMenuBar
 -Translate all Gui elements to English or German
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
