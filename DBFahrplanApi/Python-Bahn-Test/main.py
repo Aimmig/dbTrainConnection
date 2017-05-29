@@ -102,12 +102,10 @@ class FormWidget(qw.QWidget):
         filterLayout=qw.QHBoxLayout()
         filterLayout.addWidget(self.checkFilter)
         self.checkICE=qw.QCheckBox(" ICE/TGV ")
-        self.checkIC=qw.QCheckBox(" IC ")
-        self.checkEC=qw.QCheckBox(" EC ")
+        self.checkIC=qw.QCheckBox(" IC/EC ")
         self.checkOther=qw.QCheckBox(" other ")
         filterLayout.addWidget(self.checkICE)
         filterLayout.addWidget(self.checkIC)
-        filterLayout.addWidget(self.checkEC)
         filterLayout.addWidget(self.checkOther)
         
         self.mapActive=qw.QCheckBox(" Karte ")
@@ -315,11 +313,10 @@ class FormWidget(qw.QWidget):
         self.filterActive=self.checkFilter.isChecked()
         ICE=self.checkICE.isChecked()
         IC=self.checkIC.isChecked()
-        EC=self.checkEC.isChecked()
         Other=self.checkOther.isChecked()
         #minimum one filter type must be selected
-        if ICE or IC or EC or Other:
-                self.typeFilter=Filter(ICE,IC,EC,Other)
+        if ICE or IC or Other:
+                self.typeFilter=Filter(ICE,IC,Other)
         else:
                 self.filterActive=False
         #add all connections to table

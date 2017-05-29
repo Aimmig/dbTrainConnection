@@ -97,10 +97,9 @@ class Coordinate:
 class Filter:
     
     #member variables are true if this type should be included
-    def __init__(self,ICE,IC,EC,other):
+    def __init__(self,ICE,IC,other):
         self.ICE=ICE
         self.IC=IC
-        self.EC=EC
         self.other=other
         
     def filterICE(self,con):
@@ -117,31 +116,17 @@ class Filter:
     #this method needs clean-up !!! can be simplified and not cluttered
     def filter(self,connections):
         res=[]
-        for con in connections:
+        for i in range(len(connections)):
                 selected=False
                 if self.ICE:
-                        selected=self.filterICE(con) or self.filterTGV(con)
+                        selected=self.filterICE(connections[i]) or self.filterTGV(connections[i])
                 if self.IC:
-                        selected=selected or self.filterIC(con)
-                if self.EC:
-                        selected=selected or self.filterEC(con)
+                        selected=selected or self.filterIC(connections[i]) or self.filterEC(connections[i])
                 if self.other:
-                        selected=selected or self.filterOther(con)
-                res.append(selected)
-        res=list(enumerate(res))
-        filterResult=[]
-        for i in range(len(res)):
-               filterResult.append(((res[i][0],i),res[i][1]))
-        for i in range(len(filterResult)):
-              if not filterResult[i][1]:
-                    for j in range(i+1,len(filterResult)):
-                        filterResult[j]=((filterResult[j][0][0]-1,filterResult[j][0][1]),filterResult[j][1])
-        indexOrder=[]
-        for tup in filterResult:
-               if tup[1]:
-                        indexOrder.append(tup[0][1])
-        return indexOrder             
-
+                        selected=selected or self.filterOther(connections[i])
+                if selected:
+                        res.append(i)
+        return res
 
 class ConnectionsList:
 
