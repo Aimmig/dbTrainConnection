@@ -22,13 +22,23 @@ class FormWidget(qw.QWidget):
 
         #super constructor
         super(FormWidget,self).__init__()
+        self.setWindowTitle("Fahrplananzeige")
+        self.myQMenuBar=qw.QMenuBar(self)
+        settingsMenu=self.myQMenuBar.addMenu('Einstellung')
+        mapSizeAction=qw.QAction('Ändern',self)
+        mapSizeAction.triggered.connect(self.showSettings)
+        settingsMenu.addAction(mapSizeAction)
+        exitMenu=self.myQMenuBar.addMenu('Anwendung')
+        exitAction=qw.QAction('Beenden',self)
+        exitAction.triggered.connect(qw.qApp.quit)
+        exitMenu.addAction(exitAction)
+        self.myQMenuBar.show()
         
         #set some properties
         self.setAutoFillBackground(True)
         self.errorMsg="Keine Information  vorhanden"
         self.stationId=[]
         self.conList=ConnectionsList()
-        self.defaultMapSize=300
         self.mapSizeMin=300
         self.mapSizeMax=800
         self.minTimeOffset=1
@@ -99,18 +109,9 @@ class FormWidget(qw.QWidget):
         filterLayout.addWidget(self.checkIC)
         filterLayout.addWidget(self.checkOther)
         
-        self.mapActive=qw.QCheckBox(" Karte ")
+        self.mapActive=qw.QCheckBox(" Karte anzeigen ")
         mapLayout=qw.QHBoxLayout()
         mapLayout.addWidget(self.mapActive)
-        val=qg.QIntValidator(self.mapSizeMin,self.mapSizeMax)
-        self.mapWidth=qw.QLineEdit()
-        self.mapHeight=qw.QLineEdit()
-        self.mapWidth.setValidator(val)
-        self.mapHeight.setValidator(val)
-        mapLayout.addWidget(qw.QLabel(" Breite: "))
-        mapLayout.addWidget(self.mapWidth)
-        mapLayout.addWidget(qw.QLabel(" Höhe: "))
-        mapLayout.addWidget(self.mapHeight)
                 
         #create buttons for getting connections earlier/later and group them
         requestEarlierLater_layout=qw.QHBoxLayout()
@@ -118,14 +119,8 @@ class FormWidget(qw.QWidget):
         self.later=qw.QPushButton("Später")
         self.later.clicked.connect(self.getConnectionsLater)
         self.earlier.clicked.connect(self.getConnectionsEarlier)
-        self.offsetField=qw.QLineEdit("3")
-        val=qg.QIntValidator(self.minTimeOffset,self.maxTimeOffset)
-        self.offsetField.setValidator(val)
-        self.offsetField.setMaximumWidth(50)
-        label=qw.QLabel(" Stunden ")
-        label.setMaximumWidth(60)
-        requestEarlierLater_layout.addWidget(self.offsetField)
-        requestEarlierLater_layout.addWidget(label)
+        #requestEarlierLater_layout.addWidget(self.offsetField)
+        #requestEarlierLater_layout.addWidget(label)
         requestEarlierLater_layout.addWidget(self.earlier)
         requestEarlierLater_layout.addWidget(self.later)
         
@@ -197,6 +192,8 @@ class FormWidget(qw.QWidget):
         #initalize Widget for map
         self.mapWidget=QMapWidget()
         
+        self.settings=SettingsWidget()
+        
     #called on click of detailsTable
     def getConnectionsOnClickInDetails(self):
         #get selected Row in connection details
@@ -215,6 +212,10 @@ class FormWidget(qw.QWidget):
         identifier=s.id
         #request information and display it
         self.getConnections(date,time,identifier,True)
+
+    def showSettings(self):
+              self.settings.update()
+              
         
     #called on click of connectionTable
     #request connection details if needed and displays them  
@@ -253,18 +254,8 @@ class FormWidget(qw.QWidget):
 
         #check if imageData is empty and if map is selected   
         if connection.imageData.isEmpty() and self.mapActive.isChecked():
-                #try to convert desired height and with to int
-                try:
-                        height=int(self.mapHeight.text())
-                        width=int(self.mapWidth.text())
-                #on error use default values               
-                except ValueError:
-                        height=self.defaultMapSize
-                        width=self.defaultMapSize
-                #size to small use default size
-                if height<self.defaultMapSize or width<self.defaultMapSize:
-                        height=self.defaultMapSize
-                        width=self.defaultMapSize
+                width=self.settings.width
+                height=self.settings.height
                 #request imageData and create QByteArray and set imageData
                 connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates,markerIndex,width,height))
         #display requested map-Data
@@ -394,18 +385,12 @@ class FormWidget(qw.QWidget):
 
     #ealier means subtract hours
     def getConnectionsEarlier(self):
-        try:
-                hourShift=int(self.offsetField.text())
-        except ValueError:
-                return
+        hourShift=self.settings.offset
         self.getConnectionsWithShiftedTime(-1,hourShift)
 
     #later means add hours
     def getConnectionsLater(self):
-        try:
-                hourShift=int(self.offsetField.text())
-        except ValueError:
-                return
+        hourShift=self.settings.offset
         self.getConnectionsWithShiftedTime(1,hourShift)
 
     #
@@ -486,5 +471,75 @@ class FormWidget(qw.QWidget):
                         #set connection label
                         self.setConnectionLabel()
             else:
-                self.connection_label.setText(self.errorMsg) 
+                self.connection_label.setText(self.errorMsg)
 
+class SettingsWidget(qw.QWidget):
+        mapSizeMin=300
+        mapSizeMax=800
+        minTimeOffSet=1
+        maxTimeOffSet=24
+        defaultSize=500
+        defaultOffSet=3
+        
+        def __init__(self):
+                super(SettingsWidget,self).__init__()
+                self.setWindowTitle("Einstellungen ändern")
+                
+                layout=qw.QVBoxLayout()
+                
+                self.width=SettingsWidget.defaultSize
+                self.height=SettingsWidget.defaultSize
+                self.offset=SettingsWidget.defaultOffSet
+
+                mapLayout=qw.QHBoxLayout()
+                val=qg.QIntValidator(SettingsWidget.mapSizeMin,SettingsWidget.mapSizeMax)
+                self.mapWidth=qw.QLineEdit(str(SettingsWidget.defaultSize))
+                self.mapHeight=qw.QLineEdit(str(SettingsWidget.defaultSize))
+                self.mapWidth.setValidator(val)
+                self.mapHeight.setValidator(val)
+                
+                mapLayout.addWidget(qw.QLabel(" Breite: "))
+                mapLayout.addWidget(self.mapWidth)
+                mapLayout.addWidget(qw.QLabel(" Höhe: "))
+                mapLayout.addWidget(self.mapHeight)
+                
+                self.offsetField=qw.QLineEdit(str(SettingsWidget.defaultOffSet))
+                val=qg.QIntValidator(self.minTimeOffSet,self.maxTimeOffSet)
+                self.offsetField.setValidator(val)
+                self.offsetField.setMaximumWidth(50)
+                label=qw.QLabel(" Stunden ")
+                label.setMaximumWidth(60)
+                self.save=qw.QPushButton("Übernehmen")
+                self.save.clicked.connect(self.saveInput)
+                
+                layout1=qw.QHBoxLayout()
+                layout1.addWidget(label)
+                layout1.addWidget(self.offsetField)
+                layout1.addWidget(self.save)
+                
+                layout.addLayout(mapLayout)
+                layout.addLayout(layout1)
+                self.setLayout(layout)
+
+        def saveInput(self):
+                #try to convert desired height and with to int
+                try:
+                        self.height=int(self.mapHeight.text())
+                        self.width=int(self.mapWidth.text())
+                #on error use default values               
+                except ValueError:
+                        self.height=SettingsWidget.defaultSize
+                        self.width=SettingsWidget.defaultSize
+                #size to small use default size
+                if self.height<SettingsWidget.defaultSize or self.width<SettingsWidget.defaultSize:
+                        height=self.defaultSize
+                        width=self.defaultSize
+                try:
+                        self.offset=int(self.offsetField.text())
+                except ValueError:
+                        self.offset=SettingsWidget.defaultOffSet
+        def update(self):
+                self.mapHeight.setText(str(self.height))
+                self.mapWidth.setText(str(self.width))
+                self.offsetField.setText(str(self.offset))
+                self.show() 
