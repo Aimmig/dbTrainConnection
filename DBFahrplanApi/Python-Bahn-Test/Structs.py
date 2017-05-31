@@ -89,12 +89,15 @@ class Stop:
     def depTimeToString(self):
         return self.depTime.toString(Stop.timeFormat)
 
+#just for encapsulation of longituted, latitude
 class Coordinate:
 
+    #construct coordinate with longituted, latitude
     def __init__(self,lon,lat):
         self.lon=lon
         self.lat=lat
 
+#class for filtering connections based on train type
 class Filter:
     
     #member variables are true if this type should be included
@@ -103,109 +106,150 @@ class Filter:
         self.IC=IC
         self.other=other
     
+    #static method for filtering trainType ICE
     @staticmethod
     def filterICE(con):
         return con.type=="ICE" or "ICE" in con.name 
     
+    #static method for filtering trainType IC
     @staticmethod
     def filterIC(con):
         return con.type==("IC" or "IC" in con.name) and not Filter.filterICE(con)
     
+    #static method for filtering trainType EC
     @staticmethod
     def filterEC(con):
         return con.type=="EC" or "EC" in con.name
 
+    #static method for filtering trainType TGV
     @staticmethod
     def filterTGV(con):
         return con.type=="TGV" or "TGV" in con.name
-
+    
+    ##static method for filtering all other train types
     @staticmethod 
     def filterOther(con):
+        #connection has train type other if it does not have an above stated train type
         return not(Filter.filterICE(con) or Filter.filterIC(con) or Filter.filterEC(con) or Filter.filterTGV(con))
         
-    #this method needs clean-up !!! can be simplified and not cluttered
+    #filters list of connection based on set train types
+    #returns list of originall indices of all train that pass the filter
     def filter(self,connections):
         res=[]
+        #iterate over all connections in list
         for i in range(len(connections)):
+                #initialy train is not selected
                 selected=False
+                #for each selected filter type check if connection has this type
                 if self.ICE:
                         selected=Filter.filterICE(connections[i]) or Filter.filterTGV(connections[i])
                 if self.IC:
                         selected=selected or Filter.filterIC(connections[i]) or Filter.filterEC(connections[i])
                 if self.other:
                         selected=selected or Filter.filterOther(connections[i])
+                #connection pases filter
                 if selected:
+                        #add index of connection to list
                         res.append(i)
+        #return list of indices
         return res
 
+#class to encapsulate connection data structure and managa indices
 class ConnectionsList:
 
+    #construct ConnectionList
     def __init__(self):
+        #no information at construction
         self.connectionPages=[]
+        #thus indices -1
         self.displayedIndex=-1
         self.displayedDetailedIndex=(-1,-1)
 
+    #returns the single connection with given index on given page
     def getSingleConnection(self,pageIndex,conIndexOnPage):
         return self.connectionPages[pageIndex][conIndexOnPage]
 
-    def getStop(self,pageIndex,conIndexOnPage,row):
-        return self.connectionPages[pageIndex][conIndexOnPage].stopList[row]
+    #returns the i-th stop of the single connection with given index on given Page
+    def getStop(self,pageIndex,conIndexOnPage,i):
+        return self.getSingleConnection(pageIndex,conIndexOnPage).stopList[i]
 
+    #returns the connectionList (page) with given Index
     def getConnectionPage(self,pageIndex):
         return self.connectionPages[pageIndex]
-
+        
+    #returns the amount of pages
     def getPageCount(self):
         return len(self.connectionPages)
-
+     
+    #appends connections as page
     def appendPage(self,connections):
         self.connectionPages.append(connections)
 
+    #returns DetailsIndices
     def getDetailsIndices(self):
         return self.displayedDetailedIndex
 
+    #returns DisplayedIndex
     def getDisplayedIndex(self):
         return self.displayedIndex
-
+    
+    #sets Displayed index to given value
     def setDisplayedIndex(self,val):
         self.displayedIndex=val
-
+      
+    #sets DetailIndices to pageIndex and row
     def setDisplayedDetailedIndex(self,pageIndex,row):
         self.displayedDetailedIndex=(pageIndex,row)
-        
+
+#class that encapsulate all important settings for requesting
+#like mapOptions and offset        
 class RequestSettings:
 
+    #static settings that can not be changed (at the moment)
     MARKER_SIZE='small'
     MARKER_SIZE_SPECIAL='mid'
     PATH_SIZE='3'
     MARKER_COLOR_SPECIAL=qg.QColor('#aa339988')
 
+    #initialize changeable settings with default Values
     def __init__(self,defaultSize,defaultOffSet):
         self.PATH_COLOR=qg.QColor('#ff0000')
         self.MARKER_COLOR=qg.QColor('#5555BB')
         self.height=defaultSize
         self.width=defaultSize
         self.offSet=defaultOffSet
-        
+    
+    #retunrs string repr. of PathColor that can be used in urls
     def formatPathColor(self):
         return self.PATH_COLOR.name().replace('#','0x')
     
-    def formatSpecialColor(self):
-        return RequestSettings.MARKER_COLOR_SPECIAL.name().replace('#','0x')
-    
+    #retunrs string repr. of MarkerColor that can be used in urls
     def formatColor(self):
         return self.MARKER_COLOR.name().replace('#','0x')
 
+    #retunrs string repr. of MarkerColorSpecial that can be used in urls
+    def formatSpecialColor(self):
+        return RequestSettings.MARKER_COLOR_SPECIAL.name().replace('#','0x')
+    
+    #set MarkerColor to given color
     def setMarkerColor(self,col):
         self.MARKER_COLOR=col
 
+    #set PathColor to given color
     def setPathColor(self,col):
         self.PATH_COLOR=col
     
+    #set height to given value
     def setHeight(self,h):
         self.height=h
 
+    #set width to given value
     def setWidth(self,w):
         self.width=w
 
+    #set offset to given value
     def setOffSet(self,s):
+        #do not set invalid offsets
+        if s<=0:
+                return
         self.offSet=s
