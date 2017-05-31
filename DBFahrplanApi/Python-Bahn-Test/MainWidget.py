@@ -11,6 +11,7 @@ from Widgets import QConnectionTable
 from Widgets import QDetailsTable
 from Widgets import QMapWidget
 from Request import Request as req
+from SettingsWidget import SettingsWidget
 #import class for parsing xml-String
 import XMLParser as parser
 
@@ -22,34 +23,88 @@ class FormWidget(qw.QWidget):
 
         #super constructor
         super(FormWidget,self).__init__()
-        self.setWindowTitle("Fahrplananzeige")
-        self.myQMenuBar=qw.QMenuBar(self)
-        settingsMenu=self.myQMenuBar.addMenu('Einstellung')
-        mapSizeAction=qw.QAction('Ändern',self)
-        mapSizeAction.triggered.connect(self.showSettings)
-        settingsMenu.addAction(mapSizeAction)
-        exitMenu=self.myQMenuBar.addMenu('Anwendung')
-        exitAction=qw.QAction('Beenden',self)
-        exitAction.triggered.connect(qw.qApp.quit)
-        exitMenu.addAction(exitAction)
-        self.myQMenuBar.show()
         
-        #set some properties
-        self.setAutoFillBackground(True)
+        #create MenuBars
+        self.initializeMenuBar()
+                
+        #set Window Title
+        self.setWindowTitle("Fahrplananzeige")
+        #set default error Message
         self.errorMsg="Keine Information  vorhanden"
+        #create empty list for station Ids
         self.stationId=[]
+        #initialize ConnectionList
         self.conList=ConnectionsList()
-        self.mapSizeMin=300
-        self.mapSizeMax=800
-        self.minTimeOffset=1
-        self.maxTimeOffset=24
+        #set filter to active
         self.filterActive=True
+        #initalize Widget for map
+        self.mapWidget=QMapWidget()
+        #initialize SettingsWidget
+        self.settingsWidget=SettingsWidget()
 
-        #overall layout for gui 
+        #create HorizontalBoxLayout as overall Widget layout
         layout=qw.QHBoxLayout()
 
-        #layout for left part of gui
-        box1=qw.QVBoxLayout()
+        #intialize three main layout parts
+        box1=self.initializeUserInputLayout()
+        box2=self.initializeConnectionTableLayout()
+        box3=self.initializeDetailsTableLayout()
+        
+        #add all layouts to form-Layout
+        layout.addLayout(box1)
+        layout.addLayout(box2)
+        layout.addLayout(box3)
+        
+        #set formLayout
+        self.setLayout(layout)
+
+    #initializes MenuBar
+    def initializeMenuBar(self):
+
+        #create MenuBar with self as parent
+        self.myQMenuBar=qw.QMenuBar(self)
+        
+        #create Menu for changing settings
+        settingsMenu=self.myQMenuBar.addMenu('Einstellung')
+        #Create Action for changing settings
+        settingsAction=qw.QAction('Ändern',self)
+        #connect Action with method
+        settingsAction.triggered.connect(self.showSettingsWidget)
+        #add Action to Menu
+        settingsMenu.addAction(settingsAction)
+        
+        #create Menu for changing Colors
+        colorMenu=self.myQMenuBar.addMenu('Farben')
+        #create Action for changing Path color
+        colorPathAction=qw.QAction('Pfad-Farbe ändern',self)
+        #connect Action with method
+        colorPathAction.triggered.connect(self.changePathColor)
+        #add Action to Menu
+        colorMenu.addAction(colorPathAction)
+        #create Action for changing Marker Color
+        colorMarkerAction=qw.QAction('Marker-Farbe ändern',self)
+        #connect Action with method
+        colorMarkerAction.triggered.connect(self.changeMarkerColor)
+        #add Action to Menu
+        colorMenu.addAction(colorMarkerAction)     
+        
+        #create Menu for application
+        exitMenu=self.myQMenuBar.addMenu('Anwendung')
+        #create Action for closing application
+        exitAction=qw.QAction('Beenden',self)
+        #connect Action with method
+        exitAction.triggered.connect(qw.qApp.quit)
+        #add Action to Menu
+        exitMenu.addAction(exitAction)
+        
+        #show MenuBar
+        self.myQMenuBar.show()
+
+    #initializes layout for userInput on gui, adds these Widgets to layout
+    def initializeUserInputLayout(self):
+
+        #create VerticalBoxLayouts
+        layout=qw.QVBoxLayout()
 
         #input field for user input
         self.inp=qw.QLineEdit()
@@ -99,18 +154,25 @@ class FormWidget(qw.QWidget):
         self.arriv.setCheckable(True)
         self.depart.setChecked(True)
         
-        self.checkFilter=qw.QCheckBox(" Filter ")
+        #create Horizontal Layout for filtering
         filterLayout=qw.QHBoxLayout()
-        filterLayout.addWidget(self.checkFilter)
+        #create CheckBoxes for activating Filtering
+        self.checkFilter=qw.QCheckBox(" Filter ")
+        #create CheckBoxes for choosing filters
         self.checkICE=qw.QCheckBox(" ICE/TGV ")
         self.checkIC=qw.QCheckBox(" IC/EC ")
         self.checkOther=qw.QCheckBox(" other ")
+        #add checkboxes to filterLayout
+        filterLayout.addWidget(self.checkFilter)
         filterLayout.addWidget(self.checkICE)
         filterLayout.addWidget(self.checkIC)
         filterLayout.addWidget(self.checkOther)
         
-        self.mapActive=qw.QCheckBox(" Karte anzeigen ")
+        #create Layout for activating map
         mapLayout=qw.QHBoxLayout()
+        #create CheckBox for en/disabling map
+        self.mapActive=qw.QCheckBox(" Karte anzeigen ")
+        #add checkbox to layout
         mapLayout.addWidget(self.mapActive)
                 
         #create buttons for getting connections earlier/later and group them
@@ -119,23 +181,25 @@ class FormWidget(qw.QWidget):
         self.later=qw.QPushButton("Später")
         self.later.clicked.connect(self.getConnectionsLater)
         self.earlier.clicked.connect(self.getConnectionsEarlier)
-        #requestEarlierLater_layout.addWidget(self.offsetField)
-        #requestEarlierLater_layout.addWidget(label)
         requestEarlierLater_layout.addWidget(self.earlier)
         requestEarlierLater_layout.addWidget(self.later)
         
-        #add layouts and widgets to layout for left part
-        box1.addLayout(input1_layout)
-        box1.addLayout(input2_layout)
-        box1.addWidget(self.date_chooser)
-        box1.addLayout(radioButton_layout)
-        box1.addLayout(filterLayout)
-        box1.addLayout(mapLayout)
-        box1.addLayout(requestEarlierLater_layout)
-        box1.addLayout(request_layout)
+        #add layouts and widgets to layout
+        layout.addLayout(input1_layout)
+        layout.addLayout(input2_layout)
+        layout.addWidget(self.date_chooser)
+        layout.addLayout(radioButton_layout)
+        layout.addLayout(filterLayout)
+        layout.addLayout(mapLayout)
+        layout.addLayout(requestEarlierLater_layout)
+        layout.addLayout(request_layout)
+        
+        return layout
 
-        #layout for middle part of gui
-        box2=qw.QVBoxLayout()
+    #initializes Layout for connectionTable, Label and navigation
+    def initializeConnectionTableLayout(self):
+        #create VerticalBoxLayout
+        layout=qw.QVBoxLayout()
 
         #label for connectionTable
         self.connection_label=qw.QLabel("")
@@ -154,20 +218,24 @@ class FormWidget(qw.QWidget):
         self.next=qw.QPushButton("Nächste")
         self.next.clicked.connect(self.showNextPage)
 
-        #layout for connectionTable navigation
+        #layout for navigation
         navigation_layout=qw.QHBoxLayout()
         #add buttons to navigation layout        
         navigation_layout.addWidget(self.prev)
         navigation_layout.addWidget(self.reload)
         navigation_layout.addWidget(self.next)
          
-        #add widgets and layouts to layout for middle part
-        box2.addWidget(self.connection_label)
-        box2.addWidget(self.connectionTable)
-        box2.addLayout(navigation_layout)
+        #add widgets and navigationLayout to layout
+        layout.addWidget(self.connection_label)
+        layout.addWidget(self.connectionTable)
+        layout.addLayout(navigation_layout)
         
-        #layout for right part of gui
-        box3=qw.QVBoxLayout()
+        return layout
+    
+    #initializes layout for ConnectionDetails,label
+    def initializeDetailsTableLayout(self):
+        #create VerticalBoxLayout
+        layout=qw.QVBoxLayout()
         
         #label for details of a connection
         self.details_label=qw.QLabel("")
@@ -176,24 +244,13 @@ class FormWidget(qw.QWidget):
         #connect QTableWidget with function
         self.detailsTable.clicked.connect(self.getConnectionsOnClickInDetails)
                 
-        #add label to box3
-        box3.addWidget(self.details_label)
-        #add QTableWidget to box3
-        box3.addWidget(self.detailsTable)
- 
-        #add all layouts to form-Layout
-        layout.addLayout(box1)
-        layout.addLayout(box2)
-        layout.addLayout(box3)
-        
-        #set formLayout
-        self.setLayout(layout)
-        
-        #initalize Widget for map
-        self.mapWidget=QMapWidget()
-        
-        self.settings=SettingsWidget()
-        
+        #add label
+        layout.addWidget(self.details_label)
+        #add QTableWidget
+        layout.addWidget(self.detailsTable)
+        #return layout with added widgets
+        return layout
+
     #called on click of detailsTable
     def getConnectionsOnClickInDetails(self):
         #get selected Row in connection details
@@ -213,10 +270,6 @@ class FormWidget(qw.QWidget):
         #request information and display it
         self.getConnections(date,time,identifier,True)
 
-    def showSettings(self):
-              self.settings.update()
-              
-        
     #called on click of connectionTable
     #request connection details if needed and displays them  
     def getDetails(self):
@@ -254,10 +307,8 @@ class FormWidget(qw.QWidget):
 
         #check if imageData is empty and if map is selected   
         if connection.imageData.isEmpty() and self.mapActive.isChecked():
-                width=self.settings.width
-                height=self.settings.height
                 #request imageData and create QByteArray and set imageData
-                connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates,markerIndex,width,height))
+                connection.imageData=qc.QByteArray(req.getMapWithLocations(coordinates,markerIndex,self.settingsWidget.settings))
         #display requested map-Data
         if self.mapActive.isChecked():
                 self.mapWidget.showMap(connection.imageData,connection.toStringDetails())
@@ -385,12 +436,12 @@ class FormWidget(qw.QWidget):
 
     #ealier means subtract hours
     def getConnectionsEarlier(self):
-        hourShift=self.settings.offset
+        hourShift=self.settingsWidget.settings.offSet
         self.getConnectionsWithShiftedTime(-1,hourShift)
 
     #later means add hours
     def getConnectionsLater(self):
-        hourShift=self.settings.offset
+        hourShift=self.settingsWidget.settings.offSet
         self.getConnectionsWithShiftedTime(1,hourShift)
 
     #
@@ -473,73 +524,27 @@ class FormWidget(qw.QWidget):
             else:
                 self.connection_label.setText(self.errorMsg)
 
-class SettingsWidget(qw.QWidget):
-        mapSizeMin=300
-        mapSizeMax=800
-        minTimeOffSet=1
-        maxTimeOffSet=24
-        defaultSize=500
-        defaultOffSet=3
-        
-        def __init__(self):
-                super(SettingsWidget,self).__init__()
-                self.setWindowTitle("Einstellungen ändern")
+    #create ColorDialog for choosing path color
+    def changePathColor(self):
+        #create ColorDialog
+        colordialog=qw.QColorDialog()
+        #get the color
+        newColor=colordialog.getColor(qg.QColor(),self,'Pfad-Farbe wählen')
+        #check for invalid color
+        if newColor.isValid():
+                self.settingsWidget.settings.setPathColor(newColor)
+    
+    #create ColorDialog for choosing marker color
+    def changeMarkerColor(self):
+        #create ColorDialog
+        colordialog=qw.QColorDialog()
+        #get the color
+        newColor=colordialog.getColor(qg.QColor(),self,'Marker-Farbe wählen')
+        #check for invalid color
+        if newColor.isValid():
+                self.settingsWidget.settings.setMarkerColor(newColor)
                 
-                layout=qw.QVBoxLayout()
-                
-                self.width=SettingsWidget.defaultSize
-                self.height=SettingsWidget.defaultSize
-                self.offset=SettingsWidget.defaultOffSet
+    #updates and shows settingsWidget
+    def showSettingsWidget(self):
+              self.settingsWidget.update()
 
-                mapLayout=qw.QHBoxLayout()
-                val=qg.QIntValidator(SettingsWidget.mapSizeMin,SettingsWidget.mapSizeMax)
-                self.mapWidth=qw.QLineEdit(str(SettingsWidget.defaultSize))
-                self.mapHeight=qw.QLineEdit(str(SettingsWidget.defaultSize))
-                self.mapWidth.setValidator(val)
-                self.mapHeight.setValidator(val)
-                
-                mapLayout.addWidget(qw.QLabel(" Breite: "))
-                mapLayout.addWidget(self.mapWidth)
-                mapLayout.addWidget(qw.QLabel(" Höhe: "))
-                mapLayout.addWidget(self.mapHeight)
-                
-                self.offsetField=qw.QLineEdit(str(SettingsWidget.defaultOffSet))
-                val=qg.QIntValidator(self.minTimeOffSet,self.maxTimeOffSet)
-                self.offsetField.setValidator(val)
-                self.offsetField.setMaximumWidth(50)
-                label=qw.QLabel(" Stunden ")
-                label.setMaximumWidth(60)
-                self.save=qw.QPushButton("Übernehmen")
-                self.save.clicked.connect(self.saveInput)
-                
-                layout1=qw.QHBoxLayout()
-                layout1.addWidget(label)
-                layout1.addWidget(self.offsetField)
-                layout1.addWidget(self.save)
-                
-                layout.addLayout(mapLayout)
-                layout.addLayout(layout1)
-                self.setLayout(layout)
-
-        def saveInput(self):
-                #try to convert desired height and with to int
-                try:
-                        self.height=int(self.mapHeight.text())
-                        self.width=int(self.mapWidth.text())
-                #on error use default values               
-                except ValueError:
-                        self.height=SettingsWidget.defaultSize
-                        self.width=SettingsWidget.defaultSize
-                #size to small use default size
-                if self.height<SettingsWidget.defaultSize or self.width<SettingsWidget.defaultSize:
-                        height=self.defaultSize
-                        width=self.defaultSize
-                try:
-                        self.offset=int(self.offsetField.text())
-                except ValueError:
-                        self.offset=SettingsWidget.defaultOffSet
-        def update(self):
-                self.mapHeight.setText(str(self.height))
-                self.mapWidth.setText(str(self.width))
-                self.offsetField.setText(str(self.offset))
-                self.show() 

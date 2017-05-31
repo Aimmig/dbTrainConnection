@@ -1,4 +1,5 @@
 from PyQt5 import QtCore as qc
+from PyQt5 import QtGui as qg
 
 #clas representing a single train connection
 class Connection:
@@ -101,17 +102,26 @@ class Filter:
         self.ICE=ICE
         self.IC=IC
         self.other=other
-        
-    def filterICE(self,con):
+    
+    @staticmethod
+    def filterICE(con):
         return con.type=="ICE" or "ICE" in con.name 
-    def filterIC(self,con):
-        return con.type==("IC" or "IC" in con.name) and not self.filterICE(con)
-    def filterEC(self,con):
+    
+    @staticmethod
+    def filterIC(con):
+        return con.type==("IC" or "IC" in con.name) and not Filter.filterICE(con)
+    
+    @staticmethod
+    def filterEC(con):
         return con.type=="EC" or "EC" in con.name
-    def filterTGV(self,con):
-        return con.type=="TGV" or "TGV" in con.name 
-    def filterOther(self,con):
-        return not(self.filterICE(con) or self.filterIC(con) or self.filterEC(con) or self.filterTGV(con))
+
+    @staticmethod
+    def filterTGV(con):
+        return con.type=="TGV" or "TGV" in con.name
+
+    @staticmethod 
+    def filterOther(con):
+        return not(Filter.filterICE(con) or Filter.filterIC(con) or Filter.filterEC(con) or Filter.filterTGV(con))
         
     #this method needs clean-up !!! can be simplified and not cluttered
     def filter(self,connections):
@@ -119,11 +129,11 @@ class Filter:
         for i in range(len(connections)):
                 selected=False
                 if self.ICE:
-                        selected=self.filterICE(connections[i]) or self.filterTGV(connections[i])
+                        selected=Filter.filterICE(connections[i]) or Filter.filterTGV(connections[i])
                 if self.IC:
-                        selected=selected or self.filterIC(connections[i]) or self.filterEC(connections[i])
+                        selected=selected or Filter.filterIC(connections[i]) or Filter.filterEC(connections[i])
                 if self.other:
-                        selected=selected or self.filterOther(connections[i])
+                        selected=selected or Filter.filterOther(connections[i])
                 if selected:
                         res.append(i)
         return res
@@ -137,19 +147,65 @@ class ConnectionsList:
 
     def getSingleConnection(self,pageIndex,conIndexOnPage):
         return self.connectionPages[pageIndex][conIndexOnPage]
+
     def getStop(self,pageIndex,conIndexOnPage,row):
         return self.connectionPages[pageIndex][conIndexOnPage].stopList[row]
+
     def getConnectionPage(self,pageIndex):
         return self.connectionPages[pageIndex]
+
     def getPageCount(self):
         return len(self.connectionPages)
+
     def appendPage(self,connections):
         self.connectionPages.append(connections)
+
     def getDetailsIndices(self):
         return self.displayedDetailedIndex
+
     def getDisplayedIndex(self):
         return self.displayedIndex
+
     def setDisplayedIndex(self,val):
         self.displayedIndex=val
+
     def setDisplayedDetailedIndex(self,pageIndex,row):
         self.displayedDetailedIndex=(pageIndex,row)
+        
+class RequestSettings:
+
+    MARKER_SIZE='small'
+    MARKER_SIZE_SPECIAL='mid'
+    PATH_SIZE='3'
+    MARKER_COLOR_SPECIAL=qg.QColor('#aa339988')
+
+    def __init__(self,defaultSize,defaultOffSet):
+        self.PATH_COLOR=qg.QColor('#ff0000')
+        self.MARKER_COLOR=qg.QColor('#5555BB')
+        self.height=defaultSize
+        self.width=defaultSize
+        self.offSet=defaultOffSet
+        
+    def formatPathColor(self):
+        return self.PATH_COLOR.name().replace('#','0x')
+    
+    def formatSpecialColor(self):
+        return RequestSettings.MARKER_COLOR_SPECIAL.name().replace('#','0x')
+    
+    def formatColor(self):
+        return self.MARKER_COLOR.name().replace('#','0x')
+
+    def setMarkerColor(self,col):
+        self.MARKER_COLOR=col
+
+    def setPathColor(self,col):
+        self.PATH_COLOR=col
+    
+    def setHeight(self,h):
+        self.height=h
+
+    def setWidth(self,w):
+        self.width=w
+
+    def setOffSet(self,s):
+        self.offSet=s

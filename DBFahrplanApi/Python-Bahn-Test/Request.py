@@ -4,36 +4,18 @@ import urllib.request as url_req
 import urllib.error as err
 import urllib.parse as parse
 from PyQt5 import QtCore as qc
+from PyQt5 import QtGui as qg
 
 KEY="DBhackFrankfurt0316"
 GOOGLEMAPS_KEY="AIzaSyAa0JAwUZMPl5DbBuUn6IRCzh9PKGGtFx4"
 LANGUAGE="de"
 DB_BASE_URL="https://open-api.bahn.de/bin/rest.exe/"
 GOOGLE_MAPS_BASE_URL="https://maps.googleapis.com/maps/api/staticmap?"
-PATH_COLOR="0xff000088"
-MARKER_COLOR="0x5555BB"
-MARKER_SIZE="small"
-MARKER_COLOR_SPECIAL="0xaa339988"
-MARKER_SIZE_SPECIAL="mid"
-PATH_SIZE="3"
 DATE_FORMAT="yyyy-M-d"
 TIME_FORMAT="h:m"
 ENCODED_SEPERATOR="%3A"
 
 class Request:
-        PATH_COLOR_INDEX=0
-        MARKER_COLOR_INDEX=1
-        MARKER_COLOR_SPECIAL_INDEX=2
-        MARKER_SIZE_INDEX=0
-        MARKER_SIZE_SPECIAL_INDEX=1
-        DEFAULT_COLOR=["","",""]
-        DEFAULT_COLOR[PATH_COLOR_INDEX]=PATH_COLOR
-        DEFAULT_COLOR[MARKER_COLOR_INDEX]=MARKER_COLOR
-        DEFAULT_COLOR[MARKER_COLOR_SPECIAL_INDEX]=MARKER_COLOR_SPECIAL
-        DEFAULT_SIZE=["",""]
-        DEFAULT_SIZE[MARKER_SIZE_INDEX]=MARKER_SIZE
-        DEFAULT_SIZE[MARKER_SIZE_SPECIAL_INDEX]=MARKER_SIZE_SPECIAL
-        
         #returns the XML-String
         @staticmethod
         def getXMLStringConnectionDetails(urlString):
@@ -85,8 +67,8 @@ class Request:
                 return ""
 
         @staticmethod
-        def getMapWithLocations(coordinates,markerIndex,mapWidth,mapHeight):
-                url=Request.createMapURL(coordinates,markerIndex,mapWidth,mapHeight)
+        def getMapWithLocations(coordinates,markerIndex,settings):
+                url=Request.createMapURL(coordinates,markerIndex,settings)
                 req=url_req.Request(url)
                 return url_req.urlopen(req).read() 
 
@@ -113,15 +95,15 @@ class Request:
 
         #creates URL  for requesting the map with path of given locations and lat lon for marker
         @staticmethod
-        def createMapURL(coordinates,markerIndex,mapWidth,mapHeight,colors=DEFAULT_COLOR,sizes=DEFAULT_SIZE):
-                res=GOOGLE_MAPS_BASE_URL+"&size="+str(mapWidth)+"x"+str(mapHeight)+"&language="+LANGUAGE        
-                res+="&sensor=false&path=color:"+colors[Request.PATH_COLOR_INDEX]+"|weight:"+PATH_SIZE
+        def createMapURL(coordinates,markerIndex,settings):
+                res=GOOGLE_MAPS_BASE_URL+"&size="+str(settings.width)+"x"+str(settings.height)+"&language="+LANGUAGE        
+                res+="&sensor=false&path=color:"+settings.formatPathColor()+"|weight:"+settings.PATH_SIZE
                 for loc in coordinates:
                         res+="|"+str(loc.lat)+","+str(loc.lon)
-                res+="&markers=size:"+sizes[Request.MARKER_SIZE_SPECIAL_INDEX]+"|color:"+colors[Request.MARKER_COLOR_SPECIAL_INDEX]+"|"
+                res+="&markers=size:"+settings.MARKER_SIZE_SPECIAL+"|color:"+settings.formatSpecialColor()+"|"
                 res+=str(coordinates[markerIndex].lat)+","+str(coordinates[markerIndex].lon)
                 del coordinates[markerIndex]
-                res+="&markers=size:"+sizes[Request.MARKER_SIZE_INDEX]+"|color:"+colors[Request.MARKER_COLOR_INDEX]+"|"
+                res+="&markers=size:"+settings.MARKER_SIZE+"|color:"+settings.formatColor()+"|"
                 for loc in coordinates:
                         res+="|"+str(loc.lat)+","+str(loc.lon)
                 res+="&key="+GOOGLEMAPS_KEY

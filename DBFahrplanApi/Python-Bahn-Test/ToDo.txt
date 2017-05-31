@@ -1,6 +1,9 @@
 #To-Do Stuff:
 
 -If possible make colums resizable and auto-streched on resize
--Integrate widget into QMainWindow and maybe move some options to QMenuBar
+-Add missing comments on structs
+-Add missing comments on Request
+-Add missing comments on SettingsWidget
+-Add missing comments for ColorChosing
 -Translate all Gui elements to English or German
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
