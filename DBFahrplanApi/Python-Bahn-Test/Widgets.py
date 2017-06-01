@@ -2,6 +2,7 @@ from PyQt5 import QtWidgets as qw
 from PyQt5 import QtCore as qc
 from PyQt5 import QtGui as qg
 
+#class is a QTableWidget with special properties for displaying Connections
 class QConnectionTable(qw.QTableWidget):
 
         #define some constants for later use
@@ -14,8 +15,9 @@ class QConnectionTable(qw.QTableWidget):
         minimumWidth=420
         minimumHeight=320
        
-        #constructor
+        #constructor sets all needed properties
         def __init__(self):
+
                 #call super constructor
                 super(QConnectionTable,self).__init__()
                 #set columCount to number of entries in header list
@@ -45,6 +47,7 @@ class QConnectionTable(qw.QTableWidget):
                 #set Size Policy to MimumExpanding
                 self.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
 
+#class is a QTableWidget with special properties for displaying ConnectionDetails
 class QDetailsTable(qw.QTableWidget):
 
         #define some constants for later use
@@ -56,6 +59,7 @@ class QDetailsTable(qw.QTableWidget):
         minimumWidth=420
         minimumHeight=320
 
+        #constructor sets  all needed properties
         def __init__(self):
                 
                 super(QDetailsTable,self).__init__()
@@ -82,19 +86,26 @@ class QDetailsTable(qw.QTableWidget):
                 #set size policy to minimalExpanding
                 self.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
 
+#class for encapsulationg Widget for displaying map
 class QMapWidget(qw.QWidget):
 
+      #constructor
       def __init__(self):
-           super(QMapWidget,self).__init__()
 
+           super(QMapWidget,self).__init__()
+           #set label to Widget
            self.mapLabel=qw.QLabel()
            self.mapLabel.setScaledContents(True)
+           #set layout of widget
            mapLayout=qw.QVBoxLayout()
            mapLayout.addWidget(self.mapLabel)
            self.setLayout(mapLayout)
 
+      #shows map from given data and sets windowTitle
       def showMap(self,imageData,windowTitle):
+           #create Pixmap
            pixmap=qg.QPixmap()
+           #try to load imageData to pixmap
            if pixmap.loadFromData(imageData):
                 #set window title
                 self.setWindowTitle(windowTitle)
