@@ -1,8 +1,7 @@
 #To-Do Stuff:
 
 -If possible make colums resizable and auto-streched on resize
--Add missing comments on Request + remove cluttering in buildURL methods (split in 2-3 submethods)
--Add missing comments on SettingsWidget + reimplement checking for to small map size
+-Reimplement checking for to small map size
 -Add missing comments for ColorChosing
 -Translate all Gui elements to English or German
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
