@@ -210,7 +210,8 @@ class RequestSettings:
     MARKER_SIZE_SPECIAL='mid'
     PATH_SIZE='3'
     MARKER_COLOR_SPECIAL=qg.QColor('#aa339988')
-
+    MIN_SIZE=300
+            
     #initialize changeable settings with default Values
     def __init__(self,defaultSize,defaultOffSet):
         self.PATH_COLOR=qg.QColor('#ff0000')
@@ -241,11 +242,19 @@ class RequestSettings:
     
     #set height to given value
     def setHeight(self,h):
-        self.height=h
+        #prevent to small size
+        if h>=RequestSettings.MIN_SIZE:
+                self.height=h
+        else:
+                self.height=RequestSettings.MIN_SIZE
 
     #set width to given value
     def setWidth(self,w):
-        self.width=w
+        #prevent to small size
+        if w>=RequestSettings.MIN_SIZE:
+                self.width=w
+        else:
+                self.width=RequestSettings.MIN_SIZE
 
     #set offset to given value
     def setOffSet(self,s):

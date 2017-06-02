@@ -12,7 +12,6 @@ from Widgets import QDetailsTable
 from Widgets import QMapWidget
 from Request import Request as req
 from SettingsWidget import SettingsWidget
-#import class for parsing xml-String
 import XMLParser as parser
 
 #Class that defines gui
@@ -97,9 +96,6 @@ class FormWidget(qw.QWidget):
         #add Action to Menu
         exitMenu.addAction(exitAction)
         
-        #show MenuBar
-        self.myQMenuBar.show()
-
     #initializes layout for userInput on gui, adds these Widgets to layout
     def initializeUserInputLayout(self):
 

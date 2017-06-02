@@ -1,7 +1,5 @@
 #To-Do Stuff:
 
 -If possible make colums resizable and auto-streched on resize
--Reimplement checking for to small map size
--Add missing comments for ColorChosing
 -Translate all Gui elements to English or German
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..

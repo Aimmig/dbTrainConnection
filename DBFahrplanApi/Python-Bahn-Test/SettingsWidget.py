@@ -75,14 +75,7 @@ class SettingsWidget(qw.QWidget):
                 try:
                         #convert desired height and with to int
                         height=int(self.mapHeight.text())
-                        width=int(self.mapWidth.text())
-                        
-                        #TO-DO: Prevent to little values
-                        #size to small use default size
-                        #if height<SettingsWidget.defaultSize or width<SettingsWidget.defaultSize:
-                        #        height=SettingsWidget.defaultSize
-                        #        width=SettingsWidget.defaultSize
-                        
+                        width=int(self.mapWidth.text())                        
                         #set settings to values
                         self.settings.setWidth(width)
                         self.settings.setHeight(height)
