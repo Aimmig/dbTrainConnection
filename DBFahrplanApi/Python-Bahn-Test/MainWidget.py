@@ -204,7 +204,7 @@ class FormWidget(qw.QWidget):
         #label for connectionTable
         self.connection_label=qw.QLabel("")
         #QTableWidget for displaying connections
-        self.connectionTable=QConnectionTable()
+        self.connectionTable=QConnectionTable(self)
         #connect connectionTable with function
         self.connectionTable.clicked.connect(self.getDetails)
         
@@ -240,7 +240,7 @@ class FormWidget(qw.QWidget):
         #label for details of a connection
         self.details_label=qw.QLabel("")
         #QTableWidget for presenting detailed data of a connection
-        self.detailsTable=QDetailsTable()
+        self.detailsTable=QDetailsTable(self)
         #connect QTableWidget with function
         self.detailsTable.clicked.connect(self.getConnectionsOnClickInDetails)
                 
@@ -363,6 +363,8 @@ class FormWidget(qw.QWidget):
                 for ind in displayIndex:
                         #display corresponding row
                         self.connectionTable.setRowHidden(ind,False)
+        #select first element
+        self.connectionTable.selectRow(0)
 
     #sets the connection label to string repr. of the first displayed connection
     def setConnectionLabel(self):

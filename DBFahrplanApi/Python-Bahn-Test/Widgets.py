@@ -16,10 +16,12 @@ class QConnectionTable(qw.QTableWidget):
         minimumHeight=320
        
         #constructor sets all needed properties
-        def __init__(self):
+        def __init__(self,main):
 
                 #call super constructor
                 super(QConnectionTable,self).__init__()
+                #set mainWidget to main
+                self.mainWidget=main
                 #set columCount to number of entries in header list
                 self.setColumnCount(len(QConnectionTable.header_list))
                 #set Horizontal Header for QTableWidget
@@ -47,6 +49,21 @@ class QConnectionTable(qw.QTableWidget):
                 #set Size Policy to MimumExpanding
                 self.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
 
+        #overwrite keyPressEvent
+        def keyPressEvent(self,e):
+                #enter/return key triggers details
+                if e.key() == qc.Qt.Key_Return or e.key()==qc.Qt.Key_Enter:
+                        self.mainWidget.getDetails()
+                #left key shows previous page
+                elif e.key() == qc.Qt.Key_Left:
+                        self.mainWidget.showPreviousPage()
+                #right key shows next page
+                elif e.key() == qc.Qt.Key_Right:
+                        self.mainWidget.showNextPage()
+                #all other events are passed to the super keyPressEvent
+                else:
+                       super(QConnectionTable,self).keyPressEvent(e)
+
 #class is a QTableWidget with special properties for displaying ConnectionDetails
 class QDetailsTable(qw.QTableWidget):
 
@@ -60,9 +77,12 @@ class QDetailsTable(qw.QTableWidget):
         minimumHeight=320
 
         #constructor sets  all needed properties
-        def __init__(self):
+        def __init__(self,main):
                 
+                #call super constructor
                 super(QDetailsTable,self).__init__()
+                #set mainWidget to main
+                self.mainWidget=main
                 #make table not editable
                 self.setEditTriggers(qw.QAbstractItemView.NoEditTriggers)
                 #make only rows selectable
@@ -85,6 +105,15 @@ class QDetailsTable(qw.QTableWidget):
                 self.setMinimumSize(qc.QSize(QDetailsTable.minimumWidth,QDetailsTable.minimumHeight))
                 #set size policy to minimalExpanding
                 self.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
+
+        #overwrite keyPressEvent
+        def keyPressEvent(self,e):
+                #enter/return triggers getConnections
+                if e.key() == qc.Qt.Key_Return or e.key()==qc.Qt.Key_Enter:
+                        self.mainWidget.getConnectionsOnClickInDetails()
+                #all other events are passed to the super keyPressEvent
+                else:
+                        super(QDetailsTable,self).keyPressEvent(e)
 
 #class for encapsulationg Widget for displaying map
 class QMapWidget(qw.QWidget):
