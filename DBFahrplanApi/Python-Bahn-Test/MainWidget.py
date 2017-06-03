@@ -251,6 +251,9 @@ class FormWidget(qw.QWidget):
     def getConnectionsOnClickInDetails(self):
         #get selected Row in connection details
         row=self.detailsTable.currentRow()
+        #avoid error if nothing is selected
+        if row<0:
+                return
         #get the displayedIndex Information
         (pageIndex,connectionIndexOnPage)=self.conList.getDetailsIndices()
         #select the clicked stop from the displayed Connection (Details)
@@ -271,6 +274,9 @@ class FormWidget(qw.QWidget):
     def getDetails(self):
         #get the selected Index
         index=self.connectionTable.currentRow()
+        #avoid error if notingh was selected
+        if index<0:
+                return
         #get the connection according to the index
         connection=self.conList.getSingleConnection(self.conList.getDisplayedIndex(),index)
         #if stopList is empty request details information
@@ -544,5 +550,16 @@ class FormWidget(qw.QWidget):
                 
     #updates and shows settingsWidget
     def showSettingsWidget(self):
-              self.settingsWidget.update()
+              self.settingsWidget.update()          
 
+    #basic keyPressEvent for getting connections
+    def keyPressEvent(self,e):
+        #enter/return to search stations/connections
+        if e.key() == qc.Qt.Key_Return or e.key() == qc.Qt.Key_Enter:
+                if self.stationId==[]:
+                        self.getStations()
+                else:
+                        self.getConnectionsNow()
+        #all other events are passed to the super keyPressEvent
+        else:
+                super(FormWidget,self).keyPressEvent(e)
