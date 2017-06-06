@@ -3,3 +3,5 @@
 -If possible make colums resizable and auto-streched on resize
 -Translate all Gui elements to English or German
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
+
+-Add licensing GPL3, include information about author, like e-mail etc
