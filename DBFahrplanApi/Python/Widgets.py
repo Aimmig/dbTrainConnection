@@ -60,9 +60,6 @@ class QConnectionTable(qw.QTableWidget):
                 #right key shows next page
                 elif e.key() == qc.Qt.Key_Right:
                         self.mainWidget.showNextPage()
-                #F5 refreshes filter
-                elif e.key() == qc.Qt.Key_F5:
-                        self.mainWidget.refreshPage()
                 #all other events are passed to the super keyPressEvent
                 else:
                        super(QConnectionTable,self).keyPressEvent(e)
