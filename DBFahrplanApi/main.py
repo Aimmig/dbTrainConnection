@@ -290,6 +290,10 @@ class FormWidget(qw.QWidget):
         identifier=s.id
         #request information and display it
         self.getConnections(date,time,identifier,True)
+    
+    #clears detailsTable
+    def clearDetailsTable(self):
+        self.detailsTable.setRowCount(0)
 
     #called on click of connectionTable
     #request connection details if needed and displays them  
@@ -309,8 +313,6 @@ class FormWidget(qw.QWidget):
               xmlString=req.getXMLStringConnectionDetails(urlString)
               #check if valid
               if xmlString:
-                    #remove all Elements from details QTableWidget
-                    self.detailsTable.setRowCount(0)
                     stopList=parser.getStopListFromXMLString(xmlString)
                     if not stopList=="":
                         #set the stopList of the connection to the local list
@@ -320,7 +322,9 @@ class FormWidget(qw.QWidget):
                         return
         #for every stop in stopList add it to QTableWidget
         coordinates=[]
-        for i in range(0,len(connection.stopList)):
+        #clear detailsTable
+        self.clearDetailsTable()
+        for i in range(len(connection.stopList)):
                 self.addStopToDetails(connection.stopList[i])
                 coordinates.append(connection.stopList[i].pos)
                 if connection.stopList[i].id==connection.stopid:
@@ -344,7 +348,7 @@ class FormWidget(qw.QWidget):
         if self.conList.getDisplayedIndex()>0:
               self.conList.setDisplayedIndex(self.conList.getDisplayedIndex()-1)
               #remove old elements from QTableWidget
-              self.connectionTable.setRowCount(0)
+              self.clearConnectionTable()
               #for every connection add connection display it
               self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()))
               self.setConnectionLabel()      
@@ -352,8 +356,12 @@ class FormWidget(qw.QWidget):
     def refreshPage(self):
         index =self.conList.getDisplayedIndex()
         if index>=0:
-                self.connectionTable.setRowCount(0)
+                self.clearConnectionTable()
                 self.addConnections(self.conList.getConnectionPage(index))
+    
+    #clears the connectionTable
+    def clearConnectionTable(self):
+        self.connectionTable.setRowCount(0)
         
     #next navigation
     def showNextPage(self):
@@ -362,7 +370,7 @@ class FormWidget(qw.QWidget):
         if self.conList.getDisplayedIndex()<self.conList.getPageCount()-1:
               self.conList.setDisplayedIndex(self.conList.getDisplayedIndex()+1)
               #remove all elements from QTableWidget
-              self.connectionTable.setRowCount(0)
+              self.clearConnectionTable()
               #for every connection add connection display it
               self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()))
               #resize columns to contens
@@ -532,7 +540,7 @@ class FormWidget(qw.QWidget):
         xmlString=req.getXMLStringConnectionRequest(date,time,identifier,isDeparture)
         if xmlString:
             connections=parser.getConnectionsFromXMLString(xmlString,isDeparture)
-            self.connectionTable.setRowCount(0)
+            self.clearConnectionTable()
             if not connections=="":
                 #clear displayed list
                 #check if something was actually found 

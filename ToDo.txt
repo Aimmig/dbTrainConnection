@@ -1,7 +1,7 @@
 #To-Do Stuff:
 
 -If possible make colums resizable and auto-streched on resize
--Translate all Gui elements to English or German
+-Translate all Gui elements to English/German
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
-
--Add licensing GPL3, include information about author, like e-mail etc
+-Implement some sort of possibility to save the requested data local into a file
+-Integrate some more options(?) into QMenuBar
