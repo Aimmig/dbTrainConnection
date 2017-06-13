@@ -41,63 +41,38 @@ ENCODED_SEPERATOR="%3A"
 
 #static class for handling request
 class Request:
+
+        #establishes connection with server and reads result
+        @staticmethod
+        def getResultFromServer(url):
+                req=url_req.Request(url)
+                response=url_req.urlopen(req)
+                result=response.read()
+                return result
+
         #returns the XML-String requested from the given urlString
         @staticmethod
-        def getXMLStringConnectionDetails(urlString):
-                req=url_req.Request(urlString)
-                try:
-                        with url_req.urlopen(req) as response:
-                                result=response.read()
-                                return result
-                except err.HTTPError as e:
-                        print('The server couldn\'t fulfill the request.')
-                        print('Error code: ', e.code)
-                except err.URLError as e:
-                        print('We failed to reach a server.')
-                        print('Reason: ', e.reason)
-                return ""
+        def getXMLStringConnectionDetails(url):
+                return Request.getResultFromServer(url)
 
         #returns the XML-String representation of the requested ressource
         @staticmethod
         def getXMLStringStationRequest(loc):
                 url=Request.createStationRequestURL(loc)
-                req=url_req.Request(url)
-                try:
-                        with url_req.urlopen(req) as response:
-                                result=response.read()
-                                return result
-                except err.HTTPError as e:
-                        print('The server couldn\'t fulfill the request.')
-                        print('Error code: ', e.code)
-                except err.URLError as e:
-                        print('We failed to reach a server.')
-                        print('Reason: ', e.reason)
-                return ""
+                return Request.getResultFromServer(url)
 
         #returns the XML-String representation of the Connection Request
         @staticmethod
         def getXMLStringConnectionRequest(date,time,identifier,isDeparture):
                 url=Request.createConnectionRequestURL(date,time,identifier,isDeparture)
-                req=url_req.Request(url)
-                try:
-                        with url_req.urlopen(req) as response:
-                                result=response.read()
-                                return result
-                except err.HTTPError as e:
-                        print('The server couldn\'t fulfill the request.')
-                        print('Error code: ', e.code)
-                except err.URLError as e:
-                        print('We failed to reach a server.')
-                        print('Reason: ', e.reason)
-                return ""
+                return Request.getResultFromServer(url)
 
         #request map with given settings and cooridnates and returns it as raw data
         @staticmethod
         def getMapWithLocations(coordinates,markerIndex,settings):
                 #create url with settings
                 url=Request.createMapURL(coordinates,markerIndex,settings)
-                req=url_req.Request(url)
-                return url_req.urlopen(req).read() 
+                return Request.getResultFromServer(url)
 
         @staticmethod
         #creates the URL for requesting Connections

@@ -35,6 +35,7 @@ from Request import Request as req
 from SettingsWidget import SettingsWidget
 import XMLParser as parser
 import sys
+import urllib.error as err
 
 #Class that defines gui
 class FormWidget(qw.QWidget):
@@ -309,17 +310,24 @@ class FormWidget(qw.QWidget):
         if  connection.stopList==[]:
               #get reference link of connection
               urlString=connection.ref
-              #request xml String
-              xmlString=req.getXMLStringConnectionDetails(urlString)
-              #check if valid
-              if xmlString:
-                    stopList=parser.getStopListFromXMLString(xmlString)
-                    if not stopList=="":
-                        #set the stopList of the connection to the local list
-                        connection.stopList=stopList
-                    else:
-                        self.details_label.setText(self.errorMsg)
+              try:
+                    #request xml String
+                    xmlString=req.getXMLStringConnectionDetails(urlString)
+              except err.HTTPError as e:
+                        print('The server couldn\'t fulfill the request.')
+                        print('Error code: ', e.code)
                         return
+              except err.URLError as e:
+                        print('We failed to reach a server.')
+                        print('Reason: ', e.reason)
+                        return
+              stopList=parser.getStopListFromXMLString(xmlString)
+              if not stopList=="":
+                    #set the stopList of the connection to the local list
+                    connection.stopList=stopList
+              else:
+                    self.details_label.setText(self.errorMsg)
+                    return
         #for every stop in stopList add it to QTableWidget
         coordinates=[]
         #clear detailsTable
@@ -450,17 +458,24 @@ class FormWidget(qw.QWidget):
         loc=self.inp.text()
         #check for empty input
         if loc.strip():
-             #create xml-object
-             xmlString=req.getXMLStringStationRequest(loc)
-             #xmlString might be empty if HTTP-Error occured
-             if xmlString:
-                  (newStations,newStationsId)=parser.getStationsFromXMLString(xmlString)
-                  #if something was actually found replace everything
-                  if len(newStations)>0:
-                      self.stationId=[]
-                      self.railStations.clear()
-                      self.stationId=newStationsId
-                      self.railStations.addItems(newStations)
+             try:
+                     #create xml-object
+                     xmlString=req.getXMLStringStationRequest(loc)
+             except err.HTTPError as e:
+                     print('The server couldn\'t fulfill the request.')
+                     print('Error code: ', e.code)
+                     return
+             except err.URLError as e:
+                     print('We failed to reach a server.')
+                     print('Reason: ', e.reason)
+                     return
+             (newStations,newStationsId)=parser.getStationsFromXMLString(xmlString)
+             #if something was actually found replace everything
+             if len(newStations)>0:
+                     self.stationId=[]
+                     self.railStations.clear()
+                     self.stationId=newStationsId
+                     self.railStations.addItems(newStations)
 
     #Encapsulation for calling from Button
     def getConnectionsNow(self):
@@ -536,12 +551,19 @@ class FormWidget(qw.QWidget):
     #date and time as QDate and QTime object!
     #request the connection from or to the train station with given id at date and time    
     def getConnections(self,date,time,identifier,isDeparture):
-        #request    
-        xmlString=req.getXMLStringConnectionRequest(date,time,identifier,isDeparture)
-        if xmlString:
-            connections=parser.getConnectionsFromXMLString(xmlString,isDeparture)
-            self.clearConnectionTable()
-            if not connections=="":
+         try: 
+                xmlString=req.getXMLStringConnectionRequest(date,time,identifier,isDeparture)
+         except err.HTTPError as e:
+                print('The server couldn\'t fulfill the request.')
+                print('Error code: ', e.code)
+                return
+         except err.URLError as e:
+                print('We failed to reach a server.')
+                print('Reason: ', e.reason)
+                return
+         connections=parser.getConnectionsFromXMLString(xmlString,isDeparture)
+         self.clearConnectionTable()
+         if not connections=="":
                 #clear displayed list
                 #check if something was actually found 
                 if connections==[]:
@@ -557,7 +579,7 @@ class FormWidget(qw.QWidget):
                         self.conList.setDisplayedIndex(self.conList.getPageCount()-1)
                         #set connection label
                         self.setConnectionLabel()
-            else:
+         else:
                 self.connection_label.setText(self.errorMsg)
 
     #create ColorDialog for choosing path color
@@ -597,7 +619,7 @@ class FormWidget(qw.QWidget):
         #all other events are passed to the super keyPressEvent
         else:
                 super(FormWidget,self).keyPressEvent(e)
-
+                
 
 if __name__=="__main__":
         app=qw.QApplication(sys.argv)
