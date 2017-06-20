@@ -26,80 +26,124 @@ import urllib.parse as parse
 from PyQt5 import QtCore as qc
 from PyQt5 import QtGui as qg
 
-#API-Keys
-KEY="DBhackFrankfurt0316"
-GOOGLEMAPS_KEY="AIzaSyAa0JAwUZMPl5DbBuUn6IRCzh9PKGGtFx4"
-#language of Request
-LANGUAGE="de"
-#API base urls
-DB_BASE_URL="https://open-api.bahn.de/bin/rest.exe/"
-GOOGLE_MAPS_BASE_URL="https://maps.googleapis.com/maps/api/staticmap?"
-#format strings for time and date
-DATE_FORMAT="yyyy-M-d"
-TIME_FORMAT="h:m"
-ENCODED_SEPERATOR="%3A"
-
-#static class for handling request
 class Request:
+        """
+        Class to encapsulate the requests of a ressource and
+        the creation of the corresponding urls used as ressource.
+        """
+        
+        #static member variables
+        #API-Keys
+        KEY="DBhackFrankfurt0316"
+        GOOGLEMAPS_KEY="AIzaSyAa0JAwUZMPl5DbBuUn6IRCzh9PKGGtFx4"
+        #language of Request
+        LANGUAGE="de"
+        #API base urls
+        DB_BASE_URL="https://open-api.bahn.de/bin/rest.exe/"
+        GOOGLE_MAPS_BASE_URL="https://maps.googleapis.com/maps/api/staticmap?"
+        #format strings for time and date
+        DATE_FORMAT="yyyy-M-d"
+        TIME_FORMAT="h:m"
+        ENCODED_SEPERATOR="%3A"
 
-        #establishes connection with server and reads result
         @staticmethod
         def getResultFromServer(url):
+                """
+                Establishes connection to the given url, reads and returns
+                the result of this ressource.
+                """
+                
                 req=url_req.Request(url)
                 response=url_req.urlopen(req)
                 result=response.read()
                 return result
 
-        #returns the XML-String requested from the given urlString
         @staticmethod
         def getXMLStringConnectionDetails(url):
+                """
+                Returns the result of the given url ressource.
+                Used for requesting the connection details from the reference link.
+                """
+                
                 return Request.getResultFromServer(url)
 
-        #returns the XML-String representation of the requested ressource
         @staticmethod
         def getXMLStringStationRequest(loc):
+                """
+                Creates url for requesting all locations that match to the given
+                location loc.
+                Request these locations and returns the XML-String.
+                """
+                
                 url=Request.createStationRequestURL(loc)
                 return Request.getResultFromServer(url)
 
-        #returns the XML-String representation of the Connection Request
         @staticmethod
         def getXMLStringConnectionRequest(date,time,identifier,isDeparture):
+                """
+                Creates url for requesting connections from date,time,
+                identifier (corresponding to a location) and a boolean departure
+                flag variable.
+                Request the connections and returns the XML-String.
+                """
+                
                 url=Request.createConnectionRequestURL(date,time,identifier,isDeparture)
                 return Request.getResultFromServer(url)
 
-        #request map with given settings and cooridnates and returns it as raw data
         @staticmethod
         def getMapWithLocations(coordinates,markerIndex,settings):
-                #create url with settings
+                """
+                Creates google-maps url for corresponding map with given coordinates and settings.
+                Returns the raw requested data.
+                """
+                
                 url=Request.createMapURL(coordinates,markerIndex,settings)
                 return Request.getResultFromServer(url)
 
         @staticmethod
-        #creates the URL for requesting Connections
         def createConnectionRequestURL(date,time,identifier,isDeparture):
+                """
+                Builds and returns the url for requesting connection from date,time,
+                identifier (corresponding to a location) and a boolean departure
+                flag variable.
+                """
+                
                 #build date-String
-                dateString=date.toString(DATE_FORMAT)
+                dateString=date.toString(Request.DATE_FORMAT)
                 #build and encode timeString
-                timeString=time.toString(TIME_FORMAT).replace(":",ENCODED_SEPERATOR)
+                timeString=time.toString(Request.TIME_FORMAT).replace(":",Request.ENCODED_SEPERATOR)
                 #build last part of url
-                lastPart="authKey="+KEY+"&lang="+LANGUAGE+"&id="
+                lastPart="authKey="+Request.KEY+"&lang="+Request.LANGUAGE+"&id="
                 lastPart=lastPart+str(identifier)+"&date="+dateString+"&time="+timeString
                 #build complete url
                 if isDeparture:
-                        return DB_BASE_URL+"departureBoard?"+lastPart
+                        return Request.DB_BASE_URL+"departureBoard?"+lastPart
                 else:
-                        return DB_BASE_URL+"arrivalBoard?"+lastPart
+                        return Request.DB_BASE_URL+"arrivalBoard?"+lastPart
 
         #creates the URL for requesting Stations
         @staticmethod
         def createStationRequestURL(loc):
-                return DB_BASE_URL+"location.name?authKey="+KEY+"&lang="+LANGUAGE+"&input="+parse.quote(loc.replace(" ",""))
+                """
+                Builds and returns the url for requesting all locations that match to the
+                given location loc.
+                """
+                
+                return Request.DB_BASE_URL+"location.name?authKey="+Request.KEY+"&lang="+Request.LANGUAGE+"&input="+parse.quote(loc.replace(" ",""))
 
         #creates URL  for requesting the map with path of given locations and lat lon for marker
         @staticmethod
         def createMapURL(coordinates,markerIndex,settings):
+                """
+                Builds and returns the url for requesting the map with coordinates and settings.
+                Use size, path- and marker color from settings.
+                Create full path with all coordinates, for each coordinate add marker with
+                default size except the specified markerIndex, these coordinate gets an other
+                color specified in settings.
+                """
+                
                 #add width and heigt and language of map to base url
-                res=GOOGLE_MAPS_BASE_URL+"&size="+str(settings.width)+"x"+str(settings.height)+"&language="+LANGUAGE  
+                res=Request.GOOGLE_MAPS_BASE_URL+"&size="+str(settings.width)+"x"+str(settings.height)+"&language="+Request.LANGUAGE  
                 #add path color and size to url      
                 res+="&sensor=false&path=color:"+settings.formatPathColor()+"|weight:"+settings.PATH_SIZE
                 #add string of all coordinates for path
@@ -115,12 +159,17 @@ class Request:
                 #add string of all coordinates for markers
                 res+=Request.createFullCoordinateString(coordinates)
                 #add googlemapskey
-                res+="&key="+GOOGLEMAPS_KEY
+                res+="&key="+Request.GOOGLEMAPS_KEY
                 return res
         
         #create formated coordinate String
         @staticmethod
         def createFullCoordinateString(cords):
+                """
+                Takes a list of geographical locations and returns a string
+                that is formatted for use in google-maps request.
+                """
+                
                 res=""
                 #iterate over all locations
                 for loc in cords:
@@ -131,5 +180,10 @@ class Request:
         #create representation of one location
         @staticmethod
         def createCoordinateString(loc):
+                """
+                Takes a geographical location and returns a string
+                that is formatted for use in google-maps request.
+                """
+                
                 #single coordinate is formatted to |lat,lon
                 return "|"+str(loc.lat)+","+str(loc.lon)
