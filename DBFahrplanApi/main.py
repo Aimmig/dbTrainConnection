@@ -33,7 +33,7 @@ from Widgets import QDetailsTable
 from Widgets import QMapWidget
 from Request import Request as req
 from SettingsWidget import SettingsWidget
-import XMLParser as parser
+from XMLParser import XMLParser as parser
 import sys
 import urllib.error as err
 

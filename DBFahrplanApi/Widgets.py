@@ -174,7 +174,7 @@ class QMapWidget(qw.QWidget):
 
       def __init__(self):
            """
-           Initalizes Widet.
+           Initalizes Widget.
            Sets some properties like layout, etc.
            """
 
