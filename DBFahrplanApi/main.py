@@ -39,9 +39,20 @@ import urllib.error as err
 
 #Class that defines gui
 class FormWidget(qw.QWidget):
+    """
+    Main Gui consist of the parts.
+    Part 1 for user input,
+    part 2 for displaying generall information for connections
+    part 3 for displaying detailed information for one connection.
+    Additionally holds important global variables.
+    """
 
     #constructor for gui
     def __init__(self):
+        """
+        Constructor initalizes main gui.
+        Initializes settings- and mapWidget.
+        """
 
         #super constructor
         super(FormWidget,self).__init__()
@@ -82,6 +93,11 @@ class FormWidget(qw.QWidget):
 
     #initializes MenuBar
     def initializeMenuBar(self):
+        """
+        Initializes QMenuBar.
+        Adds action for choosing path and marker color.
+        Adds action for showing the settingsWidget.
+        """
 
         #create MenuBar with self as parent
         self.myQMenuBar=qw.QMenuBar(self)
@@ -119,8 +135,14 @@ class FormWidget(qw.QWidget):
         #add Action to Menu
         exitMenu.addAction(exitAction)
         
-    #initializes layout for userInput on gui, adds these Widgets to layout
     def initializeUserInputLayout(self):
+        """
+        Initializes first part of the gui.
+        Initializes LineEdit, ComboBox,
+        Date- and Time-Chooser and Radio-Buttons for filtering.
+        Additionally initializes the departure/arrival Radio-Button
+        and the request buttons.
+        """
 
         #create VerticalBoxLayouts
         layout=qw.QVBoxLayout()
@@ -215,8 +237,14 @@ class FormWidget(qw.QWidget):
         
         return layout
 
-    #initializes Layout for connectionTable, Label and navigation
     def initializeConnectionTableLayout(self):
+        """
+        Initalizes part 2 of the gui.
+        This includes a label for generall information,
+        the QConnectionTable and buttons for navigation and 
+        refreshing.
+        """
+        
         #create VerticalBoxLayout
         layout=qw.QVBoxLayout()
 
@@ -251,8 +279,13 @@ class FormWidget(qw.QWidget):
         
         return layout
     
-    #initializes layout for ConnectionDetails,label
     def initializeDetailsTableLayout(self):
+        """
+        Initializes part 3 of the gui.
+        This includes a label for displaying information for a connection
+        and the QDetailsTable.
+        """
+        
         #create VerticalBoxLayout
         layout=qw.QVBoxLayout()
         
@@ -292,8 +325,10 @@ class FormWidget(qw.QWidget):
         #request information and display it
         self.getConnections(date,time,identifier,True)
     
-    #clears detailsTable
     def clearDetailsTable(self):
+        """
+        Clears the detailsTable by setting RowCount to 0.
+        """
         self.detailsTable.setRowCount(0)
 
     #called on click of connectionTable
@@ -367,8 +402,11 @@ class FormWidget(qw.QWidget):
                 self.clearConnectionTable()
                 self.addConnections(self.conList.getConnectionPage(index))
     
-    #clears the connectionTable
     def clearConnectionTable(self):
+        """
+        Clears the ConnectionTable by setting the rowCount to 0.
+        """
+        
         self.connectionTable.setRowCount(0)
         
     #next navigation
