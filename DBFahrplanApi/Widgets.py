@@ -23,8 +23,13 @@ from PyQt5 import QtWidgets as qw
 from PyQt5 import QtCore as qc
 from PyQt5 import QtGui as qg
 
-#class is a QTableWidget with special properties for displaying Connections
 class QConnectionTable(qw.QTableWidget):
+        """
+        Class QConnection is derived from QTableWidget.
+        Used for displaying connections on gui.
+        Encapsulates all settings in constructor.
+        Defines some new keyPressEvents.
+        """
 
         #define some constants for later use
         name_Index=0
@@ -35,9 +40,13 @@ class QConnectionTable(qw.QTableWidget):
         header_list=["Zugnummer","von","nach","Uhrzeit","Gleis"]
         minimumWidth=420
         minimumHeight=320
-       
-        #constructor sets all needed properties
+
         def __init__(self,main):
+                """
+                Initializes QConnectionTable.
+                Sets all desired properties.
+                Sets appropiates headers.
+                """
 
                 #call super constructor
                 super(QConnectionTable,self).__init__()
@@ -70,8 +79,14 @@ class QConnectionTable(qw.QTableWidget):
                 #set Size Policy to MimumExpanding
                 self.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
 
-        #overwrite keyPressEvent
         def keyPressEvent(self,e):
+                """
+                Defines keyPress Events for QConnectionTable.
+                Enter or return trigger request of details (like mouseclick).
+                Left or right arrow used for navigation in connectionPages.
+                All other events are passed to super keyPressEvent.
+                """
+                
                 #enter/return key triggers details
                 if e.key() == qc.Qt.Key_Return or e.key()==qc.Qt.Key_Enter:
                         self.mainWidget.getDetails()
@@ -81,12 +96,17 @@ class QConnectionTable(qw.QTableWidget):
                 #right key shows next page
                 elif e.key() == qc.Qt.Key_Right:
                         self.mainWidget.showNextPage()
-                #all other events are passed to the super keyPressEvent
+                #pass to the super keyPressEvent
                 else:
                        super(QConnectionTable,self).keyPressEvent(e)
 
-#class is a QTableWidget with special properties for displaying ConnectionDetails
 class QDetailsTable(qw.QTableWidget):
+        """
+        Class QDetailsTable is derived from QTableWidget.
+        Used for displaying connection-details on gui.
+        Encapsulates all settings in constructor.
+        Defines some new keyPressEvents.
+        """
 
         #define some constants for later use
         stop_Index=0
@@ -97,8 +117,12 @@ class QDetailsTable(qw.QTableWidget):
         minimumWidth=420
         minimumHeight=320
 
-        #constructor sets  all needed properties
         def __init__(self,main):
+                """
+                Initializes QDetailsTable.
+                Sets all desired properties.
+                Sets appropiates headers.
+                """
                 
                 #call super constructor
                 super(QDetailsTable,self).__init__()
@@ -127,20 +151,32 @@ class QDetailsTable(qw.QTableWidget):
                 #set size policy to minimalExpanding
                 self.setSizePolicy(qw.QSizePolicy.MinimumExpanding,qw.QSizePolicy.MinimumExpanding)
 
-        #overwrite keyPressEvent
         def keyPressEvent(self,e):
+                """
+                Defines keyPress Events for QDetailsTable.
+                Enter or return trigger request of connection (like mouseclick).
+                All other events are passed to super keyPressEvent.
+                """
                 #enter/return triggers getConnections
                 if e.key() == qc.Qt.Key_Return or e.key()==qc.Qt.Key_Enter:
                         self.mainWidget.getConnectionsOnClickInDetails()
-                #all other events are passed to the super keyPressEvent
+                #Pass to the super keyPressEvent
                 else:
                         super(QDetailsTable,self).keyPressEvent(e)
 
-#class for encapsulationg Widget for displaying map
 class QMapWidget(qw.QWidget):
+      """
+      Class QMapWidget is derived from QWidget.
+      Used for displaying an additionaly requested map.
+      Defines method to set and show the map.
+      Constructor encapsulates some basic settings.
+      """
 
-      #constructor
       def __init__(self):
+           """
+           Initalizes Widet.
+           Sets some properties like layout, etc.
+           """
 
            super(QMapWidget,self).__init__()
            #set label to Widget
@@ -151,8 +187,12 @@ class QMapWidget(qw.QWidget):
            mapLayout.addWidget(self.mapLabel)
            self.setLayout(mapLayout)
 
-      #shows map from given data and sets windowTitle
       def showMap(self,imageData,windowTitle):
+           """
+           Loads the (raw) imageData to pixmap.
+           Sets the windowTitle to given value and
+           shows widget.
+           """
            #create Pixmap
            pixmap=qg.QPixmap()
            #try to load imageData to pixmap
