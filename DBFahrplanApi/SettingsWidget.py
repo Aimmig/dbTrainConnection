@@ -23,8 +23,14 @@ from PyQt5 import QtGui as qg
 
 from Structs import RequestSettings
 
-#class that represents widget for choosing some settings
 class SettingsWidget(qw.QWidget):
+        """
+        Class that represents the widget for changing some
+        settings, that might not be changed as frequently
+        so they aren't located in the main gui.
+        This includes the mapSize and the time offset
+        used when requesting connections earlier/later.
+        """
         
         #set some default values for later use
         mapSizeMin=300
@@ -34,8 +40,10 @@ class SettingsWidget(qw.QWidget):
         defaultSize=500
         defaultOffSet=3
         
-        #constructor manages layout stuff
         def __init__(self):
+                """
+                Constructor manages layout, initializes widget and sets all desired properties.
+                """
         
                 #super constructor
                 super(SettingsWidget,self).__init__()
@@ -89,9 +97,12 @@ class SettingsWidget(qw.QWidget):
                 
                 #intialize Request settings object with default values
                 self.settings=RequestSettings(SettingsWidget.defaultSize,SettingsWidget.defaultOffSet)
-        
-        #saves userInput to class variables
+
         def saveInput(self):
+                """
+                Saves user input (if possible) into class variables.
+                """
+                
                 try:
                         #convert desired height and with to int
                         height=int(self.mapHeight.text())
@@ -113,8 +124,12 @@ class SettingsWidget(qw.QWidget):
                 #close widget
                 self.close()
         
-        #update values in textfield and shows widget
         def update(self):
+                """
+                Reads values of class variables and displays them.
+                Shows the widget.
+                """
+                
                 #read and convert actuall height from settings and set it
                 self.mapHeight.setText(str(self.settings.height))
                 #read and convert actuall width from settings and set it 
