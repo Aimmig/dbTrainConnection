@@ -37,17 +37,15 @@ from XMLParser import XMLParser as parser
 import sys
 import urllib.error as err
 
-#Class that defines gui
 class FormWidget(qw.QWidget):
     """
-    Main Gui consist of the parts.
+    Main Gui consist of three parts.
     Part 1 for user input,
     part 2 for displaying generall information for connections
     part 3 for displaying detailed information for one connection.
     Additionally holds important global variables.
     """
 
-    #constructor for gui
     def __init__(self):
         """
         Constructor initalizes main gui.
@@ -91,7 +89,6 @@ class FormWidget(qw.QWidget):
         #set formLayout
         self.setLayout(layout)
 
-    #initializes MenuBar
     def initializeMenuBar(self):
         """
         Initializes QMenuBar.
@@ -303,8 +300,13 @@ class FormWidget(qw.QWidget):
         #return layout with added widgets
         return layout
 
-    #called on click of detailsTable
     def getConnectionsOnClickInDetails(self):
+        """
+        Called on click in DetailsTable.
+        Request (departure) connections for station,time,date from selected row.
+        Calls getConnections with the parameters read from this row.
+        """
+        
         #get selected Row in connection details
         row=self.detailsTable.currentRow()
         #avoid error if nothing is selected
@@ -329,11 +331,17 @@ class FormWidget(qw.QWidget):
         """
         Clears the detailsTable by setting RowCount to 0.
         """
+        
         self.detailsTable.setRowCount(0)
-
-    #called on click of connectionTable
-    #request connection details if needed and displays them  
+  
     def getDetails(self):
+        """
+        Called on click in ConnectionTables.
+        Uses reference link of the selected connection to request 
+        detailed information (if needed) for this connection.
+        Displays this detailed information in DetailsTable.
+        """
+        
         #get the selected Index
         index=self.connectionTable.currentRow()
         #avoid error if nothing was selected
@@ -384,10 +392,12 @@ class FormWidget(qw.QWidget):
         if self.mapActive.isChecked():
                 self.mapWidget.showMap(connection.imageData,connection.toStringDetails())
 
-    #previous navigation
     def showPreviousPage(self):
-        #on first page do nothing
-        #else go one page back and display
+        """
+        Display previous page of requested connections.
+        Does not have an effect on first page.
+        """
+        
         if self.conList.getDisplayedIndex()>0:
               self.conList.setDisplayedIndex(self.conList.getDisplayedIndex()-1)
               #remove old elements from QTableWidget
@@ -397,6 +407,13 @@ class FormWidget(qw.QWidget):
               self.setConnectionLabel()      
 
     def refreshPage(self):
+        """
+        Refreshes displayed connection page.
+        First clears ConnectionTable.
+        Applies changed filter to original data
+        and displays new results.
+        """
+        
         index =self.conList.getDisplayedIndex()
         if index>=0:
                 self.clearConnectionTable()
@@ -409,10 +426,13 @@ class FormWidget(qw.QWidget):
         
         self.connectionTable.setRowCount(0)
         
-    #next navigation
+    
     def showNextPage(self):
-        #on last page do nothing
-        #else go one page forward and display
+        """
+        Displays next page of requested connections.
+        Does not have an effect on last page.
+        """
+        
         if self.conList.getDisplayedIndex()<self.conList.getPageCount()-1:
               self.conList.setDisplayedIndex(self.conList.getDisplayedIndex()+1)
               #remove all elements from QTableWidget
@@ -423,6 +443,13 @@ class FormWidget(qw.QWidget):
               self.setConnectionLabel()
 
     def addConnections(self,connections):
+        """
+        Adds every connection in connections to ConnectionTable.
+        Instanciates a filter according to checkbox from userInput.
+        If filter is active filters all connection and only displays
+        connections that pass the filter.
+        """
+        
         self.filterActive=self.checkFilter.isChecked()
         ICE=self.checkICE.isChecked()
         IC=self.checkIC.isChecked()
@@ -446,12 +473,20 @@ class FormWidget(qw.QWidget):
         #select first element
         self.connectionTable.selectRow(0)
 
-    #sets the connection label to string repr. of the first displayed connection
     def setConnectionLabel(self):
+        """
+        Sets the connection label to the string representation of the first
+        displayed connection.
+        """
+        
         self.connection_label.setText(self.conList.getSingleConnection(self.conList.getDisplayedIndex(),0).toStringGenerall())
 
-    #adds a connection to QTableWidget
     def addConnectionToTable(self,con):
+        """
+        Adds the given connection as a new row to ConnectionTable.
+        When filter is used the new row is set to hidden default.
+        """
+        
         #add new row to QTableWidget
         self.connectionTable.insertRow(self.connectionTable.rowCount())
         #select last row of QTableWidget
@@ -475,8 +510,11 @@ class FormWidget(qw.QWidget):
         if con.track:
                 self.connectionTable.setItem(row,QConnectionTable.track_Index,qw.QTableWidgetItem(con.track))
 
-    #adds a stop to QTableWidget details
     def addStopToDetails(self,stop):
+        """
+        Adds the given stop as a new row to DetailsTable.
+        """
+        
         #insert new row in QTableWidget details
         self.detailsTable.insertRow(self.detailsTable.rowCount())
         #select last row of QTableWidget details
@@ -491,8 +529,12 @@ class FormWidget(qw.QWidget):
         if stop.track:
                 self.detailsTable.setItem(row,QDetailsTable.track_Index,qw.QTableWidgetItem(stop.track))
 
-    #retrieves list all all matching stations to input and displays them
     def getStations(self):
+        """
+        Request all names and corresponding id's for stops that match
+        the user input and displays names in corresponding combo-box.
+        """
+        
         loc=self.inp.text()
         #check for empty input
         if loc.strip():
@@ -510,31 +552,61 @@ class FormWidget(qw.QWidget):
              (newStations,newStationsId)=parser.getStationsFromXMLString(xmlString)
              #if something was actually found replace everything
              if len(newStations)>0:
+                     #reset id-list
                      self.stationId=[]
+                     #clear combo box
                      self.railStations.clear()
+                     #set new id-list
                      self.stationId=newStationsId
+                     #display new station-names
                      self.railStations.addItems(newStations)
 
-    #Encapsulation for calling from Button
     def getConnectionsNow(self):
+        """
+        Encapsulation for requesting connections with system time/date from button.
+        Calls getConnectionFromInput with isNow=True.
+        """
+        
         self.getConnectionsFromInput(True)
 
-    #Encapsulation for calling from Button
     def getConnectionsWithTime(self):
+        """
+        Encapsulation for requesting connections with choosen time from button.
+        Calls getConnectionFromInput with isNow=False.
+        """
+        
         self.getConnectionsFromInput(False)
 
-    #ealier means subtract hours
     def getConnectionsEarlier(self):
+        """
+        Encapsulation of getting connections with shifted time.
+        -1 indicates earlier. Requesting earlier means subtract
+        the shift from the previous time.
+        """
+        
         hourShift=self.settingsWidget.settings.offSet
         self.getConnectionsWithShiftedTime(-1,hourShift)
 
-    #later means add hours
     def getConnectionsLater(self):
+        """
+        Encapsulation of getting connections with shifted time.
+        +1 indicates later. Requesting later means add
+        the shift from the previous time.
+        """
+        
         hourShift=self.settingsWidget.settings.offSet
         self.getConnectionsWithShiftedTime(1,hourShift)
 
-    #
+    
     def getConnectionsWithShiftedTime(self,shift,numbersOfHoursShifted=3):
+        """
+        Requests connections earlier/later.
+        Shift =-1 indicates earlier.
+        Shift =+1 incicates later.
+        Base information are read from first connection displayed
+        in ConnectionTable.
+        """
+        
         #something has to be displayed at the moment or nothing can be read from table
         if self.conList.getDisplayedIndex()>-1:
                 #get the first connection
@@ -560,10 +632,14 @@ class FormWidget(qw.QWidget):
                 #request new connections
                 self.getConnections(date,newTime,identifier,isDeparture)
 
-    #retrieves all Connections matching to the inputs and displays them
-    #isnow=TRUE use system time 
-    #isnow=FALSE use choosen time
     def getConnectionsFromInput(self,isnow):
+        """
+        If isnow is set True gets the current time and date.
+        Othewise reads time and date from userinput.
+        Reads all other relevant information (id, isDeparture) from userInput.
+        Calls getConnection with these parameters.
+        """
+        
         #get selected Index from ComboBox
         index=self.railStations.currentIndex()
         #check invalid Index
@@ -585,10 +661,15 @@ class FormWidget(qw.QWidget):
         else:
             isDeparture=True
         self.getConnections(date,time,identifier,isDeparture)
-        
-    #date and time as QDate and QTime object!
-    #request the connection from or to the train station with given id at date and time    
+
     def getConnections(self,date,time,identifier,isDeparture):
+         """
+         Request the connections from/to (specified by isDeparture flag)
+         the train station (specified by identifier) at given Date and Time
+         (Both as Qt.Time/Qt.Date Objects).
+         If request was sucesfull displays requested connection on ConnectionTabel.
+         """
+         
          try: 
                 xmlString=req.getXMLStringConnectionRequest(date,time,identifier,isDeparture)
          except err.HTTPError as e:
@@ -620,8 +701,13 @@ class FormWidget(qw.QWidget):
          else:
                 self.connection_label.setText(self.errorMsg)
 
-    #create ColorDialog for choosing path color
     def changePathColor(self):
+        """
+        Create ColorDialog for choosing path color.
+        If valid color is picked, sets the path color
+        of settings-object to new color.
+        """
+        
         #create ColorDialog
         colordialog=qw.QColorDialog()
         #get the color
@@ -630,8 +716,13 @@ class FormWidget(qw.QWidget):
         if newColor.isValid():
                 self.settingsWidget.settings.setPathColor(newColor)
     
-    #create ColorDialog for choosing marker color
     def changeMarkerColor(self):
+        """
+        Create ColorDialog for choosing marker color.
+        If valid color is picked, sets the marker color
+        of settings-object to new color.
+        """
+        
         #create ColorDialog
         colordialog=qw.QColorDialog()
         #get the color
@@ -639,14 +730,25 @@ class FormWidget(qw.QWidget):
         #check for invalid color
         if newColor.isValid():
                 self.settingsWidget.settings.setMarkerColor(newColor)
-                
-    #updates and shows settingsWidget
-    def showSettingsWidget(self):
-              self.settingsWidget.update()          
 
-    #basic keyPressEvent for getting connections
+    def showSettingsWidget(self):
+        """
+        Updates and shows settingsWidget.
+        """
+        
+        self.settingsWidget.update()          
+
     def keyPressEvent(self,e):
-        #enter/return to search stations/connections
+        """
+        Basic keyPressEvent for getting connections.
+        Enter/return to get stations if none have been
+        requested.
+        If stations have already been requested enter/return
+        to request connections with actual date/time from
+        first station.
+        All other keyPressEvent are passed to super keyPressEvent.
+        """
+        
         if e.key() == qc.Qt.Key_Return or e.key() == qc.Qt.Key_Enter:
                 if self.stationId==[]:
                         self.getStations()
@@ -654,7 +756,7 @@ class FormWidget(qw.QWidget):
                         self.getConnectionsNow()
         elif e.key() == qc.Qt.Key_F5:
                 self.refreshPage()
-        #all other events are passed to the super keyPressEvent
+        #pass to the super keyPressEvent
         else:
                 super(FormWidget,self).keyPressEvent(e)
                 

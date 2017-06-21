@@ -364,7 +364,6 @@ class RequestSettings:
     MARKER_COLOR_SPECIAL=qg.QColor('#aa339988')
     MIN_SIZE=300
             
-    #initialize changeable settings with default Values
     def __init__(self,defaultSize,defaultOffSet):
         """
         Construct RequestSettings with given defaultSize of the map

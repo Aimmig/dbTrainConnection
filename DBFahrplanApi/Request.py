@@ -121,7 +121,6 @@ class Request:
                 else:
                         return Request.DB_BASE_URL+"arrivalBoard?"+lastPart
 
-        #creates the URL for requesting Stations
         @staticmethod
         def createStationRequestURL(loc):
                 """
@@ -131,7 +130,6 @@ class Request:
                 
                 return Request.DB_BASE_URL+"location.name?authKey="+Request.KEY+"&lang="+Request.LANGUAGE+"&input="+parse.quote(loc.replace(" ",""))
 
-        #creates URL  for requesting the map with path of given locations and lat lon for marker
         @staticmethod
         def createMapURL(coordinates,markerIndex,settings):
                 """
@@ -162,7 +160,6 @@ class Request:
                 res+="&key="+Request.GOOGLEMAPS_KEY
                 return res
         
-        #create formated coordinate String
         @staticmethod
         def createFullCoordinateString(cords):
                 """
@@ -177,7 +174,6 @@ class Request:
                         res+=Request.createCoordinateString(loc)
                 return res
 
-        #create representation of one location
         @staticmethod
         def createCoordinateString(loc):
                 """
