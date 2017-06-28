@@ -580,35 +580,35 @@ class FormWidget(qw.QWidget):
     def getConnectionsEarlier(self):
         """
         Encapsulation of getting connections with shifted time.
-        -1 indicates earlier. Requesting earlier means subtract
+        False indicates earlier. Requesting earlier means subtract
         the shift from the previous time.
         """
         
-        hourShift=self.settingsWidget.settings.offSet
-        self.getConnectionsWithShiftedTime(-1,hourShift)
+        secShift=self.settingsWidget.getOffSet()
+        self.getConnectionsWithShiftedTime(False,secShift)
 
     def getConnectionsLater(self):
         """
         Encapsulation of getting connections with shifted time.
-        +1 indicates later. Requesting later means add
-        the shift from the previous time.
+        True indicates later. Requesting later means add
+        the shift to the previous time.
         """
         
-        hourShift=self.settingsWidget.settings.offSet
-        self.getConnectionsWithShiftedTime(1,hourShift)
+        secShift=self.settingsWidget.getOffSet()
+        self.getConnectionsWithShiftedTime(True,secShift)
 
     
-    def getConnectionsWithShiftedTime(self,shift,numbersOfHoursShifted=3):
+    def getConnectionsWithShiftedTime(self,isShiftPositive,secShift):
         """
         Requests connections earlier/later.
-        Shift =-1 indicates earlier.
-        Shift =+1 incicates later.
+        isShiftPositive =False indicates earlier.
+        isShiftPositive =True incicates later.
         Base information are read from first connection displayed
         in ConnectionTable.
         """
         
         #something has to be displayed at the moment or nothing can be read from table
-        if self.conList.getDisplayedIndex()>-1:
+        if self.conList.getDisplayedIndex()>=0:
                 #get the first connection
                 con=self.conList.getSingleConnection(self.conList.getDisplayedIndex(),0)
                 #get id, date and time
@@ -621,14 +621,20 @@ class FormWidget(qw.QWidget):
                 # origin is not set so it is a departure
                 if con.origin=="":
                         isDeparture=True
-                #add shift to requested time
-                newTime=time.addSecs(shift*3600*numbersOfHoursShifted)
+                #calculate shift (positive or negative depending on isShiftPositive-Flag)
+                #calculae possible dayShift
+                if isShiftPositive:
+                     dayShift=1
+                     shift=secShift
+                else:
+                     dayShift=-1
+                     shift=-secShift
+                #add shift to requested time         
+                newTime=time.addSecs(shift)
                 #added hours but new Time less than before -> day overflow, thus add one day
-                if newTime < time and shift>0:
-                        date=date.addDays(1)
-                #subtracted hours but new Time greater than before -> day underflow, thus subtract one day
-                if newTime > time and shift<0:
-                        date=date.addDays(-1)
+                #same for day underflow, subtract one day.
+                if (newTime < time and isShiftPositive) or (newTime > time and not isShiftPositive):
+                        date=date.addDays(dayShift)
                 #request new connections
                 self.getConnections(date,newTime,identifier,isDeparture)
 

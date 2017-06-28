@@ -97,6 +97,13 @@ class SettingsWidget(qw.QWidget):
                 
                 #intialize Request settings object with default values
                 self.settings=RequestSettings(SettingsWidget.defaultSize,SettingsWidget.defaultOffSet)
+        
+        def getOffSet(self):
+                """
+                Returns the offset to use in seconds.
+                """
+                
+                return self.settings.offSet*3600
 
         def saveInput(self):
                 """

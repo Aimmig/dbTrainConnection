@@ -5,4 +5,3 @@
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
 -Implement some sort of possibility to save the requested data local into a file
 -Integrate some more options(?) into QMenuBar
--Write code documentation for missing classes/methods !!!
