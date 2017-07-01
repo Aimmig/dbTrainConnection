@@ -31,21 +31,21 @@ class XMLParser:
     """
 
     # constants for parsing xml-Document
-    ID = 'id'
+    Id = 'id'
     NAME = 'name'
     TYPE = 'type'
-    STOPID = 'stopid'
-    STOP = 'stop'
+    StopId = 'stopid'
+    Stop = 'stop'
     TIME = 'time'
     DATE = 'date'
     ORIGIN = 'origin'
     DIRECTION = 'direction'
     TRACK = 'track'
     REF = 'ref'
-    ARRTIME = 'arrTime'
-    ARRDATE = 'arrDate'
-    DEPTIME = 'depTime'
-    DEPDATE = 'depDate'
+    ArrTime = 'arrTime'
+    ArrDate = 'arrDate'
+    DepTime = 'depTime'
+    DepDate = 'depDate'
     LON = 'lon'
     LAT = 'lat'
     STOPS = 'Stops'
@@ -65,7 +65,7 @@ class XMLParser:
         station_ids = []
         # iterate over all children and add attributes to lists
         for child in root:
-            station_ids.append(int(child.attrib[XMLParser.ID]))
+            station_ids.append(int(child.attrib[XMLParser.Id]))
             stations.append(child.attrib[XMLParser.NAME])
         return stations, station_ids
 
@@ -93,8 +93,8 @@ class XMLParser:
                 else:
                     typ = ""
                 # stop, id and time, date are mandatory
-                stopId = int(con.attrib[XMLParser.STOPID])
-                stopName = con.attrib[XMLParser.STOP]
+                stopId = int(con.attrib[XMLParser.StopId])
+                stopName = con.attrib[XMLParser.Stop]
                 # convert time and date string to Qt Objects
                 timeString = con.attrib[XMLParser.TIME]
                 time = QtCore.QTime.fromString(timeString, XMLParser.TIME_FORMAT)
@@ -151,35 +151,35 @@ class XMLParser:
                     for child in c:
                         # name and id of the station are mandatory
                         name = child.attrib[XMLParser.NAME]
-                        identifier = int(child.attrib[XMLParser.ID])
+                        identifier = int(child.attrib[XMLParser.Id])
                         # check if arrival time exists
-                        if XMLParser.ARRTIME in child.attrib:
+                        if XMLParser.ArrTime in child.attrib:
                             # read arrival time
-                            arrTimeString = child.attrib[XMLParser.ARRTIME]
+                            arrTimeString = child.attrib[XMLParser.ArrTime]
                             # convert arrival time to QTime
                             arrTime = QtCore.QTime.fromString(arrTimeString, XMLParser.TIME_FORMAT)
                         else:
                             arrTime = QtCore.QTime()
                         # check if arrival date exists
-                        if XMLParser.ARRDATE in child.attrib:
+                        if XMLParser.ArrDate in child.attrib:
                             # read arrival date
-                            arrDateString = child.attrib[XMLParser.ARRDATE]
+                            arrDateString = child.attrib[XMLParser.ArrDate]
                             # convert arrival date to QDate
                             arrDate = QtCore.QDate.fromString(arrDateString, XMLParser.DATE_FORMAT)
                         else:
                             arrDate = QtCore.QDate()
                         # check if departure time exists
-                        if XMLParser.DEPTIME in child.attrib:
+                        if XMLParser.DepTime in child.attrib:
                             # read departure Time
-                            depTimeString = child.attrib[XMLParser.DEPTIME]
+                            depTimeString = child.attrib[XMLParser.DepTime]
                             # convert departure time to QTime
                             depTime = QtCore.QTime.fromString(depTimeString, XMLParser.TIME_FORMAT)
                         else:
                             depTime = QtCore.QTime()
                         # check if departure date exists
-                        if XMLParser.DEPDATE in child.attrib:
+                        if XMLParser.DepDate in child.attrib:
                             # read departure date
-                            depDateString = child.attrib[XMLParser.DEPDATE]
+                            depDateString = child.attrib[XMLParser.DepDate]
                             # convert departure date to QDate object
                             depDate = QtCore.QDate.fromString(depDateString, XMLParser.DATE_FORMAT)
                         else:

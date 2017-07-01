@@ -274,7 +274,7 @@ class Filter:
     are types that should be included after filtering.
     """
 
-    def __init__(self, ICE: bool, IC: bool, other: bool):
+    def __init__(self, ICE: bool = False, IC: bool = False, other: bool = False):
         """
         Constructs a filter with the given bool flags
         ICE,IC,other.
@@ -328,7 +328,7 @@ class Filter:
         # connection has train type other if it does not have an above stated train type
         return not (Filter.filterICE(con) or Filter.filterIC(con) or Filter.filterEC(con) or Filter.filterTGV(con))
 
-    def filter(self, connections: ConnectionsList):
+    def filter(self, connections: [Connection]):
         """
         Filters a list of connections by filtering each connection.
         Only filters on type if type flag was set.

@@ -2,7 +2,7 @@
 #    -----------------------------------------------------------------------
 #    This program requests connections and corresponding details from the
 #    API of Deutsche Bahn and presents them in an user interface.
-#    This file encapsulates the main gui, handels the gui navigation and
+#    This file encapsulates the main gui, handles the gui navigation and
 #    defines logic to display the information.
 #    Copyright (C) 2017  Andre Immig, andreimmig@t-online.de
 #
@@ -23,7 +23,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Widgets import QConnectionTable, QDetailsTable, QMapWidget
 from Request import Request
-from Structs import Connection, ConnectionsList, Stop, Filter
+from Structs import Connection, ConnectionsList, Stop, Filter, Coordinate
 from SettingsWidget import SettingsWidget
 from XMLParser import XMLParser as parser
 import sys
@@ -47,6 +47,9 @@ class FormWidget(QtWidgets.QWidget):
 
         # super constructor
         super(FormWidget, self).__init__()
+
+        # create MenuBar with self as parent
+        self.myQMenuBar = QtWidgets.QMenuBar(self)
 
         # create MenuBars
         self.initializeMenuBar()
@@ -81,6 +84,8 @@ class FormWidget(QtWidgets.QWidget):
 
         # set formLayout
         self.setLayout(layout)
+        # create empty Filter
+        self.typeFilter = Filter()
 
     def initializeMenuBar(self):
         """
@@ -88,9 +93,6 @@ class FormWidget(QtWidgets.QWidget):
         Adds action for choosing path and marker color.
         Adds action for showing the settingsWidget.
         """
-
-        # create MenuBar with self as parent
-        self.myQMenuBar = QtWidgets.QMenuBar(self)
 
         # create Menu for changing settings
         settingsMenu = self.myQMenuBar.addMenu('Einstellung')
@@ -125,7 +127,7 @@ class FormWidget(QtWidgets.QWidget):
         # add Action to Menu
         exitMenu.addAction(exitAction)
 
-    def initializeUserInputLayout(self):
+    def initializeUserInputLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes first part of the gui.
         Initializes LineEdit, ComboBox,
@@ -227,7 +229,7 @@ class FormWidget(QtWidgets.QWidget):
 
         return layout
 
-    def initializeConnectionTableLayout(self):
+    def initializeConnectionTableLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes part 2 of the gui.
         This includes a label for generall information,
@@ -269,7 +271,7 @@ class FormWidget(QtWidgets.QWidget):
 
         return layout
 
-    def initializeDetailsTableLayout(self):
+    def initializeDetailsTableLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes part 3 of the gui.
         This includes a label for displaying information for a connection
@@ -368,16 +370,16 @@ class FormWidget(QtWidgets.QWidget):
         coordinates, markerIndex = self.addAllStopsToDetails(connection, index)
         self.RequestAndShowMap(connection, coordinates, markerIndex)
 
-    def addAllStopsToDetails(self,connection: Connection, index: int):
-
+    def addAllStopsToDetails(self, connection: Connection, index: int) -> ([Coordinate], int):
         """
 
         """
 
-        # for every stop in stopList add it to QTableWidget
+        markerIndex = -1
         coordinates = []
         # clear detailsTable
         self.clearDetailsTable()
+        # for every stop in stopList add it to QTableWidget
         for i in range(len(connection.stopList)):
             self.addStopToDetails(connection.stopList[i])
             coordinates.append(connection.stopList[i].pos)
@@ -388,7 +390,7 @@ class FormWidget(QtWidgets.QWidget):
         self.conList.setDisplayedDetailedIndex(self.conList.getDisplayedIndex(), index)
         return coordinates, markerIndex
 
-    def RequestAndShowMap(self, connection: Connection,coordinates,markerIndex: int):
+    def RequestAndShowMap(self, connection: Connection, coordinates: [Coordinate], markerIndex: int):
 
         """
 
@@ -452,7 +454,7 @@ class FormWidget(QtWidgets.QWidget):
             # resize columns to content
             self.setConnectionLabel()
 
-    def addConnections(self, connections: ConnectionsList):
+    def addConnections(self, connections: [Connection]):
         """
         Adds every connection in connections to ConnectionTable.
         Instantiates a filter according to checkbox from userInput.
@@ -612,7 +614,7 @@ class FormWidget(QtWidgets.QWidget):
         """
         Requests connections earlier/later.
         isShiftPositive =False indicates earlier.
-        isShiftPositive =True incicates later.
+        isShiftPositive =True indicates later.
         Base information are read from first connection displayed
         in ConnectionTable.
         """
@@ -625,12 +627,11 @@ class FormWidget(QtWidgets.QWidget):
             identifier = con.stopId
             date = con.date
             time = con.time
+            # default set departure
+            isDeparture = True
             # direction is not set means it is a arrival
             if con.direction == "":
                 isDeparture = False
-            # origin is not set so it is a departure
-            if con.origin == "":
-                isDeparture = True
             # calculate shift (positive or negative depending on isShiftPositive-Flag)
             # calculate possible dayShift
             if isShiftPositive:
@@ -650,7 +651,7 @@ class FormWidget(QtWidgets.QWidget):
 
     def getConnectionsFromInput(self, isNow: bool):
         """
-        If isnow is set True gets the current time and date.
+        If isNow is set True gets the current time and date.
         Otherwise reads time and date from userInput.
         Reads all other relevant information (id, isDeparture) from userInput.
         Calls getConnection with these parameters.
@@ -700,7 +701,7 @@ class FormWidget(QtWidgets.QWidget):
         if not connections == "":
             # clear displayed list
             # check if something was actually found
-            if connections == []:
+            if not connections:
                 # if not set index to last entry of pages so this page can never be reached again
                 self.conList.setDisplayedIndex(self.conList.getPageCount() - 1)
                 # set connection label to error Message

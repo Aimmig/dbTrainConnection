@@ -34,8 +34,8 @@ class Request:
 
     # static member variables
     # API-Keys
-    KEY = "DBhackFrankfurt0316"
-    GOOGLEMAPS_KEY = "AIzaSyAa0JAwUZMPl5DbBuUn6IRCzh9PKGGtFx4"
+    DbKey = "DBhackFrankfurt0316"
+    GoogleMapsKey = "AIzaSyAa0JAwUZMPl5DbBuUn6IRCzh9PKGGtFx4"
     # language of Request
     LANGUAGE = "de"
     # API base urls
@@ -44,10 +44,10 @@ class Request:
     # format strings for time and date
     DATE_FORMAT = "yyyy-M-d"
     TIME_FORMAT = "h:m"
-    ENCODED_SEPERATOR = "%3A"
+    EncodedSeparator = "%3A"
 
     @staticmethod
-    def getResultFromServer(url: str):
+    def getResultFromServer(url: str) -> str:
         """
         Establishes connection to the given url, reads and returns
         the result of this resource.
@@ -59,7 +59,7 @@ class Request:
         return result
 
     @staticmethod
-    def getXMLStringConnectionDetails(url: str):
+    def getXMLStringConnectionDetails(url: str) -> str:
         """
         Returns the result of the given url resource.
         Used for requesting the connection details from the reference link.
@@ -68,7 +68,7 @@ class Request:
         return Request.getResultFromServer(url)
 
     @staticmethod
-    def getXMLStringStationRequest(loc: str):
+    def getXMLStringStationRequest(loc: str) -> str:
         """
         Creates url for requesting all locations that match to the given
         location loc.
@@ -91,7 +91,7 @@ class Request:
         return Request.getResultFromServer(url)
 
     @staticmethod
-    def getMapWithLocations(coordinates: [Coordinate], markerIndex: int, settings: RequestSettings):
+    def getMapWithLocations(coordinates: [Coordinate], markerIndex: int, settings: RequestSettings) -> str:
         """
         Creates google-maps url for corresponding map with given coordinates and settings.
         Returns the raw requested data.
@@ -101,7 +101,7 @@ class Request:
         return Request.getResultFromServer(url)
 
     @staticmethod
-    def createConnectionRequestURL(date: QtCore.QDate, time: QtCore.QTime, identifier: int, isDeparture: bool):
+    def createConnectionRequestURL(date: QtCore.QDate, time: QtCore.QTime, identifier: int, isDeparture: bool) -> str:
         """
         Builds and returns the url for requesting connection from date,time,
         identifier (corresponding to a location) and a boolean departure
@@ -110,9 +110,9 @@ class Request:
         # build date-String
         dateString = date.toString(Request.DATE_FORMAT)
         # build and encode timeString
-        timeString = time.toString(Request.TIME_FORMAT).replace(":", Request.ENCODED_SEPERATOR)
+        timeString = time.toString(Request.TIME_FORMAT).replace(":", Request.EncodedSeparator)
         # build last part of url
-        lastPart = "authKey=" + Request.KEY + "&lang=" + Request.LANGUAGE + "&id="
+        lastPart = "authKey=" + Request.DbKey + "&lang=" + Request.LANGUAGE + "&id="
         lastPart = lastPart + str(identifier) + "&date=" + dateString + "&time=" + timeString
         # build complete url
         if isDeparture:
@@ -121,17 +121,17 @@ class Request:
             return Request.DB_BASE_URL + "arrivalBoard?" + lastPart
 
     @staticmethod
-    def createStationRequestURL(loc: str):
+    def createStationRequestURL(loc: str) -> str:
         """
         Builds and returns the url for requesting all locations that match to the
         given location loc.
         """
 
-        return Request.DB_BASE_URL + "location.name?authKey=" + Request.KEY + "&lang=" + Request.LANGUAGE + "&input=" +\
-            parse.quote(loc.replace(" ", ""))
+        return Request.DB_BASE_URL + "location.name?authKey=" + Request.DbKey + "&lang=" + Request.LANGUAGE + \
+            "&input=" + parse.quote(loc.replace(" ", ""))
 
     @staticmethod
-    def createMapURL(coordinates: [Coordinate], markerIndex: int, settings: RequestSettings):
+    def createMapURL(coordinates: [Coordinate], markerIndex: int, settings: RequestSettings) -> str:
         """
         Builds and returns the url for requesting the map with coordinates and settings.
         Use size, path- and marker color from settings.
@@ -147,22 +147,24 @@ class Request:
         res += "&sensor=false&path=color:" + settings.formatPathColor() + "|weight:" + settings.PATH_SIZE
         # add string of all coordinates for path
         res += Request.createFullCoordinateString(coordinates)
-        # add special marker size and color to url
-        res += "&markers=size:" + settings.MARKER_SIZE_SPECIAL + "|color:" + settings.formatSpecialColor()
-        # add String of special cordinate for special marker
-        res += Request.createCoordinateString(coordinates[markerIndex])
-        # delete special element it should not be marked 2 times
-        del coordinates[markerIndex]
-        # add marker size and color for normal locations
-        res += "&markers=size:" + settings.MARKER_SIZE + "|color:" + settings.formatColor() + "|"
-        # add string of all coordinates for markers
-        res += Request.createFullCoordinateString(coordinates)
+        # check for valid markerIndex
+        if markerIndex > 0:
+            # add special marker size and color to url
+            res += "&markers=size:" + settings.MARKER_SIZE_SPECIAL + "|color:" + settings.formatSpecialColor()
+            # add String of special coordinate for special marker
+            res += Request.createCoordinateString(coordinates[markerIndex])
+            # delete special element it should not be marked 2 times
+            del coordinates[markerIndex]
+            # add marker size and color for normal locations
+            res += "&markers=size:" + settings.MARKER_SIZE + "|color:" + settings.formatColor() + "|"
+            # add string of all coordinates for markers
+            res += Request.createFullCoordinateString(coordinates)
         # add google map key
-        res += "&key=" + Request.GOOGLEMAPS_KEY
+        res += "&key=" + Request.GoogleMapsKey
         return res
 
     @staticmethod
-    def createFullCoordinateString(cords: [Coordinate]):
+    def createFullCoordinateString(cords: [Coordinate]) -> str:
         """
         Takes a list of geographical locations and returns a string
         that is formatted for use in google-maps request.
@@ -176,7 +178,7 @@ class Request:
         return res
 
     @staticmethod
-    def createCoordinateString(loc: Coordinate):
+    def createCoordinateString(loc: Coordinate) ->str:
         """
         Takes a geographical location and returns a string
         that is formatted for use in google-maps request.
