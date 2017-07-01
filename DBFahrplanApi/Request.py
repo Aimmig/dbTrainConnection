@@ -21,10 +21,7 @@
 #    ---------------------------------------------------------------------
 
 import urllib.request as url_req
-import urllib.error as err
 import urllib.parse as parse
-from PyQt5 import QtCore as qc
-from PyQt5 import QtGui as qg
 
 class Request:
         """
