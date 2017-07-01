@@ -564,7 +564,7 @@ class FormWidget(QtWidgets.QWidget):
                 return
             (newStations, newStationsId) = parser.getStationsFromXMLString(xmlString)
             # if something was actually found replace everything
-            if len(newStations) > 0:
+            if newStations:
                 # reset id-list
                 self.stationId = []
                 # clear combo box
@@ -698,24 +698,20 @@ class FormWidget(QtWidgets.QWidget):
             return
         connections = parser.getConnectionsFromXMLString(xmlString, isDeparture)
         self.clearConnectionTable()
-        if not connections == "":
-            # clear displayed list
-            # check if something was actually found
-            if not connections:
-                # if not set index to last entry of pages so this page can never be reached again
-                self.conList.setDisplayedIndex(self.conList.getPageCount() - 1)
-                # set connection label to error Message
-                self.connection_label.setText(self.errorMsg)
-            else:
-                self.addConnections(connections)
-                # Add list of connections to pages
-                self.conList.appendPage(connections)
-                # set index to last entry of pages
-                self.conList.setDisplayedIndex(self.conList.getPageCount() - 1)
-                # set connection label
-                self.setConnectionLabel()
-        else:
+        # check if something was actually found
+        if not connections:
+            # if not set index to last entry of pages so this page can never be reached again
+            self.conList.setDisplayedIndex(self.conList.getPageCount() - 1)
+            # set connection label to error Message
             self.connection_label.setText(self.errorMsg)
+        else:
+            self.addConnections(connections)
+            # Add list of connections to pages
+            self.conList.appendPage(connections)
+            # set index to last entry of pages
+            self.conList.setDisplayedIndex(self.conList.getPageCount() - 1)
+            # set connection label
+            self.setConnectionLabel()
 
     def changePathColor(self):
         """

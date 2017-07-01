@@ -51,6 +51,8 @@ class Request:
         """
         Establishes connection to the given url, reads and returns
         the result of this resource.
+        :type url: str
+        :rtype str
         """
 
         req = url_req.Request(url)
@@ -63,6 +65,8 @@ class Request:
         """
         Returns the result of the given url resource.
         Used for requesting the connection details from the reference link.
+        :type url str
+        :rtype str
         """
 
         return Request.getResultFromServer(url)
@@ -73,28 +77,39 @@ class Request:
         Creates url for requesting all locations that match to the given
         location loc.
         Request these locations and returns the XML-String.
+        :type loc str
+        :rtype str
         """
 
         url = Request.createStationRequestURL(loc)
         return Request.getResultFromServer(url)
 
     @staticmethod
-    def getXMLStringConnectionRequest(date: QtCore.QDate, time: QtCore.QTime, identifier: int, isDeparture: bool):
+    def getXMLStringConnectionRequest(date: QtCore.QDate, time: QtCore.QTime, id: int, isDeparture: bool) -> str:
         """
         Creates url for requesting connections from date,time,
         identifier (corresponding to a location) and a boolean departure
         flag variable.
         Request the connections and returns the XML-String.
+        :type date QtCore.QDate
+        :type time Qt.Core.QTime
+        :type id int
+        :type isDeparture bool
+        :rtype str
         """
 
-        url = Request.createConnectionRequestURL(date, time, identifier, isDeparture)
+        url = Request.createConnectionRequestURL(date, time, id, isDeparture)
         return Request.getResultFromServer(url)
 
     @staticmethod
     def getMapWithLocations(coordinates: [Coordinate], markerIndex: int, settings: RequestSettings) -> str:
         """
         Creates google-maps url for corresponding map with given coordinates and settings.
-        Returns the raw requested data.
+        Returns the raw requested data
+        :type coordinates [Coordinate]
+        :type markerIndex int
+        :type settings RequestSettings
+        :rtype str
         """
 
         url = Request.createMapURL(coordinates, markerIndex, settings)
@@ -106,6 +121,12 @@ class Request:
         Builds and returns the url for requesting connection from date,time,
         identifier (corresponding to a location) and a boolean departure
         flag variable.
+        :type date QtCore.QDate
+        :type time Qt.Core.QTime
+        :type identifier int
+        :type isDeparture bool
+        :rtype str
+
         """
         # build date-String
         dateString = date.toString(Request.DATE_FORMAT)
@@ -125,6 +146,8 @@ class Request:
         """
         Builds and returns the url for requesting all locations that match to the
         given location loc.
+        :type loc str
+        :rtype str
         """
 
         return Request.DB_BASE_URL + "location.name?authKey=" + Request.DbKey + "&lang=" + Request.LANGUAGE + \
@@ -137,7 +160,11 @@ class Request:
         Use size, path- and marker color from settings.
         Create full path with all coordinates, for each coordinate add marker with
         default size except the specified markerIndex, these coordinate gets an other
-        color specified in settings.
+        color specified in settings
+        :type coordinates [Coordinate]
+        :type markerIndex int
+        :type settings RequestSettings
+        :rtype str
         """
 
         # add width and height and language of map to base url
@@ -168,6 +195,8 @@ class Request:
         """
         Takes a list of geographical locations and returns a string
         that is formatted for use in google-maps request.
+        :type cords [Coordinate]
+        :rtype str
         """
 
         res = ""
@@ -182,6 +211,8 @@ class Request:
         """
         Takes a geographical location and returns a string
         that is formatted for use in google-maps request.
+        :type loc Coordinate
+        :rtype str
         """
 
         # single coordinate is formatted to |lat,lon

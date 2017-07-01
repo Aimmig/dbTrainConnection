@@ -54,7 +54,17 @@ class Connection:
         """
         Constructs a new new connection from name,type,stopId,
         stopName,time,date,direction,origin,track and reference link.
-        Initializes empty stop-List and image-Data.
+        Initializes empty stop-List and image-Data
+        :type name str
+        :type typ str
+        :type stopId int
+        :type stopName str
+        :type time QtCore.QTime
+        :type date QtCore.Date
+        :type direction str
+        :type origin str
+        :type track str
+        :type ref str
         """
 
         # Name e.g. IC10250,ICE516, etc
@@ -82,35 +92,39 @@ class Connection:
         # construct connection with empty imageData
         self.imageData = QtCore.QByteArray()
 
-    def timeToString(self):
+    def timeToString(self) -> str:
         """
         Formats the connection time using Qt.Time method
         with format specified in ConnectionsSettings.
+        :rtype str
         """
 
         return self.time.toString(ConnectionsSettings.timeFormat)
 
-    def dateToString(self):
+    def dateToString(self) -> str:
         """
         Formats the connection date using Qt.Date method
         with format specified in ConnectionsSettings.
+        :rtype str
         """
 
         return self.date.toString(ConnectionsSettings.dateFormat)
 
-    def toStringDetails(self):
+    def toStringDetails(self) -> str:
         """
         Returns a detailed string representation of the connection
         for use in details label.
+        :rtype str
         """
 
         res = ConnectionsSettings.detailsBaseString + self.name + ConnectionsSettings.datePrefix + self.dateToString()
         return res
 
-    def toStringGeneral(self):
+    def toStringGeneral(self) -> str:
         """
         Returns a general String representation of the connection
         for overview.
+        :rtype str
         """
 
         res = ConnectionsSettings.generalBaseString + self.stopName
@@ -132,6 +146,16 @@ class Stop:
         """
         Constructs stop of name,id, arrivalTime, arrivalDate,
         departureTime, departureDate, Track, longitude, latitude.
+        :type name str
+        :type identifier int
+        :type arrTime QtCore.QTime
+        :type arrDate QtCore.QDate
+        :type depTime QtCore.QTime
+        :type depDate QtCore.QDate
+        :type track str
+        :type lon float
+        :type lat float
+
         """
 
         # name of the stop-station
@@ -148,18 +172,20 @@ class Stop:
         # position of the stop
         self.pos = Coordinate(lon, lat)
 
-    def arrTimeToString(self):
+    def arrTimeToString(self) -> str:
         """
         Formats the stops arrival time using Qt.Time method
         with format specified in ConnectionsSettings.
+        :rtype str
         """
 
         return self.arrTime.toString(ConnectionsSettings.timeFormat)
 
-    def depTimeToString(self):
+    def depTimeToString(self) -> str:
         """
         Formats the stops departure time using Qt.Time method
         with format specified in ConnectionsSettings.
+        :rtype str
         """
 
         return self.depTime.toString(ConnectionsSettings.timeFormat)
@@ -181,58 +207,70 @@ class ConnectionsList:
         Set indices to -1.
         """
 
-        # no information at construction
         self.connectionPages = []
         # thus indices -1
         self.displayedIndex = -1
         self.displayedDetailedIndex = (-1, -1)
 
-    def getSingleConnection(self, pageIndex: int, conIndexOnPage: int):
+    def getSingleConnection(self, pageIndex: int, conIndexOnPage: int) -> Connection:
         """
         Returns the conIndexOnPage'th connection on page PageIndex.
+        :type pageIndex int
+        :type conIndexOnPage int
+        :rtype Connection
         """
 
         return self.connectionPages[pageIndex][conIndexOnPage]
 
-    def getStop(self, pageIndex: int, conIndexOnPage: int, i: int):
+    def getStop(self, pageIndex: int, conIndexOnPage: int, i: int) -> Stop:
         """
         Returns the i-th stop of connection specified by 2 given indices.
+        :type pageIndex int
+        :type conIndexOnPage int
+        :type i int
+        :rtype Stop
         """
 
         return self.getSingleConnection(pageIndex, conIndexOnPage).stopList[i]
 
-    def getConnectionPage(self, pageIndex: int):
+    def getConnectionPage(self, pageIndex: int) -> [Connection]:
         """
         Returns the pageIndex'th list of connection (page).
+        :type pageIndex int
+        :rtype [Connection]
         """
 
         return self.connectionPages[pageIndex]
 
-    def getPageCount(self):
+    def getPageCount(self) -> int:
         """
         Returns the amount of pages.
+        :rtype int
         """
 
         return len(self.connectionPages)
 
-    def appendPage(self, connections):
+    def appendPage(self, connections: [Connection]):
         """
         Appends a list of connections to the end of connectionPages (new Page).
+        :type connections [Connection]
         """
 
         self.connectionPages.append(connections)
 
-    def getDetailsIndices(self):
+    def getDetailsIndices(self) -> (int,int):
         """
         Returns the index of the connection and the index of the page,
         which this connection is on, whos details are currently displayed.
+        :rtype (int,int)
         """
 
         return self.displayedDetailedIndex
 
-    def getDisplayedIndex(self):
+    def getDisplayedIndex(self) -> int:
         """
         Returns the index of the page that is currently displayed.
+        :rtype int
         """
 
         return self.displayedIndex
@@ -240,6 +278,7 @@ class ConnectionsList:
     def setDisplayedIndex(self, val: int):
         """
         Sets the index of the page that is currently displayed to given value.
+        :type val int
         """
 
         self.displayedIndex = val
@@ -248,6 +287,8 @@ class ConnectionsList:
         """
         Sets index of the connection whos details are currently displayed to row.
         The connection occurs on page pageIndex in connectionPages.
+        :type pageIndex int
+        :type row int
         """
 
         self.displayedDetailedIndex = (pageIndex, row)
@@ -261,6 +302,8 @@ class Coordinate:
     def __init__(self, lon: float, lat: float):
         """
         Constructs Coordinate from longitude and longitude.
+        :type lon float
+        :type lat float
         """
 
         self.lon = lon
@@ -279,7 +322,10 @@ class Filter:
         Constructs a filter with the given bool flags
         ICE,IC,other.
         Parameters should be True if the type should be
-        included after filtering, false otherwise.        
+        included after filtering, false otherwise.
+        :type ICE bool
+        :type IC bool
+        :type other bool
         """
 
         self.ICE = ICE
@@ -287,53 +333,65 @@ class Filter:
         self.other = other
 
     @staticmethod
-    def filterICE(con: Connection):
+    def filterICE(con: Connection) -> bool:
         """
         Returns true if the connection con is of type ICE.
+        :type con Connection
+        :rtype bool
         """
 
         return con.type == "ICE" or "ICE" in con.name
 
     @staticmethod
-    def filterIC(con: Connection):
+    def filterIC(con: Connection) -> bool:
         """
         Returns true if the connection con is of type IC.
+        :type con Connection
+        :rtype bool
         """
 
         # be sure to exclude ICE here
         return con.type == ("IC" or "IC" in con.name) and not Filter.filterICE(con)
 
     @staticmethod
-    def filterEC(con: Connection):
+    def filterEC(con: Connection) -> bool:
         """
         Returns true if the connection con is of type EC.
+        :type con Connection
+        :rtype bool
         """
 
         return con.type == "EC" or "EC" in con.name
 
     @staticmethod
-    def filterTGV(con: Connection):
+    def filterTGV(con: Connection) -> bool:
         """
         Returns true if the connection con is of type TGV.
+        :type con Connection
+        :rtype bool
         """
 
         return con.type == "TGV" or "TGV" in con.name
 
     @staticmethod
-    def filterOther(con: Connection):
+    def filterOther(con: Connection) -> bool:
         """
         Returns true if the connection is not of type filtered before.
+        :type con Connection
+        :rtype bool
         """
 
         # connection has train type other if it does not have an above stated train type
         return not (Filter.filterICE(con) or Filter.filterIC(con) or Filter.filterEC(con) or Filter.filterTGV(con))
 
-    def filter(self, connections: [Connection]):
+    def filter(self, connections: [Connection]) -> [int]:
         """
         Filters a list of connections by filtering each connection.
         Only filters on type if type flag was set.
         Groups ICE/TGV to ICE, EC/IC to IC.
         Returns list of original indices of all connections that passed filter.
+        :type connections [Connection]
+        :rtype [int]
         """
 
         res = []
@@ -376,6 +434,8 @@ class RequestSettings:
         """
         Construct RequestSettings with given defaultSize of the map
         and the default offset used when requesting earlier/later.
+        :type defaultSize int
+        :type defaultOffSet int
         """
 
         self.PATH_COLOR = QtGui.QColor('#ff0000')
@@ -384,24 +444,27 @@ class RequestSettings:
         self.width = defaultSize
         self.offSet = defaultOffSet
 
-    def formatPathColor(self):
+    def formatPathColor(self) -> str:
         """
         Returns string representation of the PathColor that can be used in URL.
+        :rtype str
         """
 
         return self.PATH_COLOR.name().replace('#', '0x')
 
-    def formatColor(self):
+    def formatColor(self) -> str:
         """
         Returns string representation of the MarkerColor that can be used in URL.
+        :rtype str
         """
 
         return self.MARKER_COLOR.name().replace('#', '0x')
 
     @staticmethod
-    def formatSpecialColor():
+    def formatSpecialColor() -> str:
         """
         Returns string representation of the MarkerColorSpecial that can be used in URL.
+        :rtype str
         """
 
         return RequestSettings.MARKER_COLOR_SPECIAL.name().replace('#', '0x')
@@ -409,13 +472,15 @@ class RequestSettings:
     def setMarkerColor(self, col: QtGui.QColor):
         """
         Set MarkerColor to given color.
+        :type col QtGui.QColor
         """
 
         self.MARKER_COLOR = col
 
     def setPathColor(self, col: QtGui.QColor):
         """
-        Set PathColor to given color.   
+        Set PathColor to given color.
+        :type col QtGui.QColor
         """
 
         self.PATH_COLOR = col
@@ -424,6 +489,7 @@ class RequestSettings:
         """
         Sets height to given value.
         If below minimum use minimum.
+        :type h int
         """
 
         # prevent to small size
@@ -436,6 +502,7 @@ class RequestSettings:
         """
         Sets width to given value.
         If below minimum use minimum.
+        :type w int
         """
 
         # prevent to small size
@@ -447,6 +514,7 @@ class RequestSettings:
     def setOffSet(self, s: int):
         """
         Sets the offset used when requesting earlier/later to given value.
+        :type s int
         """
 
         # do not set invalid offsets

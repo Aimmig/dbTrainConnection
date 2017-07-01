@@ -53,10 +53,12 @@ class XMLParser:
     TIME_FORMAT = "hh:mm"
 
     @staticmethod
-    def getStationsFromXMLString(xmlString: str):
+    def getStationsFromXMLString(xmlString: str)->([int], [str]):
         """
         Parses the xmlString and returns a list of all stop names
         and a list of all corresponding id's of these stops.
+        :type xmlString: str
+        :rtype ([int],[str])
         """
 
         root = ET.fromstring(xmlString)
@@ -70,12 +72,15 @@ class XMLParser:
         return stations, station_ids
 
     @staticmethod
-    def getConnectionsFromXMLString(xmlString: str, isDeparture: bool):
+    def getConnectionsFromXMLString(xmlString: str, isDeparture: bool)-> [Connection]:
         """
         Parses xmlString and returns list of all connections
         contained in the string.
         Takes a boolean flag isDeparture to ensure departure/arrival.
         Returns empty string on parsing error.
+        :type xmlString str
+        :type isDeparture bool
+        :rtype [Connection]
         """
 
         try:
@@ -129,14 +134,16 @@ class XMLParser:
                 connections.append(Connection(name, typ, stopId, stopName, time, date, direction, origin, track, ref))
             return connections
         except ET.ParseError:
-            return ""
+            return []
 
     @staticmethod
-    def getStopListFromXMLString(xmlString: str):
+    def getStopListFromXMLString(xmlString: str) -> [Stop]:
         """
         Parses xmlString and returns list of all stops of a connection
         contained in the string.
         Returns empty string on parsing error.
+        :type xmlString: str
+        :rtype [Stop]
         """
 
         try:
@@ -199,4 +206,4 @@ class XMLParser:
             # return list of all stops
             return stopList
         except ET.ParseError:
-            return ""
+            return []

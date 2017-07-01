@@ -45,6 +45,7 @@ class QConnectionTable(QtWidgets.QTableWidget):
         Initializes QConnectionTable.
         Sets all desired properties.
         Sets appropriates headers.
+        :type main FormWidget
         """
 
         # call super constructor
@@ -122,6 +123,7 @@ class QDetailsTable(QtWidgets.QTableWidget):
         Initializes QDetailsTable.
         Sets all desired properties.
         Sets appropriates headers.
+        :type main FormWidget
         """
 
         # call super constructor
@@ -194,6 +196,8 @@ class QMapWidget(QtWidgets.QWidget):
         Loads the (raw) imageData to pixMap.
         Sets the windowTitle to given value and
         shows widget.
+        :type imageData QtCore.QByteArray
+        :type windowTitle str
         """
 
         # create pixMap
