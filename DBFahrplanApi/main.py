@@ -20,21 +20,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #    ---------------------------------------------------------------------
 
-# import qt-stuff
-from PyQt5 import QtCore as qc
-from PyQt5 import QtGui as qg
-from PyQt5 import QtWidgets as qw
-
-from Structs import Filter, ConnectionsList
+from PyQt5 import QtCore, QtGui, QtWidgets
 from Widgets import QConnectionTable, QDetailsTable, QMapWidget
-from Request import Request as req
+from Request import Request
+from Structs import Connection, ConnectionsList, Stop, Filter
 from SettingsWidget import SettingsWidget
 from XMLParser import XMLParser as parser
 import sys
 import urllib.error as err
 
 
-class FormWidget(qw.QWidget):
+class FormWidget(QtWidgets.QWidget):
     """
     Main Gui consist of three parts.
     Part 1 for user input,
@@ -71,7 +67,7 @@ class FormWidget(qw.QWidget):
         self.settingsWidget = SettingsWidget()
 
         # create HorizontalBoxLayout as overall Widget layout
-        layout = qw.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout()
 
         # initialize three main layout parts
         box1 = self.initializeUserInputLayout()
@@ -94,12 +90,12 @@ class FormWidget(qw.QWidget):
         """
 
         # create MenuBar with self as parent
-        self.myQMenuBar = qw.QMenuBar(self)
+        self.myQMenuBar = QtWidgets.QMenuBar(self)
 
         # create Menu for changing settings
         settingsMenu = self.myQMenuBar.addMenu('Einstellung')
         # create Action for changing settings
-        settingsAction = qw.QAction('Ändern', self)
+        settingsAction = QtWidgets.QAction('Ändern', self)
         # connect Action with method
         settingsAction.triggered.connect(self.showSettingsWidget)
         # add Action to Menu
@@ -108,13 +104,13 @@ class FormWidget(qw.QWidget):
         # create Menu for changing Colors
         colorMenu = self.myQMenuBar.addMenu('Farben')
         # create Action for changing Path color
-        colorPathAction = qw.QAction('Pfad-Farbe ändern', self)
+        colorPathAction = QtWidgets.QAction('Pfad-Farbe ändern', self)
         # connect Action with method
         colorPathAction.triggered.connect(self.changePathColor)
         # add Action to Menu
         colorMenu.addAction(colorPathAction)
         # create Action for changing Marker Color
-        colorMarkerAction = qw.QAction('Marker-Farbe ändern', self)
+        colorMarkerAction = QtWidgets.QAction('Marker-Farbe ändern', self)
         # connect Action with method
         colorMarkerAction.triggered.connect(self.changeMarkerColor)
         # add Action to Menu
@@ -123,9 +119,9 @@ class FormWidget(qw.QWidget):
         # create Menu for application
         exitMenu = self.myQMenuBar.addMenu('Anwendung')
         # create Action for closing application
-        exitAction = qw.QAction('Beenden', self)
+        exitAction = QtWidgets.QAction('Beenden', self)
         # connect Action with method
-        exitAction.triggered.connect(qw.qApp.quit)
+        exitAction.triggered.connect(QtWidgets.qApp.quit)
         # add Action to Menu
         exitMenu.addAction(exitAction)
 
@@ -139,64 +135,64 @@ class FormWidget(qw.QWidget):
         """
 
         # create VerticalBoxLayouts
-        layout = qw.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
 
         # input field for user input
-        self.inp = qw.QLineEdit()
+        self.inp = QtWidgets.QLineEdit()
         # button for getting stations
-        self.chooseStation = qw.QPushButton("Bahnhof wählen")
+        self.chooseStation = QtWidgets.QPushButton("Bahnhof wählen")
         self.chooseStation.clicked.connect(self.getStations)
 
         # group input and button in input_layout1
-        input1_layout = qw.QHBoxLayout()
+        input1_layout = QtWidgets.QHBoxLayout()
         input1_layout.addWidget(self.inp)
         input1_layout.addWidget(self.chooseStation)
 
         # comboBox for all Stations
-        self.railStations = qw.QComboBox()
+        self.railStations = QtWidgets.QComboBox()
         # time chooser for selecting time
-        self.time_chooser = qw.QTimeEdit()
+        self.time_chooser = QtWidgets.QTimeEdit()
 
         # group combo box and time picker in input_layout2
-        input2_layout = qw.QHBoxLayout()
+        input2_layout = QtWidgets.QHBoxLayout()
         input2_layout.addWidget(self.railStations)
         input2_layout.addWidget(self.time_chooser)
 
         # calendar for selecting date
-        self.date_chooser = qw.QCalendarWidget()
+        self.date_chooser = QtWidgets.QCalendarWidget()
 
         # buttons for getting all connections with System Time
-        self.request_now = qw.QPushButton("Jetzt")
+        self.request_now = QtWidgets.QPushButton("Jetzt")
         self.request_now.clicked.connect(self.getConnectionsNow)
         # button for getting connections with choosen Time
-        self.request_choosenTime = qw.QPushButton("Anfragen")
+        self.request_choosenTime = QtWidgets.QPushButton("Anfragen")
         self.request_choosenTime.clicked.connect(self.getConnectionsWithTime)
 
         # group time_chooser and request in request_layout
-        request_layout = qw.QHBoxLayout()
+        request_layout = QtWidgets.QHBoxLayout()
         request_layout.addWidget(self.request_now)
         request_layout.addWidget(self.request_choosenTime)
 
         # create RadioButtons for departure/arrival selection
-        self.depart = qw.QRadioButton("Abfahrten")
-        self.arriv = qw.QRadioButton("Ankünfte")
+        self.depart = QtWidgets.QRadioButton("Abfahrten")
+        self.arriv = QtWidgets.QRadioButton("Ankünfte")
         # group RadioButtons
-        radioButton_layout = qw.QHBoxLayout()
+        radioButton_layout = QtWidgets.QHBoxLayout()
         radioButton_layout.addWidget(self.depart)
         radioButton_layout.addWidget(self.arriv)
-        # make RadioButtons checkable and set departure to default checked
+        # set departure to default checked
         self.depart.setCheckable(True)
         self.arriv.setCheckable(True)
         self.depart.setChecked(True)
 
         # create Horizontal Layout for filtering
-        filterLayout = qw.QHBoxLayout()
+        filterLayout = QtWidgets.QHBoxLayout()
         # create CheckBoxes for activating Filtering
-        self.checkFilter = qw.QCheckBox(" Filter ")
+        self.checkFilter = QtWidgets.QCheckBox(" Filter ")
         # create CheckBoxes for choosing filters
-        self.checkICE = qw.QCheckBox(" ICE/TGV ")
-        self.checkIC = qw.QCheckBox(" IC/EC ")
-        self.checkOther = qw.QCheckBox(" other ")
+        self.checkICE = QtWidgets.QCheckBox(" ICE/TGV ")
+        self.checkIC = QtWidgets.QCheckBox(" IC/EC ")
+        self.checkOther = QtWidgets.QCheckBox(" other ")
         # add checkboxes to filterLayout
         filterLayout.addWidget(self.checkFilter)
         filterLayout.addWidget(self.checkICE)
@@ -204,16 +200,16 @@ class FormWidget(qw.QWidget):
         filterLayout.addWidget(self.checkOther)
 
         # create Layout for activating map
-        mapLayout = qw.QHBoxLayout()
+        mapLayout = QtWidgets.QHBoxLayout()
         # create CheckBox for en/disabling map
-        self.mapActive = qw.QCheckBox(" Karte anzeigen ")
+        self.mapActive = QtWidgets.QCheckBox(" Karte anzeigen ")
         # add checkbox to layout
         mapLayout.addWidget(self.mapActive)
 
         # create buttons for getting connections earlier/later and group them
-        requestEarlierLater_layout = qw.QHBoxLayout()
-        self.earlier = qw.QPushButton("Früher")
-        self.later = qw.QPushButton("Später")
+        requestEarlierLater_layout = QtWidgets.QHBoxLayout()
+        self.earlier = QtWidgets.QPushButton("Früher")
+        self.later = QtWidgets.QPushButton("Später")
         self.later.clicked.connect(self.getConnectionsLater)
         self.earlier.clicked.connect(self.getConnectionsEarlier)
         requestEarlierLater_layout.addWidget(self.earlier)
@@ -235,32 +231,32 @@ class FormWidget(qw.QWidget):
         """
         Initializes part 2 of the gui.
         This includes a label for generall information,
-        the QConnectionTable and buttons for navigation and 
+        the QtCoreonnectionTable and buttons for navigation and 
         refreshing.
         """
 
         # create VerticalBoxLayout
-        layout = qw.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
 
         # label for connectionTable
-        self.connection_label = qw.QLabel("")
+        self.connection_label = QtWidgets.QLabel("")
         # QTableWidget for displaying connections
         self.connectionTable = QConnectionTable(self)
         # connect connectionTable with function
         self.connectionTable.clicked.connect(self.getDetails)
 
         # button for navigating
-        self.prev = qw.QPushButton("Vorherige")
+        self.prev = QtWidgets.QPushButton("Vorherige")
         self.prev.clicked.connect(self.showPreviousPage)
         # button for refreshing the page using new filter
-        self.reload = qw.QPushButton("Aktualisieren")
+        self.reload = QtWidgets.QPushButton("Aktualisieren")
         self.reload.clicked.connect(self.refreshPage)
         # button for navigating
-        self.next = qw.QPushButton("Nächste")
+        self.next = QtWidgets.QPushButton("Nächste")
         self.next.clicked.connect(self.showNextPage)
 
         # layout for navigation
-        navigation_layout = qw.QHBoxLayout()
+        navigation_layout = QtWidgets.QHBoxLayout()
         # add buttons to navigation layout
         navigation_layout.addWidget(self.prev)
         navigation_layout.addWidget(self.reload)
@@ -281,10 +277,10 @@ class FormWidget(qw.QWidget):
         """
 
         # create VerticalBoxLayout
-        layout = qw.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
 
         # label for details of a connection
-        self.details_label = qw.QLabel("")
+        self.details_label = QtWidgets.QLabel("")
         # QTableWidget for presenting detailed data of a connection
         self.detailsTable = QDetailsTable(self)
         # connect QTableWidget with function
@@ -352,7 +348,7 @@ class FormWidget(qw.QWidget):
             urlString = connection.ref
             try:
                 # request xml String
-                xmlString = req.getXMLStringConnectionDetails(urlString)
+                xmlString = Request.getXMLStringConnectionDetails(urlString)
             except err.HTTPError as e:
                 print('The server couldn\'t fulfill the request.')
                 print('Error code: ', e.code)
@@ -362,12 +358,22 @@ class FormWidget(qw.QWidget):
                 print('Reason: ', e.reason)
                 return
             stopList = parser.getStopListFromXMLString(xmlString)
-            if stopList != "":
+            if stopList:
                 # set the stopList of the connection to the local list
                 connection.stopList = stopList
             else:
+                self.clearDetailsTable()
                 self.details_label.setText(self.errorMsg)
                 return
+        coordinates, markerIndex = self.addAllStopsToDetails(connection, index)
+        self.RequestAndShowMap(connection, coordinates, markerIndex)
+
+    def addAllStopsToDetails(self,connection: Connection, index: int):
+
+        """
+
+        """
+
         # for every stop in stopList add it to QTableWidget
         coordinates = []
         # clear detailsTable
@@ -375,17 +381,24 @@ class FormWidget(qw.QWidget):
         for i in range(len(connection.stopList)):
             self.addStopToDetails(connection.stopList[i])
             coordinates.append(connection.stopList[i].pos)
-            if connection.stopList[i].id == connection.stopid:
+            if connection.stopList[i].id == connection.stopId:
                 markerIndex = i
         # set details_label text to connection information
         self.details_label.setText(connection.toStringDetails())
         self.conList.setDisplayedDetailedIndex(self.conList.getDisplayedIndex(), index)
+        return coordinates, markerIndex
+
+    def RequestAndShowMap(self, connection: Connection,coordinates,markerIndex: int):
+
+        """
+
+        """
 
         # check if imageData is empty and if map is selected
         if connection.imageData.isEmpty() and self.mapActive.isChecked():
             # request imageData and create QByteArray and set imageData
-            connection.imageData = qc.QByteArray(
-                req.getMapWithLocations(coordinates, markerIndex, self.settingsWidget.settings))
+            connection.imageData = QtCore.QByteArray(
+                Request.getMapWithLocations(coordinates, markerIndex, self.settingsWidget.settings))
         # display requested map-Data
         if self.mapActive.isChecked():
             self.mapWidget.showMap(connection.imageData, connection.toStringDetails())
@@ -439,7 +452,7 @@ class FormWidget(qw.QWidget):
             # resize columns to content
             self.setConnectionLabel()
 
-    def addConnections(self, connections):
+    def addConnections(self, connections: ConnectionsList):
         """
         Adds every connection in connections to ConnectionTable.
         Instantiates a filter according to checkbox from userInput.
@@ -477,9 +490,9 @@ class FormWidget(qw.QWidget):
         """
 
         self.connection_label.setText(
-            self.conList.getSingleConnection(self.conList.getDisplayedIndex(), 0).toStringGenerall())
+            self.conList.getSingleConnection(self.conList.getDisplayedIndex(), 0).toStringGeneral())
 
-    def addConnectionToTable(self, con):
+    def addConnectionToTable(self, con: Connection):
         """
         Adds the given connection as a new row to ConnectionTable.
         When filter is used the new row is set to hidden default.
@@ -493,22 +506,22 @@ class FormWidget(qw.QWidget):
         if self.filterActive:
             self.connectionTable.setRowHidden(row, True)
         # add name of connection
-        self.connectionTable.setItem(row, QConnectionTable.name_Index, qw.QTableWidgetItem(con.name))
+        self.connectionTable.setItem(row, QConnectionTable.name_Index, QtWidgets.QTableWidgetItem(con.name))
         # check if direction and origin are valid and add them
         # note that direction (departure) an origin (arrival) are exclusive only one can be set!
         if con.direction:
-            self.connectionTable.setItem(row, QConnectionTable.to_Index, qw.QTableWidgetItem(con.direction))
-            self.connectionTable.setItem(row, QConnectionTable.from_Index, qw.QTableWidgetItem(con.stopName))
+            self.connectionTable.setItem(row, QConnectionTable.to_Index, QtWidgets.QTableWidgetItem(con.direction))
+            self.connectionTable.setItem(row, QConnectionTable.from_Index, QtWidgets.QTableWidgetItem(con.stopName))
         if con.origin:
-            self.connectionTable.setItem(row, QConnectionTable.from_Index, qw.QTableWidgetItem(con.origin))
-            self.connectionTable.setItem(row, QConnectionTable.to_Index, qw.QTableWidgetItem(con.stopName))
+            self.connectionTable.setItem(row, QConnectionTable.from_Index, QtWidgets.QTableWidgetItem(con.origin))
+            self.connectionTable.setItem(row, QConnectionTable.to_Index, QtWidgets.QTableWidgetItem(con.stopName))
         # add time of connection
-        self.connectionTable.setItem(row, QConnectionTable.time_Index, qw.QTableWidgetItem(con.timeToString()))
+        self.connectionTable.setItem(row, QConnectionTable.time_Index, QtWidgets.QTableWidgetItem(con.timeToString()))
         # if track is set add track of connection
         if con.track:
-            self.connectionTable.setItem(row, QConnectionTable.track_Index, qw.QTableWidgetItem(con.track))
+            self.connectionTable.setItem(row, QConnectionTable.track_Index, QtWidgets.QTableWidgetItem(con.track))
 
-    def addStopToDetails(self, stop):
+    def addStopToDetails(self, stop: Stop):
         """
         Adds the given stop as a new row to DetailsTable.
         """
@@ -518,14 +531,14 @@ class FormWidget(qw.QWidget):
         # select last row of QTableWidget details
         row = self.detailsTable.rowCount() - 1
         # add stopName
-        self.detailsTable.setItem(row, QDetailsTable.stop_Index, qw.QTableWidgetItem(stop.name))
+        self.detailsTable.setItem(row, QDetailsTable.stop_Index, QtWidgets.QTableWidgetItem(stop.name))
         # check if times and track are valid and add them
         if stop.arrTime:
-            self.detailsTable.setItem(row, QDetailsTable.arr_Index, qw.QTableWidgetItem(stop.arrTimeToString()))
+            self.detailsTable.setItem(row, QDetailsTable.arr_Index, QtWidgets.QTableWidgetItem(stop.arrTimeToString()))
         if stop.depTime:
-            self.detailsTable.setItem(row, QDetailsTable.dep_Index, qw.QTableWidgetItem(stop.depTimeToString()))
+            self.detailsTable.setItem(row, QDetailsTable.dep_Index, QtWidgets.QTableWidgetItem(stop.depTimeToString()))
         if stop.track:
-            self.detailsTable.setItem(row, QDetailsTable.track_Index, qw.QTableWidgetItem(stop.track))
+            self.detailsTable.setItem(row, QDetailsTable.track_Index, QtWidgets.QTableWidgetItem(stop.track))
 
     def getStations(self):
         """
@@ -538,7 +551,7 @@ class FormWidget(qw.QWidget):
         if loc.strip():
             try:
                 # create xml-object
-                xmlString = req.getXMLStringStationRequest(loc)
+                xmlString = Request.getXMLStringStationRequest(loc)
             except err.HTTPError as e:
                 print('The server couldn\'t fulfill the request.')
                 print('Error code: ', e.code)
@@ -595,7 +608,7 @@ class FormWidget(qw.QWidget):
         secShift = self.settingsWidget.getOffSet()
         self.getConnectionsWithShiftedTime(True, secShift)
 
-    def getConnectionsWithShiftedTime(self, isShiftPositive, secShift):
+    def getConnectionsWithShiftedTime(self, isShiftPositive: bool, secShift: int):
         """
         Requests connections earlier/later.
         isShiftPositive =False indicates earlier.
@@ -609,7 +622,7 @@ class FormWidget(qw.QWidget):
             # get the first connection
             con = self.conList.getSingleConnection(self.conList.getDisplayedIndex(), 0)
             # get id, date and time
-            identifier = con.stopid
+            identifier = con.stopId
             date = con.date
             time = con.time
             # direction is not set means it is a arrival
@@ -635,7 +648,7 @@ class FormWidget(qw.QWidget):
             # request new connections
             self.getConnections(date, newTime, identifier, isDeparture)
 
-    def getConnectionsFromInput(self, isnow):
+    def getConnectionsFromInput(self, isNow: bool):
         """
         If isnow is set True gets the current time and date.
         Otherwise reads time and date from userInput.
@@ -649,9 +662,9 @@ class FormWidget(qw.QWidget):
         if index < 0:
             return
         # use System-Time
-        if isnow:
-            date = qc.QDate.currentDate()
-            time = qc.QTime.currentTime()
+        if isNow:
+            date = QtCore.QDate.currentDate()
+            time = QtCore.QTime.currentTime()
         # use selected time from gui
         else:
             time = self.time_chooser.time()
@@ -665,16 +678,15 @@ class FormWidget(qw.QWidget):
             isDeparture = True
         self.getConnections(date, time, identifier, isDeparture)
 
-    def getConnections(self, date, time, identifier, isDeparture):
+    def getConnections(self, date: QtCore.QDate, time: QtCore.QTime, identifier: int, isDeparture: bool):
         """
          Request the connections from/to (specified by isDeparture flag)
-         the train station (specified by identifier) at given Date and Time
-         (Both as Qt.Time/Qt.Date Objects).
+         the train station (specified by identifier) at given Date and Time.
          If request was successful displays requested connection on ConnectionTabel.
          """
 
         try:
-            xmlString = req.getXMLStringConnectionRequest(date, time, identifier, isDeparture)
+            xmlString = Request.getXMLStringConnectionRequest(date, time, identifier, isDeparture)
         except err.HTTPError as e:
             print('The server couldn\'t fulfill the request.')
             print('Error code: ', e.code)
@@ -712,9 +724,9 @@ class FormWidget(qw.QWidget):
         """
 
         # create ColorDialog
-        colordialog = qw.QColorDialog()
+        colorDialog = QtWidgets.QColorDialog()
         # get the color
-        newColor = colordialog.getColor(qg.QColor(), self, 'Pfad-Farbe wählen')
+        newColor = colorDialog.getColor(QtGui.QColor(), self, 'Pfad-Farbe wählen')
         # check for invalid color
         if newColor.isValid():
             self.settingsWidget.settings.setPathColor(newColor)
@@ -727,9 +739,9 @@ class FormWidget(qw.QWidget):
         """
 
         # create ColorDialog
-        colordialog = qw.QColorDialog()
+        colorDialog = QtWidgets.QColorDialog()
         # get the color
-        newColor = colordialog.getColor(qg.QColor(), self, 'Marker-Farbe wählen')
+        newColor = colorDialog.getColor(QtGui.QColor(), self, 'Marker-Farbe wählen')
         # check for invalid color
         if newColor.isValid():
             self.settingsWidget.settings.setMarkerColor(newColor)
@@ -752,12 +764,12 @@ class FormWidget(qw.QWidget):
         All other keyPressEvent are passed to super keyPressEvent.
         """
 
-        if e.key() == qc.Qt.Key_Return or e.key() == qc.Qt.Key_Enter:
-            if self.stationId == []:
+        if e.key() == QtCore.Qt.Key_Return or e.key() == QtCore.Qt.Key_Enter:
+            if not self.stationId:
                 self.getStations()
             else:
                 self.getConnectionsNow()
-        elif e.key() == qc.Qt.Key_F5:
+        elif e.key() == QtCore.Qt.Key_F5:
             self.refreshPage()
         # pass to the super keyPressEvent
         else:
@@ -765,7 +777,7 @@ class FormWidget(qw.QWidget):
 
 
 if __name__ == "__main__":
-    app = qw.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     application = FormWidget()
     application.show()
     sys.exit(app.exec_())
