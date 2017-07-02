@@ -33,15 +33,15 @@ class ConnectionsSettings:
     """
 
     # format date as dd.M.yy
-    dateFormat = "dd.M.yy"
+    dateFormat = 'dd.M.yy'
     # format time as hh:mm
-    timeFormat = "hh:mm"
+    timeFormat = 'hh:mm'
     # string constants for toStringMethods
-    departureString = " (Abfahrt) "
-    arrivalString = " (Ankunft) "
-    detailsBaseString = "Zugverlauf von "
-    generalBaseString = "Fahrplantabelle für "
-    datePrefix = " am "
+    departureString = ' (Abfahrt) '
+    arrivalString = ' (Ankunft) '
+    detailsBaseString = 'Zugverlauf von '
+    generalBaseString = 'Fahrplantabelle für '
+    datePrefix = ' am '
 
 
 class Connection:
@@ -258,10 +258,10 @@ class ConnectionsList:
 
         self.connectionPages.append(connections)
 
-    def getDetailsIndices(self) -> (int,int):
+    def getDetailsIndices(self) -> (int, int):
         """
         Returns the index of the connection and the index of the page,
-        which this connection is on, whos details are currently displayed.
+        which this connection is on, whose details are currently displayed.
         :rtype (int,int)
         """
 
@@ -285,7 +285,7 @@ class ConnectionsList:
 
     def setDisplayedDetailedIndex(self, pageIndex: int, row: int):
         """
-        Sets index of the connection whos details are currently displayed to row.
+        Sets index of the connection whose details are currently displayed to row.
         The connection occurs on page pageIndex in connectionPages.
         :type pageIndex int
         :type row int
@@ -340,7 +340,7 @@ class Filter:
         :rtype bool
         """
 
-        return con.type == "ICE" or "ICE" in con.name
+        return con.type == 'ICE' or 'ICE' in con.name
 
     @staticmethod
     def filterIC(con: Connection) -> bool:
@@ -351,7 +351,7 @@ class Filter:
         """
 
         # be sure to exclude ICE here
-        return con.type == ("IC" or "IC" in con.name) and not Filter.filterICE(con)
+        return (con.type == 'IC' or 'IC' in con.name) and not Filter.filterICE(con)
 
     @staticmethod
     def filterEC(con: Connection) -> bool:
@@ -361,7 +361,7 @@ class Filter:
         :rtype bool
         """
 
-        return con.type == "EC" or "EC" in con.name
+        return con.type == 'EC' or 'EC' in con.name
 
     @staticmethod
     def filterTGV(con: Connection) -> bool:
@@ -371,7 +371,7 @@ class Filter:
         :rtype bool
         """
 
-        return con.type == "TGV" or "TGV" in con.name
+        return con.type == 'TGV' or 'TGV' in con.name
 
     @staticmethod
     def filterOther(con: Connection) -> bool:

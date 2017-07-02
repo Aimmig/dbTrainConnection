@@ -39,6 +39,7 @@ class SettingsWidget(QtWidgets.QWidget):
     defaultSize = 500
     defaultOffSet = 3
 
+    # noinspection PyArgumentList
     def __init__(self):
         """
         Constructor manages layout, initializes widget and sets all desired properties.
@@ -47,7 +48,7 @@ class SettingsWidget(QtWidgets.QWidget):
         # super constructor
         super(SettingsWidget, self).__init__()
         # set window title
-        self.setWindowTitle("Einstellungen ändern")
+        self.setWindowTitle('Einstellungen ändern')
 
         # create global Layout
         layout = QtWidgets.QVBoxLayout()
@@ -64,9 +65,9 @@ class SettingsWidget(QtWidgets.QWidget):
         # layout for map height width
         mapLayout = QtWidgets.QHBoxLayout()
         # add description label and line Edits to layout
-        mapLayout.addWidget(QtWidgets.QLabel(" Breite: "))
+        mapLayout.addWidget(QtWidgets.QLabel(' Breite: '))
         mapLayout.addWidget(self.mapWidth)
-        mapLayout.addWidget(QtWidgets.QLabel(" Höhe: "))
+        mapLayout.addWidget(QtWidgets.QLabel(' Höhe: '))
         mapLayout.addWidget(self.mapHeight)
 
         # create validator with valid values
@@ -76,9 +77,10 @@ class SettingsWidget(QtWidgets.QWidget):
         # set validator
         self.offsetField.setValidator(val)
         self.offsetField.setMaximumWidth(50)
-        label = QtWidgets.QLabel(" Stunden ")
+        label = QtWidgets.QLabel(' Stunden ')
         label.setMaximumWidth(60)
-        self.save = QtWidgets.QPushButton("Übernehmen")
+        self.save = QtWidgets.QPushButton('Übernehmen')
+        # noinspection PyUnresolvedReferences
         self.save.clicked.connect(self.saveInput)
 
         # add components to layout1
@@ -96,9 +98,10 @@ class SettingsWidget(QtWidgets.QWidget):
         # initialize Request settings object with default values
         self.settings = RequestSettings(SettingsWidget.defaultSize, SettingsWidget.defaultOffSet)
 
-    def getOffSet(self):
+    def getOffSet(self) -> int:
         """
         Returns the offset to use in seconds.
+        :rtype int
         """
 
         return self.settings.offSet * 3600

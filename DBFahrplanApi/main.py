@@ -46,6 +46,7 @@ class FormWidget(QtWidgets.QWidget):
         """
 
         # super constructor
+        # noinspection PyArgumentList
         super(FormWidget, self).__init__()
 
         # create MenuBar with self as parent
@@ -55,9 +56,9 @@ class FormWidget(QtWidgets.QWidget):
         self.initializeMenuBar()
 
         # set Window Title
-        self.setWindowTitle("Fahrplananzeige")
+        self.setWindowTitle('Fahrplananzeige')
         # set default error Message
-        self.errorMsg = "Keine Information  vorhanden"
+        self.errorMsg = 'Keine Information  vorhanden'
         # create empty list for station Ids
         self.stationId = []
         # initialize ConnectionList
@@ -87,6 +88,7 @@ class FormWidget(QtWidgets.QWidget):
         # create empty Filter
         self.typeFilter = Filter()
 
+    # noinspection PyUnresolvedReferences
     def initializeMenuBar(self):
         """
         Initializes QMenuBar.
@@ -127,6 +129,7 @@ class FormWidget(QtWidgets.QWidget):
         # add Action to Menu
         exitMenu.addAction(exitAction)
 
+    # noinspection PyUnresolvedReferences,PyAttributeOutsideInit,PyArgumentList
     def initializeUserInputLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes first part of the gui.
@@ -142,7 +145,7 @@ class FormWidget(QtWidgets.QWidget):
         # input field for user input
         self.inp = QtWidgets.QLineEdit()
         # button for getting stations
-        self.chooseStation = QtWidgets.QPushButton("Bahnhof wählen")
+        self.chooseStation = QtWidgets.QPushButton('Bahnhof wählen')
         self.chooseStation.clicked.connect(self.getStations)
 
         # group input and button in input_layout1
@@ -164,20 +167,20 @@ class FormWidget(QtWidgets.QWidget):
         self.date_chooser = QtWidgets.QCalendarWidget()
 
         # buttons for getting all connections with System Time
-        self.request_now = QtWidgets.QPushButton("Jetzt")
+        self.request_now = QtWidgets.QPushButton('Jetzt')
         self.request_now.clicked.connect(self.getConnectionsNow)
-        # button for getting connections with choosen Time
-        self.request_choosenTime = QtWidgets.QPushButton("Anfragen")
-        self.request_choosenTime.clicked.connect(self.getConnectionsWithTime)
+        # button for getting connections with chosen Time
+        self.request_chosenTime = QtWidgets.QPushButton('Anfragen')
+        self.request_chosenTime.clicked.connect(self.getConnectionsWithTime)
 
         # group time_chooser and request in request_layout
         request_layout = QtWidgets.QHBoxLayout()
         request_layout.addWidget(self.request_now)
-        request_layout.addWidget(self.request_choosenTime)
+        request_layout.addWidget(self.request_chosenTime)
 
         # create RadioButtons for departure/arrival selection
-        self.depart = QtWidgets.QRadioButton("Abfahrten")
-        self.arriv = QtWidgets.QRadioButton("Ankünfte")
+        self.depart = QtWidgets.QRadioButton('Abfahrten')
+        self.arriv = QtWidgets.QRadioButton('Ankünfte')
         # group RadioButtons
         radioButton_layout = QtWidgets.QHBoxLayout()
         radioButton_layout.addWidget(self.depart)
@@ -190,11 +193,11 @@ class FormWidget(QtWidgets.QWidget):
         # create Horizontal Layout for filtering
         filterLayout = QtWidgets.QHBoxLayout()
         # create CheckBoxes for activating Filtering
-        self.checkFilter = QtWidgets.QCheckBox(" Filter ")
+        self.checkFilter = QtWidgets.QCheckBox(' Filter ')
         # create CheckBoxes for choosing filters
-        self.checkICE = QtWidgets.QCheckBox(" ICE/TGV ")
-        self.checkIC = QtWidgets.QCheckBox(" IC/EC ")
-        self.checkOther = QtWidgets.QCheckBox(" other ")
+        self.checkICE = QtWidgets.QCheckBox(' ICE/TGV ')
+        self.checkIC = QtWidgets.QCheckBox(' IC/EC ')
+        self.checkOther = QtWidgets.QCheckBox(' other ')
         # add checkboxes to filterLayout
         filterLayout.addWidget(self.checkFilter)
         filterLayout.addWidget(self.checkICE)
@@ -204,14 +207,14 @@ class FormWidget(QtWidgets.QWidget):
         # create Layout for activating map
         mapLayout = QtWidgets.QHBoxLayout()
         # create CheckBox for en/disabling map
-        self.mapActive = QtWidgets.QCheckBox(" Karte anzeigen ")
+        self.mapActive = QtWidgets.QCheckBox(' Karte anzeigen ')
         # add checkbox to layout
         mapLayout.addWidget(self.mapActive)
 
         # create buttons for getting connections earlier/later and group them
         requestEarlierLater_layout = QtWidgets.QHBoxLayout()
-        self.earlier = QtWidgets.QPushButton("Früher")
-        self.later = QtWidgets.QPushButton("Später")
+        self.earlier = QtWidgets.QPushButton('Früher')
+        self.later = QtWidgets.QPushButton('Später')
         self.later.clicked.connect(self.getConnectionsLater)
         self.earlier.clicked.connect(self.getConnectionsEarlier)
         requestEarlierLater_layout.addWidget(self.earlier)
@@ -229,11 +232,12 @@ class FormWidget(QtWidgets.QWidget):
 
         return layout
 
+    # noinspection PyUnresolvedReferences,PyAttributeOutsideInit,PyArgumentList
     def initializeConnectionTableLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes part 2 of the gui.
-        This includes a label for generall information,
-        the QtCoreonnectionTable and buttons for navigation and 
+        This includes a label for general information,
+        the QConnectionTable and buttons for navigation and
         refreshing.
         """
 
@@ -241,20 +245,20 @@ class FormWidget(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout()
 
         # label for connectionTable
-        self.connection_label = QtWidgets.QLabel("")
+        self.connection_label = QtWidgets.QLabel('')
         # QTableWidget for displaying connections
         self.connectionTable = QConnectionTable(self)
         # connect connectionTable with function
         self.connectionTable.clicked.connect(self.getDetails)
 
         # button for navigating
-        self.prev = QtWidgets.QPushButton("Vorherige")
+        self.prev = QtWidgets.QPushButton('Vorherige')
         self.prev.clicked.connect(self.showPreviousPage)
         # button for refreshing the page using new filter
-        self.reload = QtWidgets.QPushButton("Aktualisieren")
+        self.reload = QtWidgets.QPushButton('Aktualisieren')
         self.reload.clicked.connect(self.refreshPage)
         # button for navigating
-        self.next = QtWidgets.QPushButton("Nächste")
+        self.next = QtWidgets.QPushButton('Nächste')
         self.next.clicked.connect(self.showNextPage)
 
         # layout for navigation
@@ -271,6 +275,7 @@ class FormWidget(QtWidgets.QWidget):
 
         return layout
 
+    # noinspection PyUnresolvedReferences,PyAttributeOutsideInit,PyArgumentList
     def initializeDetailsTableLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes part 3 of the gui.
@@ -282,7 +287,7 @@ class FormWidget(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout()
 
         # label for details of a connection
-        self.details_label = QtWidgets.QLabel("")
+        self.details_label = QtWidgets.QLabel('')
         # QTableWidget for presenting detailed data of a connection
         self.detailsTable = QDetailsTable(self)
         # connect QTableWidget with function
@@ -372,7 +377,14 @@ class FormWidget(QtWidgets.QWidget):
 
     def addAllStopsToDetails(self, connection: Connection, index: int) -> ([Coordinate], int):
         """
-
+        Adds all Stops of the given Connection to DetailsTable.
+        Sets the the displayedDetailedIndex to given index.
+        Sets the Details_label text.
+        In term calculates a list of Coordinates and the index of the stop for special markerIndex
+        and returns this as result.
+        :type connection: Connection
+        :type index: int
+        :rtype ([Coordinate],int)
         """
 
         markerIndex = -1
@@ -391,14 +403,19 @@ class FormWidget(QtWidgets.QWidget):
         return coordinates, markerIndex
 
     def RequestAndShowMap(self, connection: Connection, coordinates: [Coordinate], markerIndex: int):
-
         """
-
+        Checks if Map-Data needs to be requested.
+        If so request map-Data with coordinates and markerIndex.
+        Displays the map-Data.
+        :type connection Connection
+        :type coordinates [Coordinate]
+        :type markerIndex int
         """
 
         # check if imageData is empty and if map is selected
         if connection.imageData.isEmpty() and self.mapActive.isChecked():
             # request imageData and create QByteArray and set imageData
+            # noinspection PyArgumentList
             connection.imageData = QtCore.QByteArray(
                 Request.getMapWithLocations(coordinates, markerIndex, self.settingsWidget.settings))
         # display requested map-Data
@@ -584,7 +601,7 @@ class FormWidget(QtWidgets.QWidget):
 
     def getConnectionsWithTime(self):
         """
-        Encapsulation for requesting connections with choosen time from button.
+        Encapsulation for requesting connections with chosen time from button.
         Calls getConnectionFromInput with isNow=False.
         """
 
@@ -664,7 +681,9 @@ class FormWidget(QtWidgets.QWidget):
             return
         # use System-Time
         if isNow:
+            # noinspection PyArgumentList
             date = QtCore.QDate.currentDate()
+            # noinspection PyArgumentList
             time = QtCore.QTime.currentTime()
         # use selected time from gui
         else:
@@ -773,7 +792,7 @@ class FormWidget(QtWidgets.QWidget):
             super(FormWidget, self).keyPressEvent(e)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     application = FormWidget()
     application.show()
