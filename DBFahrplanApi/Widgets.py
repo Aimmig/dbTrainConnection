@@ -36,7 +36,7 @@ class QConnectionTable(QtWidgets.QTableWidget):
     to_Index = 2
     time_Index = 3
     track_Index = 4
-    header_list = ["Zugnummer", "von", "nach", "Uhrzeit", "Gleis"]
+    header_list = ['Zugnummer', 'von', 'nach', 'Uhrzeit', 'Gleis']
     minimumWidth = 420
     minimumHeight = 320
 
@@ -114,7 +114,7 @@ class QDetailsTable(QtWidgets.QTableWidget):
     arr_Index = 1
     dep_Index = 2
     track_Index = 3
-    header_list = ["Halt", "Ankunft", "Abfahrt", "Gleis"]
+    header_list = ['Halt', 'Ankunft', 'Abfahrt', 'Gleis']
     minimumWidth = 420
     minimumHeight = 320
 
