@@ -96,7 +96,9 @@ class SettingsWidget(QtWidgets.QWidget):
         self.setLayout(layout)
 
         # initialize Request settings object with default values
-        self.settings = RequestSettings(SettingsWidget.defaultSize, SettingsWidget.defaultOffSet)
+        # change this to create object first in constructor and then use values from object instead of
+        # member variables
+        self.settings = RequestSettings(SettingsWidget.defaultSize, SettingsWidget.defaultOffSet, 'config.txt')
 
     def getOffSet(self) -> int:
         """

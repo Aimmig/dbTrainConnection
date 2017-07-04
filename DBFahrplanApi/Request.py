@@ -33,18 +33,14 @@ class Request:
     """
 
     # static member variables
-    # API-Keys
-    DbKey = 'DBhackFrankfurt0316'
-    GoogleMapsKey = 'AIzaSyAa0JAwUZMPl5DbBuUn6IRCzh9PKGGtFx4'
-    # language of Request
-    LANGUAGE = 'de'
     # API base urls
     DB_BASE_URL = 'https://open-api.bahn.de/bin/rest.exe/'
     GOOGLE_MAPS_BASE_URL = 'https://maps.googleapis.com/maps/api/staticmap?'
+    EncodedSeparator = '%3A'
+
     # format strings for time and date
     DATE_FORMAT = 'yyyy-M-d'
     TIME_FORMAT = 'h:m'
-    EncodedSeparator = '%3A'
 
     @staticmethod
     def getResultFromServer(url: str) -> str:
@@ -72,21 +68,22 @@ class Request:
         return Request.getResultFromServer(url)
 
     @staticmethod
-    def getXMLStringStationRequest(loc: str) -> str:
+    def getXMLStringStationRequest(loc: str, settings: RequestSettings) -> str:
         """
         Creates url for requesting all locations that match to the given
         location loc.
         Request these locations and returns the XML-String.
         :type loc str
+        :type settings RequestSettings
         :rtype str
         """
 
-        url = Request.createStationRequestURL(loc)
+        url = Request.createStationRequestURL(loc, settings)
         return Request.getResultFromServer(url)
 
     @staticmethod
     def getXMLStringConnectionRequest(date: QtCore.QDate, time: QtCore.QTime, identifier: int,
-                                      isDeparture: bool) -> str:
+                                      isDeparture: bool, settings: RequestSettings) -> str:
         """
         Creates url for requesting connections from date,time,
         identifier (corresponding to a location) and a boolean departure
@@ -96,10 +93,11 @@ class Request:
         :type time Qt.Core.QTime
         :type identifier int
         :type isDeparture bool
+        :type settings RequestSettings
         :rtype str
         """
 
-        url = Request.createConnectionRequestURL(date, time, identifier, isDeparture)
+        url = Request.createConnectionRequestURL(date, time, identifier, isDeparture, settings)
         return Request.getResultFromServer(url)
 
     @staticmethod
@@ -117,7 +115,8 @@ class Request:
         return Request.getResultFromServer(url)
 
     @staticmethod
-    def createConnectionRequestURL(date: QtCore.QDate, time: QtCore.QTime, identifier: int, isDeparture: bool) -> str:
+    def createConnectionRequestURL(date: QtCore.QDate, time: QtCore.QTime, identifier: int, isDeparture: bool,
+                                   settings: RequestSettings) -> str:
         """
         Builds and returns the url for requesting connection from date,time,
         identifier (corresponding to a location) and a boolean departure
@@ -126,6 +125,7 @@ class Request:
         :type time Qt.Core.QTime
         :type identifier int
         :type isDeparture bool
+        :type settings RequestSettings
         :rtype str
 
         """
@@ -134,7 +134,7 @@ class Request:
         # build and encode timeString
         timeString = time.toString(Request.TIME_FORMAT).replace(":", Request.EncodedSeparator)
         # build last part of url
-        lastPart = 'authKey=' + Request.DbKey + '&lang=' + Request.LANGUAGE + '&id='
+        lastPart = 'authKey=' + settings.DbKey + '&lang=' + settings.LANGUAGE + '&id='
         lastPart = lastPart + str(identifier) + '&date=' + dateString + '&time=' + timeString
         # build complete url
         if isDeparture:
@@ -143,15 +143,16 @@ class Request:
             return Request.DB_BASE_URL + 'arrivalBoard?' + lastPart
 
     @staticmethod
-    def createStationRequestURL(loc: str) -> str:
+    def createStationRequestURL(loc: str, settings: RequestSettings) -> str:
         """
         Builds and returns the url for requesting all locations that match to the
         given location loc.
         :type loc str
+        :type settings RequestSettings
         :rtype str
         """
 
-        result = Request.DB_BASE_URL + 'location.name?authKey=' + Request.DbKey + "&lang=" + Request.LANGUAGE
+        result = Request.DB_BASE_URL + 'location.name?authKey=' + settings.DbKey + "&lang=" + settings.LANGUAGE
         result += '&input=' + parse.quote(loc.replace(" ", ""))
         return result
 
@@ -171,7 +172,7 @@ class Request:
 
         # add width and height and language of map to base url
         res = Request.GOOGLE_MAPS_BASE_URL + '&size=' + str(settings.width) + 'x' + str(
-            settings.height) + '&language=' + Request.LANGUAGE
+            settings.height) + '&language=' + settings.LANGUAGE
         # add path color and size to url
         res += '&sensor=false&path=color:' + settings.formatPathColor() + '|weight:' + settings.PATH_SIZE
         # add string of all coordinates for path
@@ -189,7 +190,7 @@ class Request:
             # add string of all coordinates for markers
             res += Request.createFullCoordinateString(coordinates)
         # add google map key
-        res += '&key=' + Request.GoogleMapsKey
+        res += '&key=' + settings.GoogleMapsKey
         return res
 
     @staticmethod

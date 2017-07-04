@@ -424,19 +424,30 @@ class RequestSettings:
     """
 
     # static settings that can not be changed (at the moment)
+    # change this to read all settings from file in constructor !!
     MARKER_SIZE = 'small'
     MARKER_SIZE_SPECIAL = 'mid'
     PATH_SIZE = '3'
     MARKER_COLOR_SPECIAL = QtGui.QColor('#aa339988')
     MIN_SIZE = 300
 
-    def __init__(self, defaultSize: int, defaultOffSet: int):
+    # API-Keys
+    DbKey = 'DBhackFrankfurt0316'
+    GoogleMapsKey = 'AIzaSyAa0JAwUZMPl5DbBuUn6IRCzh9PKGGtFx4'
+    # language of Request
+    LANGUAGE = 'de'
+
+    def __init__(self, defaultSize: int, defaultOffSet: int, fileName: str):
         """
         Construct RequestSettings with given defaultSize of the map
         and the default offset used when requesting earlier/later.
         :type defaultSize int
         :type defaultOffSet int
         """
+
+        # file = open(fileName);
+        # print(file.readLine());
+        # read all values from file instead of using hard-coded ones
 
         self.PATH_COLOR = QtGui.QColor('#ff0000')
         self.MARKER_COLOR = QtGui.QColor('#5555BB')

@@ -570,7 +570,7 @@ class FormWidget(QtWidgets.QWidget):
         if loc.strip():
             try:
                 # create xml-object
-                xmlString = Request.getXMLStringStationRequest(loc)
+                xmlString = Request.getXMLStringStationRequest(loc, self.settingsWidget.settings)
             except err.HTTPError as e:
                 print('The server couldn\'t fulfill the request.')
                 print('Error code: ', e.code)
@@ -706,7 +706,8 @@ class FormWidget(QtWidgets.QWidget):
          """
 
         try:
-            xmlString = Request.getXMLStringConnectionRequest(date, time, identifier, isDeparture)
+            xmlString = Request.getXMLStringConnectionRequest(date, time, identifier, isDeparture,
+                                                              self.settingsWidget.settings)
         except err.HTTPError as e:
             print('The server couldn\'t fulfill the request.')
             print('Error code: ', e.code)
