@@ -134,7 +134,7 @@ class Request:
         # build and encode timeString
         timeString = time.toString(Request.TIME_FORMAT).replace(":", Request.EncodedSeparator)
         # build last part of url
-        lastPart = 'authKey=' + settings.DbKey + '&lang=' + settings.LANGUAGE + '&id='
+        lastPart = 'authKey=' + settings.DBKey + '&lang=' + settings.LANGUAGE + '&id='
         lastPart = lastPart + str(identifier) + '&date=' + dateString + '&time=' + timeString
         # build complete url
         if isDeparture:
@@ -152,7 +152,7 @@ class Request:
         :rtype str
         """
 
-        result = Request.DB_BASE_URL + 'location.name?authKey=' + settings.DbKey + "&lang=" + settings.LANGUAGE
+        result = Request.DB_BASE_URL + 'location.name?authKey=' + settings.DBKey + "&lang=" + settings.LANGUAGE
         result += '&input=' + parse.quote(loc.replace(" ", ""))
         return result
 

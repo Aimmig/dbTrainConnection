@@ -31,14 +31,6 @@ class SettingsWidget(QtWidgets.QWidget):
     used when requesting connections earlier/later.
     """
 
-    # set some default values for later use
-    mapSizeMin = 300
-    mapSizeMax = 800
-    minTimeOffSet = 1
-    maxTimeOffSet = 24
-    defaultSize = 500
-    defaultOffSet = 3
-
     # noinspection PyArgumentList
     def __init__(self):
         """
@@ -47,6 +39,10 @@ class SettingsWidget(QtWidgets.QWidget):
 
         # super constructor
         super(SettingsWidget, self).__init__()
+
+        # initialize Request from config file
+        self.settings = RequestSettings('config.txt')
+
         # set window title
         self.setWindowTitle('Einstellungen ändern')
 
@@ -54,10 +50,10 @@ class SettingsWidget(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout()
 
         # create validator with valid values
-        val = QtGui.QIntValidator(SettingsWidget.mapSizeMin, SettingsWidget.mapSizeMax)
+        val = QtGui.QIntValidator(self.settings.MIN_SIZE, self.settings.MAX_SIZE)
         # create line edits for width/height with default values
-        self.mapWidth = QtWidgets.QLineEdit(str(SettingsWidget.defaultSize))
-        self.mapHeight = QtWidgets.QLineEdit(str(SettingsWidget.defaultSize))
+        self.mapWidth = QtWidgets.QLineEdit(str(self.settings.defaultSize))
+        self.mapHeight = QtWidgets.QLineEdit(str(self.settings.defaultSize))
         # set validators
         self.mapWidth.setValidator(val)
         self.mapHeight.setValidator(val)
@@ -71,9 +67,9 @@ class SettingsWidget(QtWidgets.QWidget):
         mapLayout.addWidget(self.mapHeight)
 
         # create validator with valid values
-        val = QtGui.QIntValidator(self.minTimeOffSet, self.maxTimeOffSet)
+        val = QtGui.QIntValidator(self.settings.MIN_OFFSET, self.settings.MAX_OFFSET)
         # create lne edit for offset with default value
-        self.offsetField = QtWidgets.QLineEdit(str(SettingsWidget.defaultOffSet))
+        self.offsetField = QtWidgets.QLineEdit(str(self.settings.defaultOffSet))
         # set validator
         self.offsetField.setValidator(val)
         self.offsetField.setMaximumWidth(50)
@@ -94,11 +90,6 @@ class SettingsWidget(QtWidgets.QWidget):
         layout.addLayout(layout1)
         # set layout
         self.setLayout(layout)
-
-        # initialize Request settings object with default values
-        # change this to create object first in constructor and then use values from object instead of
-        # member variables
-        self.settings = RequestSettings(SettingsWidget.defaultSize, SettingsWidget.defaultOffSet, 'config.txt')
 
     def getOffSet(self) -> int:
         """

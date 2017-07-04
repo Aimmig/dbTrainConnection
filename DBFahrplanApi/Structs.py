@@ -21,6 +21,7 @@
 #    ---------------------------------------------------------------------
 
 from PyQt5 import QtCore, QtGui
+import configparser
 
 
 class ConnectionsSettings:
@@ -423,37 +424,46 @@ class RequestSettings:
     Holds the offset used when requesting later/earlier.
     """
 
-    # static settings that can not be changed (at the moment)
-    # change this to read all settings from file in constructor !!
-    MARKER_SIZE = 'small'
-    MARKER_SIZE_SPECIAL = 'mid'
-    PATH_SIZE = '3'
-    MARKER_COLOR_SPECIAL = QtGui.QColor('#aa339988')
-    MIN_SIZE = 300
-
-    # API-Keys
-    DbKey = 'DBhackFrankfurt0316'
-    GoogleMapsKey = 'AIzaSyAa0JAwUZMPl5DbBuUn6IRCzh9PKGGtFx4'
-    # language of Request
-    LANGUAGE = 'de'
-
-    def __init__(self, defaultSize: int, defaultOffSet: int, fileName: str):
+    def __init__(self, fileName: str):
         """
-        Construct RequestSettings with given defaultSize of the map
-        and the default offset used when requesting earlier/later.
-        :type defaultSize int
-        :type defaultOffSet int
+        Construct RequestSettings object, that holds all
+        possible settings. Read these from given file.
+        :type fileName str
         """
 
-        # file = open(fileName);
-        # print(file.readLine());
-        # read all values from file instead of using hard-coded ones
+        # create parser and read file
+        parser = configparser.ConfigParser()
+        parser.read(fileName)
 
-        self.PATH_COLOR = QtGui.QColor('#ff0000')
-        self.MARKER_COLOR = QtGui.QColor('#5555BB')
-        self.height = defaultSize
-        self.width = defaultSize
-        self.offSet = defaultOffSet
+        # read keys
+        keys = 'Keys'
+        self.DBKey = parser[keys]['DBKey']
+        self.GoogleMapsKey = parser[keys]['GoogleMapsKey']
+
+        default = 'Default'
+        # read language
+        self.LANGUAGE = parser[default]['language']
+
+        # read default color values and sizes
+        self.PATH_COLOR = QtGui.QColor(parser[default]['PathColor'])
+        self.PATH_SIZE = parser[default]['PathSize']
+        self.MARKER_COLOR = QtGui.QColor(parser[default]['MarkerColor'])
+        self.MARKER_SIZE = parser[default]['MarkerSize']
+        self.MARKER_COLOR_SPECIAL = QtGui.QColor(parser[default]['MarkerColorSpecial'])
+        self.MARKER_SIZE_SPECIAL = parser[default]['MarkerSizeSpecial']
+
+        # read default offset and min/max offset
+        self.MIN_OFFSET = int(parser[default]['minTimeOffSet'])
+        self.MAX_OFFSET = int(parser[default]['maxTimeOffSet'])
+        self.defaultOffSet = int(parser[default]['defaultOffSet'])
+        self.offSet = self.defaultOffSet
+
+        # read default and min/max MapSize
+        self.MIN_SIZE = int(parser[default]['MapSizeMin'])
+        self.MAX_SIZE = int(parser[default]['MapSizeMax'])
+        self.defaultSize = int(parser[default]['defaultSize'])
+        self.height = self.defaultSize
+        self.width = self.defaultSize
 
     def formatPathColor(self) -> str:
         """
@@ -471,14 +481,13 @@ class RequestSettings:
 
         return self.MARKER_COLOR.name().replace('#', '0x')
 
-    @staticmethod
-    def formatSpecialColor() -> str:
+    def formatSpecialColor(self) -> str:
         """
         Returns string representation of the MarkerColorSpecial that can be used in URL.
         :rtype str
         """
 
-        return RequestSettings.MARKER_COLOR_SPECIAL.name().replace('#', '0x')
+        return self.MARKER_COLOR_SPECIAL.name().replace('#', '0x')
 
     def setMarkerColor(self, col: QtGui.QColor):
         """
@@ -504,10 +513,10 @@ class RequestSettings:
         """
 
         # prevent to small size
-        if h >= RequestSettings.MIN_SIZE:
+        if h >= self.MIN_SIZE:
             self.height = h
         else:
-            self.height = RequestSettings.MIN_SIZE
+            self.height = self.MIN_SIZE
 
     def setWidth(self, w: int):
         """
@@ -517,10 +526,10 @@ class RequestSettings:
         """
 
         # prevent to small size
-        if w >= RequestSettings.MIN_SIZE:
+        if w >= self.MIN_SIZE:
             self.width = w
         else:
-            self.width = RequestSettings.MIN_SIZE
+            self.width = self.MIN_SIZE
 
     def setOffSet(self, s: int):
         """
