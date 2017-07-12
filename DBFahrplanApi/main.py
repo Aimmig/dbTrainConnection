@@ -397,8 +397,9 @@ class FormWidget(QtWidgets.QWidget):
             coordinates.append(connection.stopList[i].pos)
             if connection.stopList[i].id == connection.stopId:
                 markerIndex = i
+        sett = self.settingsWidget.settings
         # set details_label text to connection information
-        self.details_label.setText(connection.toStringDetails())
+        self.details_label.setText(connection.toStringDetails(sett))
         self.conList.setDisplayedDetailedIndex(self.conList.getDisplayedIndex(), index)
         return coordinates, markerIndex
 
@@ -507,9 +508,9 @@ class FormWidget(QtWidgets.QWidget):
         Sets the connection label to the string representation of the first
         displayed connection.
         """
-
+        sett = self.settingsWidget.settings
         self.connection_label.setText(
-            self.conList.getSingleConnection(self.conList.getDisplayedIndex(), 0).toStringGeneral())
+            self.conList.getSingleConnection(self.conList.getDisplayedIndex(), 0).toStringGeneral(sett))
 
     def addConnectionToTable(self, con: Connection):
         """
@@ -535,7 +536,8 @@ class FormWidget(QtWidgets.QWidget):
             self.connectionTable.setItem(row, QConnectionTable.from_Index, QtWidgets.QTableWidgetItem(con.origin))
             self.connectionTable.setItem(row, QConnectionTable.to_Index, QtWidgets.QTableWidgetItem(con.stopName))
         # add time of connection
-        self.connectionTable.setItem(row, QConnectionTable.time_Index, QtWidgets.QTableWidgetItem(con.timeToString()))
+        sett = self.settingsWidget.settings
+        self.connectionTable.setItem(row, QConnectionTable.time_Index, QtWidgets.QTableWidgetItem(con.timeToString(sett)))
         # if track is set add track of connection
         if con.track:
             self.connectionTable.setItem(row, QConnectionTable.track_Index, QtWidgets.QTableWidgetItem(con.track))
@@ -552,10 +554,11 @@ class FormWidget(QtWidgets.QWidget):
         # add stopName
         self.detailsTable.setItem(row, QDetailsTable.stop_Index, QtWidgets.QTableWidgetItem(stop.name))
         # check if times and track are valid and add them
+        sett = self.settingsWidget.settings
         if stop.arrTime:
-            self.detailsTable.setItem(row, QDetailsTable.arr_Index, QtWidgets.QTableWidgetItem(stop.arrTimeToString()))
+            self.detailsTable.setItem(row, QDetailsTable.arr_Index, QtWidgets.QTableWidgetItem(stop.arrTimeToString(sett)))
         if stop.depTime:
-            self.detailsTable.setItem(row, QDetailsTable.dep_Index, QtWidgets.QTableWidgetItem(stop.depTimeToString()))
+            self.detailsTable.setItem(row, QDetailsTable.dep_Index, QtWidgets.QTableWidgetItem(stop.depTimeToString(sett)))
         if stop.track:
             self.detailsTable.setItem(row, QDetailsTable.track_Index, QtWidgets.QTableWidgetItem(stop.track))
 

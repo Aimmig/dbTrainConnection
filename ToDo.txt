@@ -5,3 +5,6 @@
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
 -Implement some sort of possibility to save the requested data local into a file
 -Integrate some more options(?) into QMenuBar
+-Seperate Settings class into 2 subclasses (request and other)
+-Move settings for mapSize/timeOffset to main gui
+- therefore restructure/remove SettingsWidget?!

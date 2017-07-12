@@ -24,25 +24,141 @@ from PyQt5 import QtCore, QtGui
 import configparser
 
 
-class ConnectionsSettings:
-    """ 
-    Class that holds all relevant constant and fix options
-    for formatting and converting connection to String.
-    Holds base strings for string representation
-    (general and details) of a connection.
-    Holds time and date formatting strings.
+class RequestSettings:
+    """
+    Class that encapsulates Request-settings.
+    Holds Marker size/color, Path size/color and the height/width
+    of the Map that will be requested.
+    Holds default values and a minimum for map size.
+    Holds the offset used when requesting later/earlier.
     """
 
-    # format date as dd.M.yy
-    dateFormat = 'dd.M.yy'
-    # format time as hh:mm
-    timeFormat = 'hh:mm'
-    # string constants for toStringMethods
-    departureString = ' (Abfahrt) '
-    arrivalString = ' (Ankunft) '
-    detailsBaseString = 'Zugverlauf von '
-    generalBaseString = 'Fahrplantabelle für '
-    datePrefix = ' am '
+    def __init__(self, fileName: str):
+        """
+        Construct RequestSettings object, that holds all
+        possible settings. Read these from given file.
+        :type fileName str
+        """
+
+        # create parser and read file
+        parser = configparser.ConfigParser()
+        parser.read(fileName)
+
+        # read keys
+        keys = 'Keys'
+        self.DBKey = parser[keys]['DBKey']
+        self.GoogleMapsKey = parser[keys]['GoogleMapsKey']
+
+        default = 'Default'
+        # read language
+        self.LANGUAGE = parser[default]['language']
+        self.dateFormat = parser[default]['dateFormat']
+        self.timeFormat = parser[default]['timeFormat']
+
+        # read default color values and sizes
+        self.PATH_COLOR = QtGui.QColor(parser[default]['PathColor'])
+        self.PATH_SIZE = parser[default]['PathSize']
+        self.MARKER_COLOR = QtGui.QColor(parser[default]['MarkerColor'])
+        self.MARKER_SIZE = parser[default]['MarkerSize']
+        self.MARKER_COLOR_SPECIAL = QtGui.QColor(parser[default]['MarkerColorSpecial'])
+        self.MARKER_SIZE_SPECIAL = parser[default]['MarkerSizeSpecial']
+
+        # read default offset and min/max offset
+        self.MIN_OFFSET = int(parser[default]['minTimeOffSet'])
+        self.MAX_OFFSET = int(parser[default]['maxTimeOffSet'])
+        self.defaultOffSet = int(parser[default]['defaultOffSet'])
+        self.offSet = self.defaultOffSet
+
+        # read default and min/max MapSize
+        self.MIN_SIZE = int(parser[default]['MapSizeMin'])
+        self.MAX_SIZE = int(parser[default]['MapSizeMax'])
+        self.defaultSize = int(parser[default]['defaultSize'])
+        self.height = self.defaultSize
+        self.width = self.defaultSize
+
+        # string constants for toStringMethods
+        self.departureString = ' (Abfahrt) '
+        self.arrivalString = ' (Ankunft) '
+        self.detailsBaseString = 'Zugverlauf von '
+        self.generalBaseString = 'Fahrplantabelle für '
+        self.datePrefix = ' am '
+
+    def formatPathColor(self) -> str:
+        """
+        Returns string representation of the PathColor that can be used in URL.
+        :rtype str
+        """
+
+        return self.PATH_COLOR.name().replace('#', '0x')
+
+    def formatColor(self) -> str:
+        """
+        Returns string representation of the MarkerColor that can be used in URL.
+        :rtype str
+        """
+
+        return self.MARKER_COLOR.name().replace('#', '0x')
+
+    def formatSpecialColor(self) -> str:
+        """
+        Returns string representation of the MarkerColorSpecial that can be used in URL.
+        :rtype str
+        """
+
+        return self.MARKER_COLOR_SPECIAL.name().replace('#', '0x')
+
+    def setMarkerColor(self, col: QtGui.QColor):
+        """
+        Set MarkerColor to given color.
+        :type col QtGui.QColor
+        """
+
+        self.MARKER_COLOR = col
+
+    def setPathColor(self, col: QtGui.QColor):
+        """
+        Set PathColor to given color.
+        :type col QtGui.QColor
+        """
+
+        self.PATH_COLOR = col
+
+    def setHeight(self, h: int):
+        """
+        Sets height to given value.
+        If below minimum use minimum.
+        :type h int
+        """
+
+        # prevent to small size
+        if h >= self.MIN_SIZE:
+            self.height = h
+        else:
+            self.height = self.MIN_SIZE
+
+    def setWidth(self, w: int):
+        """
+        Sets width to given value.
+        If below minimum use minimum.
+        :type w int
+        """
+
+        # prevent to small size
+        if w >= self.MIN_SIZE:
+            self.width = w
+        else:
+            self.width = self.MIN_SIZE
+
+    def setOffSet(self, s: int):
+        """
+        Sets the offset used when requesting earlier/later to given value.
+        :type s int
+        """
+
+        # do not set invalid offsets
+        if s <= 0:
+            return
+        self.offSet = s
 
 
 class Connection:
@@ -93,47 +209,45 @@ class Connection:
         # construct connection with empty imageData
         self.imageData = QtCore.QByteArray()
 
-    def timeToString(self) -> str:
+    def timeToString(self, settings: RequestSettings) -> str:
         """
-        Formats the connection time using Qt.Time method
-        with format specified in ConnectionsSettings.
+        Formats the connection time using Qt.Time method.
         :rtype str
         """
 
-        return self.time.toString(ConnectionsSettings.timeFormat)
+        return self.time.toString(settings.timeFormat)
 
-    def dateToString(self) -> str:
+    def dateToString(self, settings: RequestSettings) -> str:
         """
-        Formats the connection date using Qt.Date method
-        with format specified in ConnectionsSettings.
+        Formats the connection date using Qt.Date method.
         :rtype str
         """
 
-        return self.date.toString(ConnectionsSettings.dateFormat)
+        return self.date.toString(settings.dateFormat)
 
-    def toStringDetails(self) -> str:
+    def toStringDetails(self, settings: RequestSettings) -> str:
         """
         Returns a detailed string representation of the connection
         for use in details label.
         :rtype str
         """
 
-        res = ConnectionsSettings.detailsBaseString + self.name + ConnectionsSettings.datePrefix + self.dateToString()
+        res = settings.detailsBaseString + self.name + settings.datePrefix + self.dateToString(settings)
         return res
 
-    def toStringGeneral(self) -> str:
+    def toStringGeneral(self, settings: RequestSettings) -> str:
         """
         Returns a general String representation of the connection
         for overview.
         :rtype str
         """
 
-        res = ConnectionsSettings.generalBaseString + self.stopName
+        res = settings.generalBaseString + self.stopName
         if self.origin:
-            res += ConnectionsSettings.arrivalString
+            res += settings.arrivalString
         else:
-            res += ConnectionsSettings.departureString
-        res += ConnectionsSettings.datePrefix + self.dateToString()
+            res += settings.departureString
+        res += settings.datePrefix + self.dateToString(settings)
         return res
 
 
@@ -173,23 +287,21 @@ class Stop:
         # position of the stop
         self.pos = Coordinate(lon, lat)
 
-    def arrTimeToString(self) -> str:
+    def arrTimeToString(self, settings: RequestSettings) -> str:
         """
-        Formats the stops arrival time using Qt.Time method
-        with format specified in ConnectionsSettings.
+        Formats the stops arrival time using Qt.Time methods
         :rtype str
         """
 
-        return self.arrTime.toString(ConnectionsSettings.timeFormat)
+        return self.arrTime.toString(settings.timeFormat)
 
-    def depTimeToString(self) -> str:
+    def depTimeToString(self, settings: RequestSettings) -> str:
         """
-        Formats the stops departure time using Qt.Time method
-        with format specified in ConnectionsSettings.
+        Formats the stops departure time using Qt.Time method.
         :rtype str
         """
 
-        return self.depTime.toString(ConnectionsSettings.timeFormat)
+        return self.depTime.toString(settings.timeFormat)
 
 
 class ConnectionsList:
@@ -413,131 +525,3 @@ class Filter:
                 res.append(i)
         # return list of indices
         return res
-
-
-class RequestSettings:
-    """
-    Class that encapsulates Request-settings.
-    Holds Marker size/color, Path size/color and the height/width
-    of the Map that will be requested.
-    Holds default values and a minimum for map size.
-    Holds the offset used when requesting later/earlier.
-    """
-
-    def __init__(self, fileName: str):
-        """
-        Construct RequestSettings object, that holds all
-        possible settings. Read these from given file.
-        :type fileName str
-        """
-
-        # create parser and read file
-        parser = configparser.ConfigParser()
-        parser.read(fileName)
-
-        # read keys
-        keys = 'Keys'
-        self.DBKey = parser[keys]['DBKey']
-        self.GoogleMapsKey = parser[keys]['GoogleMapsKey']
-
-        default = 'Default'
-        # read language
-        self.LANGUAGE = parser[default]['language']
-
-        # read default color values and sizes
-        self.PATH_COLOR = QtGui.QColor(parser[default]['PathColor'])
-        self.PATH_SIZE = parser[default]['PathSize']
-        self.MARKER_COLOR = QtGui.QColor(parser[default]['MarkerColor'])
-        self.MARKER_SIZE = parser[default]['MarkerSize']
-        self.MARKER_COLOR_SPECIAL = QtGui.QColor(parser[default]['MarkerColorSpecial'])
-        self.MARKER_SIZE_SPECIAL = parser[default]['MarkerSizeSpecial']
-
-        # read default offset and min/max offset
-        self.MIN_OFFSET = int(parser[default]['minTimeOffSet'])
-        self.MAX_OFFSET = int(parser[default]['maxTimeOffSet'])
-        self.defaultOffSet = int(parser[default]['defaultOffSet'])
-        self.offSet = self.defaultOffSet
-
-        # read default and min/max MapSize
-        self.MIN_SIZE = int(parser[default]['MapSizeMin'])
-        self.MAX_SIZE = int(parser[default]['MapSizeMax'])
-        self.defaultSize = int(parser[default]['defaultSize'])
-        self.height = self.defaultSize
-        self.width = self.defaultSize
-
-    def formatPathColor(self) -> str:
-        """
-        Returns string representation of the PathColor that can be used in URL.
-        :rtype str
-        """
-
-        return self.PATH_COLOR.name().replace('#', '0x')
-
-    def formatColor(self) -> str:
-        """
-        Returns string representation of the MarkerColor that can be used in URL.
-        :rtype str
-        """
-
-        return self.MARKER_COLOR.name().replace('#', '0x')
-
-    def formatSpecialColor(self) -> str:
-        """
-        Returns string representation of the MarkerColorSpecial that can be used in URL.
-        :rtype str
-        """
-
-        return self.MARKER_COLOR_SPECIAL.name().replace('#', '0x')
-
-    def setMarkerColor(self, col: QtGui.QColor):
-        """
-        Set MarkerColor to given color.
-        :type col QtGui.QColor
-        """
-
-        self.MARKER_COLOR = col
-
-    def setPathColor(self, col: QtGui.QColor):
-        """
-        Set PathColor to given color.
-        :type col QtGui.QColor
-        """
-
-        self.PATH_COLOR = col
-
-    def setHeight(self, h: int):
-        """
-        Sets height to given value.
-        If below minimum use minimum.
-        :type h int
-        """
-
-        # prevent to small size
-        if h >= self.MIN_SIZE:
-            self.height = h
-        else:
-            self.height = self.MIN_SIZE
-
-    def setWidth(self, w: int):
-        """
-        Sets width to given value.
-        If below minimum use minimum.
-        :type w int
-        """
-
-        # prevent to small size
-        if w >= self.MIN_SIZE:
-            self.width = w
-        else:
-            self.width = self.MIN_SIZE
-
-    def setOffSet(self, s: int):
-        """
-        Sets the offset used when requesting earlier/later to given value.
-        :type s int
-        """
-
-        # do not set invalid offsets
-        if s <= 0:
-            return
-        self.offSet = s
