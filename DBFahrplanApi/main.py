@@ -205,13 +205,13 @@ class FormWidget(QtWidgets.QWidget):
         propertiesLayout = QtWidgets.QHBoxLayout()
 
         # create validator with valid values
-        #val = QtGui.QIntValidator(self.settings.MIN_SIZE, self.settings.MAX_SIZE)
+        # val = QtGui.QIntValidator(self.settings.MIN_SIZE, self.settings.MAX_SIZE)
         # create line edits for width/height with default values
-        self.mapWidth = QtWidgets.QLineEdit() #str(self.settings.defaultSize))
-        self.mapHeight = QtWidgets.QLineEdit() #str(self.settings.defaultSize))
+        self.mapWidth = QtWidgets.QLineEdit()  # str(self.settings.defaultSize))
+        self.mapHeight = QtWidgets.QLineEdit()  # str(self.settings.defaultSize))
         # set validators
-        #self.mapWidth.setValidator(val)
-        #self.mapHeight.setValidator(val)
+        # self.mapWidth.setValidator(val)
+        # self.mapHeight.setValidator(val)
 
         # layout for map height width
         # add description label and line Edits to layout
@@ -220,26 +220,26 @@ class FormWidget(QtWidgets.QWidget):
         mapWidthLayout.addWidget(QtWidgets.QLabel(' Breite: '))
         mapWidthLayout.addWidget(self.mapWidth)
         mapHeightLayout.addWidget(QtWidgets.QLabel(' Höhe: '))
-        mapHeightLayout .addWidget(self.mapHeight)
+        mapHeightLayout.addWidget(self.mapHeight)
 
         propertiesLayout.addLayout(mapHeightLayout)
         propertiesLayout.addLayout(mapWidthLayout)
 
         # create validator with valid values
-        #val = QtGui.QIntValidator(self.settings.MIN_OFFSET, self.settings.MAX_OFFSET)
+        # val = QtGui.QIntValidator(self.settings.MIN_OFFSET, self.settings.MAX_OFFSET)
         # create lne edit for offset with default value
         offsetLayout = QtWidgets.QVBoxLayout()
-        self.offsetField = QtWidgets.QLineEdit() #str(self.settings.defaultOffSet))
+        self.offsetField = QtWidgets.QLineEdit()  # str(self.settings.defaultOffSet))
         # set validator
-        #self.offsetField.setValidator(val)
+        # self.offsetField.setValidator(val)
         label = QtWidgets.QLabel(' Stunden ')
-        #self.save = QtWidgets.QPushButton('Übernehmen')
+        # self.save = QtWidgets.QPushButton('Übernehmen')
         # noinspection PyUnresolvedReferences
-        #self.save.clicked.connect(self.saveInput)
+        # self.save.clicked.connect(self.saveInput)
 
         offsetLayout.addWidget(label)
         offsetLayout.addWidget(self.offsetField)
-        #offsetLayout.addWidget(self.save)
+        # offsetLayout.addWidget(self.save)
 
         propertiesLayout.addLayout(offsetLayout)
 
@@ -571,7 +571,8 @@ class FormWidget(QtWidgets.QWidget):
             self.connectionTable.setItem(row, QConnectionTable.to_Index, QtWidgets.QTableWidgetItem(con.stopName))
         # add time of connection
         sett = self.settings
-        self.connectionTable.setItem(row, QConnectionTable.time_Index, QtWidgets.QTableWidgetItem(con.timeToString(sett)))
+        self.connectionTable.setItem(row, QConnectionTable.time_Index,
+                                     QtWidgets.QTableWidgetItem(con.timeToString(sett)))
         # if track is set add track of connection
         if con.track:
             self.connectionTable.setItem(row, QConnectionTable.track_Index, QtWidgets.QTableWidgetItem(con.track))
@@ -590,9 +591,11 @@ class FormWidget(QtWidgets.QWidget):
         # check if times and track are valid and add them
         sett = self.settings
         if stop.arrTime:
-            self.detailsTable.setItem(row, QDetailsTable.arr_Index, QtWidgets.QTableWidgetItem(stop.arrTimeToString(sett)))
+            self.detailsTable.setItem(row, QDetailsTable.arr_Index,
+                                      QtWidgets.QTableWidgetItem(stop.arrTimeToString(sett)))
         if stop.depTime:
-            self.detailsTable.setItem(row, QDetailsTable.dep_Index, QtWidgets.QTableWidgetItem(stop.depTimeToString(sett)))
+            self.detailsTable.setItem(row, QDetailsTable.dep_Index,
+                                      QtWidgets.QTableWidgetItem(stop.depTimeToString(sett)))
         if stop.track:
             self.detailsTable.setItem(row, QDetailsTable.track_Index, QtWidgets.QTableWidgetItem(stop.track))
 
