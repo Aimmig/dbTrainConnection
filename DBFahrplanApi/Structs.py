@@ -64,14 +64,10 @@ class RequestSettings:
         self.MARKER_SIZE_SPECIAL = parser[default]['MarkerSizeSpecial']
 
         # read default offset and min/max offset
-        self.MIN_OFFSET = int(parser[default]['minTimeOffSet'])
-        self.MAX_OFFSET = int(parser[default]['maxTimeOffSet'])
         self.defaultOffSet = int(parser[default]['defaultOffSet'])
         self.offSet = self.defaultOffSet
 
         # read default and min/max MapSize
-        self.MIN_SIZE = int(parser[default]['MapSizeMin'])
-        self.MAX_SIZE = int(parser[default]['MapSizeMax'])
         self.defaultSize = int(parser[default]['defaultSize'])
         self.height = self.defaultSize
         self.width = self.defaultSize
@@ -82,6 +78,38 @@ class RequestSettings:
         self.detailsBaseString = 'Zugverlauf von '
         self.generalBaseString = 'Fahrplantabelle für '
         self.datePrefix = ' am '
+
+    def getOffSet(self) -> int:
+        """
+        Returns the offset to use in seconds.
+        :rtype int
+        """
+
+        return self.offSet * 3600
+
+    def saveInput(self, height, width, offset):
+        """
+        Saves user input (if possible) into class variables.
+        """
+
+        try:
+            # convert desired height and with to int
+            height = int(height)
+            width = int(width)
+            # set settings to values
+            self.width = width
+            self.height = height
+        # on error do nothing, e.g use old values
+        except ValueError:
+            pass
+        try:
+            # convert desired offset
+            offset = int(offset)
+            # set setting to value
+            self.offSet = offset
+        # on error do nothing e.g use old value
+        except ValueError:
+            pass
 
     def formatPathColor(self) -> str:
         """
@@ -131,10 +159,8 @@ class RequestSettings:
         """
 
         # prevent to small size
-        if h >= self.MIN_SIZE:
+        if h >= 100:
             self.height = h
-        else:
-            self.height = self.MIN_SIZE
 
     def setWidth(self, w: int):
         """
@@ -144,10 +170,8 @@ class RequestSettings:
         """
 
         # prevent to small size
-        if w >= self.MIN_SIZE:
+        if w >= 100:
             self.width = w
-        else:
-            self.width = self.MIN_SIZE
 
     def setOffSet(self, s: int):
         """

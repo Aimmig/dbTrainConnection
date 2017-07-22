@@ -23,8 +23,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Widgets import QConnectionTable, QDetailsTable, QMapWidget
 from Request import Request
-from Structs import Connection, ConnectionsList, Stop, Filter, Coordinate
-from SettingsWidget import SettingsWidget
+from Structs import Connection, ConnectionsList, Stop, Filter, Coordinate, RequestSettings
 from XMLParser import XMLParser as parser
 import sys
 import urllib.error as err
@@ -67,8 +66,8 @@ class FormWidget(QtWidgets.QWidget):
         self.filterActive = True
         # initialize Widget for map
         self.mapWidget = QMapWidget()
-        # initialize SettingsWidget
-        self.settingsWidget = SettingsWidget()
+
+        self.settings = RequestSettings('config.txt')
 
         # create HorizontalBoxLayout as overall Widget layout
         layout = QtWidgets.QHBoxLayout()
@@ -95,15 +94,6 @@ class FormWidget(QtWidgets.QWidget):
         Adds action for choosing path and marker color.
         Adds action for showing the settingsWidget.
         """
-
-        # create Menu for changing settings
-        settingsMenu = self.myQMenuBar.addMenu('Einstellung')
-        # create Action for changing settings
-        settingsAction = QtWidgets.QAction('Ändern', self)
-        # connect Action with method
-        settingsAction.triggered.connect(self.showSettingsWidget)
-        # add Action to Menu
-        settingsMenu.addAction(settingsAction)
 
         # create Menu for changing Colors
         colorMenu = self.myQMenuBar.addMenu('Farben')
@@ -211,6 +201,48 @@ class FormWidget(QtWidgets.QWidget):
         # add checkbox to layout
         mapLayout.addWidget(self.mapActive)
 
+        # create global Layout
+        propertiesLayout = QtWidgets.QHBoxLayout()
+
+        # create validator with valid values
+        #val = QtGui.QIntValidator(self.settings.MIN_SIZE, self.settings.MAX_SIZE)
+        # create line edits for width/height with default values
+        self.mapWidth = QtWidgets.QLineEdit() #str(self.settings.defaultSize))
+        self.mapHeight = QtWidgets.QLineEdit() #str(self.settings.defaultSize))
+        # set validators
+        #self.mapWidth.setValidator(val)
+        #self.mapHeight.setValidator(val)
+
+        # layout for map height width
+        # add description label and line Edits to layout
+        mapHeightLayout = QtWidgets.QVBoxLayout()
+        mapWidthLayout = QtWidgets.QVBoxLayout()
+        mapWidthLayout.addWidget(QtWidgets.QLabel(' Breite: '))
+        mapWidthLayout.addWidget(self.mapWidth)
+        mapHeightLayout.addWidget(QtWidgets.QLabel(' Höhe: '))
+        mapHeightLayout .addWidget(self.mapHeight)
+
+        propertiesLayout.addLayout(mapHeightLayout)
+        propertiesLayout.addLayout(mapWidthLayout)
+
+        # create validator with valid values
+        #val = QtGui.QIntValidator(self.settings.MIN_OFFSET, self.settings.MAX_OFFSET)
+        # create lne edit for offset with default value
+        offsetLayout = QtWidgets.QVBoxLayout()
+        self.offsetField = QtWidgets.QLineEdit() #str(self.settings.defaultOffSet))
+        # set validator
+        #self.offsetField.setValidator(val)
+        label = QtWidgets.QLabel(' Stunden ')
+        #self.save = QtWidgets.QPushButton('Übernehmen')
+        # noinspection PyUnresolvedReferences
+        #self.save.clicked.connect(self.saveInput)
+
+        offsetLayout.addWidget(label)
+        offsetLayout.addWidget(self.offsetField)
+        #offsetLayout.addWidget(self.save)
+
+        propertiesLayout.addLayout(offsetLayout)
+
         # create buttons for getting connections earlier/later and group them
         requestEarlierLater_layout = QtWidgets.QHBoxLayout()
         self.earlier = QtWidgets.QPushButton('Früher')
@@ -224,9 +256,11 @@ class FormWidget(QtWidgets.QWidget):
         layout.addLayout(input1_layout)
         layout.addLayout(input2_layout)
         layout.addWidget(self.date_chooser)
+        layout.addLayout(offsetLayout)
         layout.addLayout(radioButton_layout)
         layout.addLayout(filterLayout)
         layout.addLayout(mapLayout)
+        layout.addLayout(propertiesLayout)
         layout.addLayout(requestEarlierLater_layout)
         layout.addLayout(request_layout)
 
@@ -397,7 +431,7 @@ class FormWidget(QtWidgets.QWidget):
             coordinates.append(connection.stopList[i].pos)
             if connection.stopList[i].id == connection.stopId:
                 markerIndex = i
-        sett = self.settingsWidget.settings
+        sett = self.settings
         # set details_label text to connection information
         self.details_label.setText(connection.toStringDetails(sett))
         self.conList.setDisplayedDetailedIndex(self.conList.getDisplayedIndex(), index)
@@ -418,10 +452,10 @@ class FormWidget(QtWidgets.QWidget):
             # request imageData and create QByteArray and set imageData
             # noinspection PyArgumentList
             connection.imageData = QtCore.QByteArray(
-                Request.getMapWithLocations(coordinates, markerIndex, self.settingsWidget.settings))
+                Request.getMapWithLocations(coordinates, markerIndex, self.settings))
         # display requested map-Data
         if self.mapActive.isChecked():
-            self.mapWidget.showMap(connection.imageData, connection.toStringDetails())
+            self.mapWidget.showMap(connection.imageData, connection.toStringDetails(self.settings))
 
     def showPreviousPage(self):
         """
@@ -508,7 +542,7 @@ class FormWidget(QtWidgets.QWidget):
         Sets the connection label to the string representation of the first
         displayed connection.
         """
-        sett = self.settingsWidget.settings
+        sett = self.settings
         self.connection_label.setText(
             self.conList.getSingleConnection(self.conList.getDisplayedIndex(), 0).toStringGeneral(sett))
 
@@ -536,7 +570,7 @@ class FormWidget(QtWidgets.QWidget):
             self.connectionTable.setItem(row, QConnectionTable.from_Index, QtWidgets.QTableWidgetItem(con.origin))
             self.connectionTable.setItem(row, QConnectionTable.to_Index, QtWidgets.QTableWidgetItem(con.stopName))
         # add time of connection
-        sett = self.settingsWidget.settings
+        sett = self.settings
         self.connectionTable.setItem(row, QConnectionTable.time_Index, QtWidgets.QTableWidgetItem(con.timeToString(sett)))
         # if track is set add track of connection
         if con.track:
@@ -554,7 +588,7 @@ class FormWidget(QtWidgets.QWidget):
         # add stopName
         self.detailsTable.setItem(row, QDetailsTable.stop_Index, QtWidgets.QTableWidgetItem(stop.name))
         # check if times and track are valid and add them
-        sett = self.settingsWidget.settings
+        sett = self.settings
         if stop.arrTime:
             self.detailsTable.setItem(row, QDetailsTable.arr_Index, QtWidgets.QTableWidgetItem(stop.arrTimeToString(sett)))
         if stop.depTime:
@@ -573,7 +607,7 @@ class FormWidget(QtWidgets.QWidget):
         if loc.strip():
             try:
                 # create xml-object
-                xmlString = Request.getXMLStringStationRequest(loc, self.settingsWidget.settings)
+                xmlString = Request.getXMLStringStationRequest(loc, self.settings)
             except err.HTTPError as e:
                 print('The server couldn\'t fulfill the request.')
                 print('Error code: ', e.code)
@@ -617,7 +651,7 @@ class FormWidget(QtWidgets.QWidget):
         the shift from the previous time.
         """
 
-        secShift = self.settingsWidget.getOffSet()
+        secShift = self.settings.getOffSet()
         self.getConnectionsWithShiftedTime(False, secShift)
 
     def getConnectionsLater(self):
@@ -627,7 +661,7 @@ class FormWidget(QtWidgets.QWidget):
         the shift to the previous time.
         """
 
-        secShift = self.settingsWidget.getOffSet()
+        secShift = self.settings.getOffSet()
         self.getConnectionsWithShiftedTime(True, secShift)
 
     def getConnectionsWithShiftedTime(self, isShiftPositive: bool, secShift: int):
@@ -709,8 +743,7 @@ class FormWidget(QtWidgets.QWidget):
          """
 
         try:
-            xmlString = Request.getXMLStringConnectionRequest(date, time, identifier, isDeparture,
-                                                              self.settingsWidget.settings)
+            xmlString = Request.getXMLStringConnectionRequest(date, time, identifier, isDeparture, self.settings)
         except err.HTTPError as e:
             print('The server couldn\'t fulfill the request.')
             print('Error code: ', e.code)
@@ -749,7 +782,7 @@ class FormWidget(QtWidgets.QWidget):
         newColor = colorDialog.getColor(QtGui.QColor(), self, 'Pfad-Farbe wählen')
         # check for invalid color
         if newColor.isValid():
-            self.settingsWidget.settings.setPathColor(newColor)
+            self.settings.setPathColor(newColor)
 
     def changeMarkerColor(self):
         """
@@ -764,14 +797,7 @@ class FormWidget(QtWidgets.QWidget):
         newColor = colorDialog.getColor(QtGui.QColor(), self, 'Marker-Farbe wählen')
         # check for invalid color
         if newColor.isValid():
-            self.settingsWidget.settings.setMarkerColor(newColor)
-
-    def showSettingsWidget(self):
-        """
-        Updates and shows settingsWidget.
-        """
-
-        self.settingsWidget.update()
+            self.settings.setMarkerColor(newColor)
 
     def keyPressEvent(self, e):
         """
