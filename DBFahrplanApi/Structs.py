@@ -274,6 +274,16 @@ class Connection:
         res += settings.datePrefix + self.dateToString(settings)
         return res
 
+    def toString(self, settings: RequestSettings) -> str:
+        """
+        Returns a string representation of the connection
+        :rtype str
+        """
+        if self.direction:
+            return self.name + ' nach ' + self.direction + ', ' + self.timeToString(settings) + ', Gleis ' + self.track
+        elif self.origin:
+            return self.name + ' von ' + self.origin + ', ' + self.timeToString(settings) + ', Gleis ' + self.track
+
 
 class Stop:
     """
@@ -326,6 +336,22 @@ class Stop:
         """
 
         return self.depTime.toString(settings.timeFormat)
+
+    def toString(self, settings: RequestSettings) -> str:
+        """
+        String representation of Stop
+        :rtype str
+        :
+        """
+
+        timeString = self.depTimeToString(settings)
+        if not timeString:
+            timeString = self.arrTimeToString(settings)
+        if self.track:
+            track = ', Gleis ' + self.track
+        else:
+            track = ''
+        return self.name + ', ' + timeString + track
 
 
 class ConnectionsList:

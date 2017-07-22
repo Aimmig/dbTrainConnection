@@ -54,38 +54,22 @@ def sendConnections(chat_id, isDeparture, name):
     if isDeparture:
         conn_string = 'Abfahrten für ' + name + '\n'
     else:
-        # noinspection SpellCheckingInspection
         conn_string = 'Ankunften für ' + name + '\n'
-    i = 0
-    if isDeparture:
-        for c in connections:
-            conn_string = conn_string + str(i) + ': ' + c.name + ' nach ' + c.direction + ', ' + c.timeToString(
-                settings) + ', Gleis ' + c.track + '\n'
-            i = i + 1
-    else:
-        for c in connections:
-            conn_string = conn_string + str(i) + ': ' + c.name + ' von ' + c.origin + ', ' + c.timeToString(
-                settings) + ', Gleis ' + c.track + '\n'
+    i = 1
+    for c in connections:
+            conn_string = conn_string + str(i) + ': ' + c.toString(settings) + '\n'
             i = i + 1
     bot.sendMessage(chat_id, conn_string)
 
 
 def sendDetails(chat_id, index_string):
     try:
-        index = int(index_string)
+        index = int(index_string) - 1
         details = Request.getXMLStringConnectionDetails(connections[index].ref)
         stop_details = parser.getStopListFromXMLString(details)
-        # noinspection SpellCheckingInspection
         result = 'Verlauf von ' + connections[index].name + ' am ' + connections[index].dateToString(settings) + '\n'
         for s in stop_details:
-            timeString = s.depTimeToString(settings)
-            if not timeString:
-                timeString = s.arrTimeToString(settings)
-            if s.track:
-                track = ', Gleis ' + s.track
-            else:
-                track = ''
-            result = result + s.name + ', ' + timeString + track + '\n'
+            result = result + s.toString(settings) + '\n'
         bot.sendMessage(chat_id, result)
     except ValueError:
         pass
@@ -99,12 +83,12 @@ def handle(msg):
     if content_type == 'text':
         split_msg = msg['text'].split(' ')
         if len(split_msg) == 2:
-            if split_msg[0] == '/info':
+            if split_msg[0].lower() == '/info':
                 sendDetails(chat_id, split_msg[1])
                 return
-            if split_msg[0] == '/departure':
+            if split_msg[0].lower() == '/departure':
                 isDeparture = True
-            elif split_msg[0] == '/arrival':
+            elif split_msg[0].lower() == '/arrival':
                 isDeparture = False
             else:
                 return
