@@ -62,8 +62,8 @@ class FormWidget(QtWidgets.QWidget):
         self.stationId = []
         # initialize ConnectionList
         self.conList = ConnectionsList()
-        # set filter to active
-        self.filterActive = True
+        # set filter to inactive
+        self.filterActive = False
         # initialize Widget for map
         self.mapWidget = QMapWidget()
 
@@ -118,7 +118,7 @@ class FormWidget(QtWidgets.QWidget):
         # add Action to Menu
         exitMenu.addAction(exitAction)
 
-    # noinspection PyUnresolvedReferences,PyAttributeOutsideInit,PyArgumentList
+    # noinspection PyAttributeOutsideInit,PyArgumentList
     def initializeUserInputLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes first part of the gui.
@@ -181,14 +181,11 @@ class FormWidget(QtWidgets.QWidget):
 
         # create Horizontal Layout for filtering
         filterLayout = QtWidgets.QHBoxLayout()
-        # create CheckBoxes for activating Filtering
-        self.checkFilter = QtWidgets.QCheckBox(' Filter ')
         # create CheckBoxes for choosing filters
         self.checkICE = QtWidgets.QCheckBox(' ICE/TGV ')
         self.checkIC = QtWidgets.QCheckBox(' IC/EC ')
         self.checkOther = QtWidgets.QCheckBox(' other ')
         # add checkboxes to filterLayout
-        filterLayout.addWidget(self.checkFilter)
         filterLayout.addWidget(self.checkICE)
         filterLayout.addWidget(self.checkIC)
         filterLayout.addWidget(self.checkOther)
@@ -203,14 +200,9 @@ class FormWidget(QtWidgets.QWidget):
         # create global Layout
         propertiesLayout = QtWidgets.QHBoxLayout()
 
-        # create validator with valid values
-        # val = QtGui.QIntValidator(self.settings.MIN_SIZE, self.settings.MAX_SIZE)
         # create line edits for width/height with default values
-        self.mapWidth = QtWidgets.QLineEdit()  # str(self.settings.defaultSize))
-        self.mapHeight = QtWidgets.QLineEdit()  # str(self.settings.defaultSize))
-        # set validators
-        # self.mapWidth.setValidator(val)
-        # self.mapHeight.setValidator(val)
+        self.mapWidth = QtWidgets.QLineEdit(str(self.settings.defaultSize))
+        self.mapHeight = QtWidgets.QLineEdit(str(self.settings.defaultSize))
 
         # layout for map height width
         # add description label and line Edits to layout
@@ -224,21 +216,13 @@ class FormWidget(QtWidgets.QWidget):
         propertiesLayout.addLayout(mapHeightLayout)
         propertiesLayout.addLayout(mapWidthLayout)
 
-        # create validator with valid values
-        # val = QtGui.QIntValidator(self.settings.MIN_OFFSET, self.settings.MAX_OFFSET)
         # create lne edit for offset with default value
         offsetLayout = QtWidgets.QVBoxLayout()
-        self.offsetField = QtWidgets.QLineEdit()  # str(self.settings.defaultOffSet))
-        # set validator
-        # self.offsetField.setValidator(val)
+        self.offsetField = QtWidgets.QLineEdit(str(self.settings.defaultOffSet))
         label = QtWidgets.QLabel(' Stunden ')
-        # self.save = QtWidgets.QPushButton('Übernehmen')
-        # noinspection PyUnresolvedReferences
-        # self.save.clicked.connect(self.saveInput)
 
         offsetLayout.addWidget(label)
         offsetLayout.addWidget(self.offsetField)
-        # offsetLayout.addWidget(self.save)
 
         propertiesLayout.addLayout(offsetLayout)
 
@@ -265,7 +249,7 @@ class FormWidget(QtWidgets.QWidget):
 
         return layout
 
-    # noinspection PyUnresolvedReferences,PyAttributeOutsideInit,PyArgumentList
+    # noinspection PyAttributeOutsideInit,PyArgumentList
     def initializeConnectionTableLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes part 2 of the gui.
@@ -308,7 +292,7 @@ class FormWidget(QtWidgets.QWidget):
 
         return layout
 
-    # noinspection PyUnresolvedReferences,PyAttributeOutsideInit,PyArgumentList
+    # noinspection PyArgumentList,PyAttributeOutsideInit
     def initializeDetailsTableLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes part 3 of the gui.
@@ -513,20 +497,17 @@ class FormWidget(QtWidgets.QWidget):
         connections that pass the filter.
         """
 
-        self.filterActive = self.checkFilter.isChecked()
         ICE = self.checkICE.isChecked()
         IC = self.checkIC.isChecked()
         Other = self.checkOther.isChecked()
         # minimum one filter type must be selected
-        if ICE or IC or Other:
-            self.typeFilter = Filter(ICE, IC, Other)
-        else:
-            self.filterActive = False
+        self.filterActive = ICE or IC or Other
         # add all connections to table
         for c in connections:
             self.addConnectionToTable(c)
         # displayed connections shall be filtered
         if self.filterActive:
+            self.typeFilter = Filter(ICE, IC, Other)
             # all Indices of original connections that shall be displayed
             displayIndex = self.typeFilter.filter(connections)
             # for each index in the list
