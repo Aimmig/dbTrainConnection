@@ -12,7 +12,14 @@ settings = RequestSettings('config.txt')
 connections = []
 
 
-def getStationId(loc):
+def getStationId(loc: str) -> (int, str):
+    """
+    Returns id and name of most suitable train station to given location
+    :type loc str
+    :rtype (int,str)
+    """
+
+    # avoid empty string
     if loc.strip():
         try:
             # create xml-object
@@ -20,22 +27,32 @@ def getStationId(loc):
         except err.HTTPError as e:
             print('The server couldn\'t fulfill the request.')
             print('Error code: ', e.code)
-            return
+            return 0, ''
         except err.URLError as e:
             print('We failed to reach a server.')
             print('Reason: ', e.reason)
-            return
+            return 0, ''
+        # parse information into list of id and names
         (newStations, newStationsId) = parser.getStationsFromXMLString(xmlString)
+        #
         if newStations:
             return newStationsId[0], newStations[0]
+        else:
+            return 0, ''
 
 
-def getConnections(identifier, isDeparture):
+# noinspection PyArgumentList
+def getConnections(identifier, isDeparture, current_time=QtCore.QTime.currentTime(),
+                   current_date=QtCore.QDate.currentDate()):
+    """
+    Retrieves connections
+    :type identifier int
+    :type isDeparture bool
+    :type current_date: QtCore.QDate
+    :type current_time: QtCore.QTime
+    """
+
     global connections
-    # noinspection PyArgumentList
-    current_date = QtCore.QDate.currentDate()
-    # noinspection PyArgumentList
-    current_time = QtCore.QTime.currentTime()
     try:
         xmlString = Request.getXMLStringConnectionRequest(current_date, current_time, identifier, isDeparture, settings)
     except err.HTTPError as e:
@@ -93,9 +110,41 @@ def handle(msg):
             else:
                 return
             identifier, name = getStationId(split_msg[1])
-            getConnections(identifier, isDeparture)
-            sendConnections(chat_id, isDeparture, name)
-
+            if name:
+                getConnections(identifier, isDeparture)
+                sendConnections(chat_id, isDeparture, name)
+                return
+        if len(split_msg) == 3:
+            if split_msg[0].lower() == '/departure':
+                isDeparture = True
+            elif split_msg[0].lower() == '/arrival':
+                isDeparture = False
+            else:
+                return
+            identifier, name = getStationId(split_msg[1])
+            if name:
+                time = QtCore.QTime.fromString(split_msg[2], settings.timeFormat)
+                getConnections(identifier, isDeparture, time)
+                sendConnections(chat_id, isDeparture, name)
+                return
+        if len(split_msg) == 4:
+            if split_msg[0].lower() == '/departure':
+                isDeparture = True
+            elif split_msg[0].lower() == '/arrival':
+                isDeparture = False
+            else:
+                return
+            identifier, name = getStationId(split_msg[1])
+            if name:
+                time = QtCore.QTime.fromString(split_msg[2], settings.timeFormat)
+                date = QtCore.QDate.fromString(split_msg[3], settings.dateFormat)
+                if not date.isValid():
+                    current_date = QtCore.QDate.currentDate()
+                    year = current_date.year()
+                    date = QtCore.QDate.fromString(split_msg[3]+'.'+str(year), settings.dateFormat)
+                getConnections(identifier, isDeparture, time, date)
+                sendConnections(chat_id, isDeparture, name)
+                return
 
 # noinspection SpellCheckingInspection
 TOKEN = '330294771:AAFJAZ5oyvNZX8nrJiDeqVCSTfrtsiy6IoA'

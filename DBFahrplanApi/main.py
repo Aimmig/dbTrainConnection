@@ -92,7 +92,6 @@ class FormWidget(QtWidgets.QWidget):
         """
         Initializes QMenuBar.
         Adds action for choosing path and marker color.
-        Adds action for showing the settingsWidget.
         """
 
         # create Menu for changing Colors
