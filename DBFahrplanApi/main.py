@@ -324,6 +324,9 @@ class FormWidget(QtWidgets.QWidget):
         Calls getConnections with the parameters read from this row.
         """
 
+        self.savesSettings()
+        self.showSettings()
+
         # get selected Row in connection details
         row = self.detailsTable.currentRow()
         # avoid error if nothing is selected
@@ -358,6 +361,9 @@ class FormWidget(QtWidgets.QWidget):
         detailed information (if needed) for this connection.
         Displays this detailed information in DetailsTable.
         """
+
+        self.savesSettings()
+        self.showSettings()
 
         # get the selected Index
         index = self.connectionTable.currentRow()
@@ -446,6 +452,9 @@ class FormWidget(QtWidgets.QWidget):
         Does not have an effect on first page.
         """
 
+        self.savesSettings()
+        self.showSettings()
+
         if self.conList.getDisplayedIndex() > 0:
             self.conList.setDisplayedIndex(self.conList.getDisplayedIndex() - 1)
             # remove old elements from QTableWidget
@@ -461,6 +470,9 @@ class FormWidget(QtWidgets.QWidget):
         Applies changed filter to original data
         and displays new results.
         """
+
+        self.savesSettings()
+        self.showSettings()
 
         index = self.conList.getDisplayedIndex()
         if index >= 0:
@@ -479,6 +491,9 @@ class FormWidget(QtWidgets.QWidget):
         Displays next page of requested connections.
         Does not have an effect on last page.
         """
+
+        self.savesSettings()
+        self.showSettings()
 
         if self.conList.getDisplayedIndex() < self.conList.getPageCount() - 1:
             self.conList.setDisplayedIndex(self.conList.getDisplayedIndex() + 1)
@@ -585,6 +600,11 @@ class FormWidget(QtWidgets.QWidget):
         the user input and displays names in corresponding combo-box.
         """
 
+        # first try to save settings
+        self.savesSettings()
+        # load settings
+        self.showSettings()
+
         loc = self.inp.text()
         # check for empty input
         if loc.strip():
@@ -634,6 +654,9 @@ class FormWidget(QtWidgets.QWidget):
         the shift from the previous time.
         """
 
+        self.savesSettings()
+        self.showSettings()
+
         secShift = self.settings.getOffSet()
         self.getConnectionsWithShiftedTime(False, secShift)
 
@@ -643,6 +666,9 @@ class FormWidget(QtWidgets.QWidget):
         True indicates later. Requesting later means add
         the shift to the previous time.
         """
+
+        self.savesSettings()
+        self.showSettings()
 
         secShift = self.settings.getOffSet()
         self.getConnectionsWithShiftedTime(True, secShift)
@@ -694,6 +720,9 @@ class FormWidget(QtWidgets.QWidget):
         Calls getConnection with these parameters.
         """
 
+        self.savesSettings()
+        self.showSettings()
+
         # get selected Index from ComboBox
         index = self.railStations.currentIndex()
         # check invalid Index
@@ -724,7 +753,6 @@ class FormWidget(QtWidgets.QWidget):
          the train station (specified by identifier) at given Date and Time.
          If request was successful displays requested connection on ConnectionTabel.
          """
-
         try:
             xmlString = Request.getXMLStringConnectionRequest(date, time, identifier, isDeparture, self.settings)
         except err.HTTPError as e:
@@ -804,6 +832,24 @@ class FormWidget(QtWidgets.QWidget):
         else:
             super(FormWidget, self).keyPressEvent(e)
 
+    def savesSettings(self):
+        try:
+            height = int(self.mapHeight.text())
+            width = int(self.mapWidth.text())
+            self.settings.setHeight(height)
+            self.settings.setWidth(width)
+        except ValueError:
+            pass
+        try:
+            offset = int(self.offsetField.text())
+            self.settings.setOffSet(offset)
+        except ValueError:
+            pass
+
+    def showSettings(self):
+        self.mapHeight.setText(str(self.settings.height))
+        self.mapWidth.setText(str(self.settings.width))
+        self.offsetField.setText(str(self.settings.offSet))
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

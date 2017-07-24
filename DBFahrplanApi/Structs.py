@@ -71,6 +71,8 @@ class RequestSettings:
         self.defaultSize = int(parser[default]['defaultSize'])
         self.height = self.defaultSize
         self.width = self.defaultSize
+        self.minSize = int(parser[default]['minSize'])
+        self.maxSize = int(parser[default]['maxSize'])
 
         # string constants for toStringMethods
         self.departureString = ' (Abfahrt) '
@@ -86,30 +88,6 @@ class RequestSettings:
         """
 
         return self.offSet * 3600
-
-    def saveInput(self, height, width, offset):
-        """
-        Saves user input (if possible) into class variables.
-        """
-
-        try:
-            # convert desired height and with to int
-            height = int(height)
-            width = int(width)
-            # set settings to values
-            self.width = width
-            self.height = height
-        # on error do nothing, e.g use old values
-        except ValueError:
-            pass
-        try:
-            # convert desired offset
-            offset = int(offset)
-            # set setting to value
-            self.offSet = offset
-        # on error do nothing e.g use old value
-        except ValueError:
-            pass
 
     def formatPathColor(self) -> str:
         """
@@ -154,23 +132,21 @@ class RequestSettings:
     def setHeight(self, h: int):
         """
         Sets height to given value.
-        If below minimum use minimum.
         :type h int
         """
 
-        # prevent to small size
-        if h >= 100:
+        # prevent to small/large size
+        if self.minSize <= h <= self.maxSize:
             self.height = h
 
     def setWidth(self, w: int):
         """
         Sets width to given value.
-        If below minimum use minimum.
         :type w int
         """
 
-        # prevent to small size
-        if w >= 100:
+        # prevent to small/large size
+        if self.minSize <= w <= self.maxSize:
             self.width = w
 
     def setOffSet(self, s: int):
@@ -179,10 +155,8 @@ class RequestSettings:
         :type s int
         """
 
-        # do not set invalid offsets
-        if s <= 0:
-            return
-        self.offSet = s
+        if s > 0:
+            self.offSet = s
 
 
 class Connection:
