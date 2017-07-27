@@ -171,7 +171,7 @@ class Request:
         """
 
         # add width and height and language of map to base url
-        res = Request.GOOGLE_MAPS_BASE_URL + '&size=' + str(settings.width) + 'x' + str(
+        res = Request.GOOGLE_MAPS_BASE_URL + '&scale=1' + '&size=' + str(settings.width) + 'x' + str(
             settings.height) + '&language=' + settings.LANGUAGE
         # add path color and size to url
         res += '&sensor=false&path=color:' + settings.formatPathColor() + '|weight:' + settings.PATH_SIZE
