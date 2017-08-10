@@ -8,7 +8,7 @@ from Structs import RequestSettings
 from XMLParser import XMLParser as parser
 import urllib.error as err
 
-settings = RequestSettings('config.txt')
+settings = RequestSettings('../config.txt')
 connections = []
 
 
