@@ -24,7 +24,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from Widgets import QConnectionTable, QDetailsTable, QMapWidget
 from Request import Request
 from Structs import Connection, ConnectionsList, Stop, Filter, Coordinate, RequestSettings
-from XMLParser import XMLParser as parser
+from XMLParser import XMLParser
 import sys
 import urllib.error as err
 
@@ -67,10 +67,10 @@ class FormWidget(QtWidgets.QWidget):
         # initialize Widget for map
         self.mapWidget = QMapWidget()
 
-        self.settings = RequestSettings('config.txt')
+        self.settings = RequestSettings('./config.txt')
 
         # create HorizontalBoxLayout as overall Widget layout
-        layout = QtWidgets.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout(self)
 
         # initialize three main layout parts
         box1 = self.initializeUserInputLayout()
@@ -118,7 +118,7 @@ class FormWidget(QtWidgets.QWidget):
         # add Action to Menu
         exitMenu.addAction(exitAction)
 
-    # noinspection PyAttributeOutsideInit,PyArgumentList
+    # noinspection PyAttributeOutsideInit,PyArgumentList,PyUnresolvedReferences
     def initializeUserInputLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes first part of the gui.
@@ -184,7 +184,7 @@ class FormWidget(QtWidgets.QWidget):
         # create CheckBoxes for choosing filters
         self.checkICE = QtWidgets.QCheckBox(' ICE/TGV ')
         self.checkIC = QtWidgets.QCheckBox(' IC/EC ')
-        self.checkOther = QtWidgets.QCheckBox(' other ')
+        self.checkOther = QtWidgets.QCheckBox(' andere ')
         # add checkboxes to filterLayout
         filterLayout.addWidget(self.checkICE)
         filterLayout.addWidget(self.checkIC)
@@ -239,7 +239,6 @@ class FormWidget(QtWidgets.QWidget):
         layout.addLayout(input1_layout)
         layout.addLayout(input2_layout)
         layout.addWidget(self.date_chooser)
-        layout.addLayout(offsetLayout)
         layout.addLayout(radioButton_layout)
         layout.addLayout(filterLayout)
         layout.addLayout(mapLayout)
@@ -249,7 +248,7 @@ class FormWidget(QtWidgets.QWidget):
 
         return layout
 
-    # noinspection PyAttributeOutsideInit,PyArgumentList
+    # noinspection PyAttributeOutsideInit,PyArgumentList,PyUnresolvedReferences
     def initializeConnectionTableLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes part 2 of the gui.
@@ -292,7 +291,7 @@ class FormWidget(QtWidgets.QWidget):
 
         return layout
 
-    # noinspection PyArgumentList,PyAttributeOutsideInit
+    # noinspection PyArgumentList,PyAttributeOutsideInit,PyUnresolvedReferences
     def initializeDetailsTableLayout(self) -> QtWidgets.QVBoxLayout:
         """
         Initializes part 3 of the gui.
@@ -387,7 +386,7 @@ class FormWidget(QtWidgets.QWidget):
                 print('We failed to reach a server.')
                 print('Reason: ', e.reason)
                 return
-            stopList = parser.getStopListFromXMLString(xmlString)
+            stopList = XMLParser.getStopListFromXMLString(xmlString)
             if stopList:
                 # set the stopList of the connection to the local list
                 connection.stopList = stopList
@@ -619,7 +618,7 @@ class FormWidget(QtWidgets.QWidget):
                 print('We failed to reach a server.')
                 print('Reason: ', e.reason)
                 return
-            (newStations, newStationsId) = parser.getStationsFromXMLString(xmlString)
+            (newStations, newStationsId) = XMLParser.getStationsFromXMLString(xmlString)
             # if something was actually found replace everything
             if newStations:
                 # reset id-list
@@ -763,7 +762,7 @@ class FormWidget(QtWidgets.QWidget):
             print('We failed to reach a server.')
             print('Reason: ', e.reason)
             return
-        connections = parser.getConnectionsFromXMLString(xmlString, isDeparture)
+        connections = XMLParser.getConnectionsFromXMLString(xmlString, isDeparture)
         self.clearConnectionTable()
         # check if something was actually found
         if not connections:

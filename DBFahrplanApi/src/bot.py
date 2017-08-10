@@ -123,8 +123,8 @@ def handle(msg):
                 return
             identifier, name = getStationId(split_msg[1])
             if name:
-                time = QtCore.QTime.fromString(split_msg[2], settings.timeFormat)
-                getConnections(identifier, isDeparture, time)
+                req_time = QtCore.QTime.fromString(split_msg[2], settings.timeFormat)
+                getConnections(identifier, isDeparture, req_time)
                 sendConnections(chat_id, isDeparture, name)
                 return
         if len(split_msg) == 4:
@@ -136,13 +136,14 @@ def handle(msg):
                 return
             identifier, name = getStationId(split_msg[1])
             if name:
-                time = QtCore.QTime.fromString(split_msg[2], settings.timeFormat)
+                req_time = QtCore.QTime.fromString(split_msg[2], settings.timeFormat)
                 date = QtCore.QDate.fromString(split_msg[3], settings.dateFormat)
                 if not date.isValid():
+                    # noinspection PyArgumentList
                     current_date = QtCore.QDate.currentDate()
                     year = current_date.year()
                     date = QtCore.QDate.fromString(split_msg[3]+'.'+str(year), settings.dateFormat)
-                getConnections(identifier, isDeparture, time, date)
+                getConnections(identifier, isDeparture, req_time, date)
                 sendConnections(chat_id, isDeparture, name)
                 return
 
