@@ -3,7 +3,3 @@
 -If possible make colums resizable and auto-streched on resize
 -Translate all Gui elements to English/German
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
--Implement some sort of possibility to save the requested data local into a file
-  ->(this might not be good practice (see API, because the Id's etc. might not be consistent)
--Integrate some more options(?) into QMenuBar
--Seperate Settings class into 2 subclasses (request and other)

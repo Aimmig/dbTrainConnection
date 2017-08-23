@@ -454,6 +454,12 @@ class Filter:
     are types that should be included after filtering.
     """
 
+    # define train type names
+    ICE = 'ICE'
+    IC = 'IC'
+    TGV = 'TGV'
+    EC = 'EC'
+
     def __init__(self, ICE: bool = False, IC: bool = False, other: bool = False):
         """
         Constructs a filter with the given bool flags
@@ -477,7 +483,7 @@ class Filter:
         :rtype bool
         """
 
-        return con.type == 'ICE' or 'ICE' in con.name
+        return con.type == Filter.ICE or Filter.ICE in con.name
 
     @staticmethod
     def filterIC(con: Connection) -> bool:
@@ -488,7 +494,7 @@ class Filter:
         """
 
         # be sure to exclude ICE here
-        return (con.type == 'IC' or 'IC' in con.name) and not Filter.filterICE(con)
+        return (con.type == Filter.IC or Filter.IC in con.name) and not Filter.filterICE(con)
 
     @staticmethod
     def filterEC(con: Connection) -> bool:
@@ -498,7 +504,7 @@ class Filter:
         :rtype bool
         """
 
-        return con.type == 'EC' or 'EC' in con.name
+        return con.type == Filter.EC or Filter.EC in con.name
 
     @staticmethod
     def filterTGV(con: Connection) -> bool:
@@ -508,7 +514,7 @@ class Filter:
         :rtype bool
         """
 
-        return con.type == 'TGV' or 'TGV' in con.name
+        return con.type == Filter.TGV or Filter.TGV in con.name
 
     @staticmethod
     def filterOther(con: Connection) -> bool:

@@ -38,6 +38,26 @@ class Request:
     GOOGLE_MAPS_BASE_URL = 'https://maps.googleapis.com/maps/api/staticmap?'
     EncodedSeparator = '%3A'
 
+    # API-Properties key-words for Deutsche Bahn API
+    UrlLang = '&lang='
+    UrlDate = '&date='
+    UrlTime = '&time='
+    UrlId = '&id='
+    UrlAuthKey = 'authKey='
+    UrlLocationName = 'location.name?'
+    UrlDepBoard = 'departureBoard?'
+    UrlArrBoard = 'arrivalBoard?'
+    UrlInput = '&input='
+
+    # API-Properties key-words for Google-Maps static API
+    UrlColor = '|color:'
+    UrlKey = '&key='
+    UrlMarkerSize = '&markers=size:'
+    UrlSeparator = '|'
+    UrlLanguage = '&language='
+    UrlSize = '&size='
+    UrlWeight = '|weight:'
+
     # format strings for time and date
     DATE_FORMAT = 'yyyy-M-d'
     TIME_FORMAT = 'h:m'
@@ -134,13 +154,13 @@ class Request:
         # build and encode timeString
         timeString = time.toString(Request.TIME_FORMAT).replace(":", Request.EncodedSeparator)
         # build last part of url
-        lastPart = 'authKey=' + settings.DBKey + '&lang=' + settings.LANGUAGE + '&id='
-        lastPart = lastPart + str(identifier) + '&date=' + dateString + '&time=' + timeString
+        lastPart = Request.UrlAuthKey + settings.DBKey + Request.UrlLang + settings.LANGUAGE + Request.UrlId
+        lastPart = lastPart + str(identifier) + Request.UrlDate + dateString + Request.UrlTime + timeString
         # build complete url
         if isDeparture:
-            return Request.DB_BASE_URL + 'departureBoard?' + lastPart
+            return Request.DB_BASE_URL + Request.UrlDepBoard + lastPart
         else:
-            return Request.DB_BASE_URL + 'arrivalBoard?' + lastPart
+            return Request.DB_BASE_URL + Request.UrlArrBoard + lastPart
 
     @staticmethod
     def createStationRequestURL(loc: str, settings: RequestSettings) -> str:
@@ -152,8 +172,8 @@ class Request:
         :rtype str
         """
 
-        result = Request.DB_BASE_URL + 'location.name?authKey=' + settings.DBKey + "&lang=" + settings.LANGUAGE
-        result += '&input=' + parse.quote(loc.replace(" ", ""))
+        result = Request.DB_BASE_URL + Request.UrlLocationName + Request.UrlAuthKey + settings.DBKey
+        result += Request.UrlLanguage + settings.LANGUAGE + Request.UrlInput+ parse.quote(loc.replace(" ", ""))
         return result
 
     @staticmethod
@@ -171,26 +191,28 @@ class Request:
         """
 
         # add width and height and language of map to base url
-        res = Request.GOOGLE_MAPS_BASE_URL + '&scale=1' + '&size=' + str(settings.width) + 'x' + str(
-            settings.height) + '&language=' + settings.LANGUAGE
+        res = Request.GOOGLE_MAPS_BASE_URL + '&scale=1' + Request.UrlSize + str(settings.width) + 'x' + str(
+            settings.height) + Request.UrlLanguage + settings.LANGUAGE
         # add path color and size to url
-        res += '&sensor=false&path=color:' + settings.formatPathColor() + '|weight:' + settings.PATH_SIZE
+        res += '&sensor=false&path=color:' + settings.formatPathColor() + Request.UrlWeight + settings.PATH_SIZE
         # add string of all coordinates for path
         res += Request.createFullCoordinateString(coordinates)
         # check for valid markerIndex
         if markerIndex > 0:
             # add special marker size and color to url
-            res += '&markers=size:' + settings.MARKER_SIZE_SPECIAL + '|color:' + settings.formatSpecialColor()
+            res += Request.UrlMarkerSize + settings.MARKER_SIZE_SPECIAL
+            res += Request.UrlColor + settings.formatSpecialColor()
             # add String of special coordinate for special marker
             res += Request.createCoordinateString(coordinates[markerIndex])
             # delete special element it should not be marked 2 times
             del coordinates[markerIndex]
             # add marker size and color for normal locations
-            res += '&markers=size:' + settings.MARKER_SIZE + '|color:' + settings.formatColor() + '|'
+            res += Request.UrlMarkerSize + settings.MARKER_SIZE
+            res += Request.UrlColor + settings.formatColor() + Request.UrlSeparator
             # add string of all coordinates for markers
             res += Request.createFullCoordinateString(coordinates)
         # add google map key
-        res += '&key=' + settings.GoogleMapsKey
+        res += Request.UrlKey + settings.GoogleMapsKey
         return res
 
     @staticmethod
@@ -219,4 +241,4 @@ class Request:
         """
 
         # single coordinate is formatted to |lat,lon
-        return '|' + str(loc.lat) + ',' + str(loc.lon)
+        return Request.UrlSeparator + str(loc.lat) + ',' + str(loc.lon)
