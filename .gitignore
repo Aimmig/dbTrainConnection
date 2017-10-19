@@ -1,2 +1,3 @@
 # ignores already compiled Python files
 *.pyc
+.idea/
