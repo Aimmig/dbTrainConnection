@@ -52,8 +52,13 @@ class RequestSettings:
         default = 'Default'
         # read language
         self.LANGUAGE = parser[default]['language']
+
+        # read date/timeformat
         self.dateFormat = parser[default]['dateFormat']
         self.timeFormat = parser[default]['timeFormat']
+
+        # read mapytpe used
+        self.MAPTYPE = parser[default]['MapType']
 
         # read default color values and sizes
         self.PATH_COLOR = QtGui.QColor(parser[default]['PathColor'])

@@ -57,6 +57,7 @@ class Request:
     UrlLanguage = '&language='
     UrlSize = '&size='
     UrlWeight = '|weight:'
+    UrlMapType = '&maptype='
 
     # format strings for time and date
     DATE_FORMAT = 'yyyy-M-d'
@@ -211,6 +212,8 @@ class Request:
             res += Request.UrlColor + settings.formatColor() + Request.UrlSeparator
             # add string of all coordinates for markers
             res += Request.createFullCoordinateString(coordinates)
+        # add maptye
+        res += Request.UrlMapType + settings.MAPTYPE
         # add google map key
         res += Request.UrlKey + settings.GoogleMapsKey
         return res
