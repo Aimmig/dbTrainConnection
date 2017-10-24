@@ -1,5 +1,8 @@
 #To-Do Stuff:
 
 -If possible make colums resizable and auto-streched on resize
--Translate all Gui elements to English/German
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
+-Add functionality to (re)-request map if maptype, or markerColor, pathColor
+-Fix PyCharm to Work with file-reading from config
+-Implement translation files for de/en (etc?) like config
+-Use translated text for user-interaction/output
