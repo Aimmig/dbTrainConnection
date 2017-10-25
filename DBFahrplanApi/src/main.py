@@ -48,6 +48,9 @@ class FormWidget(QtWidgets.QWidget):
         # noinspection PyArgumentList
         super(FormWidget, self).__init__()
 
+        # read all settings information from file including language data
+        self.settings = RequestSettings('configs/config.txt')
+
         # create MenuBar with self as parent
         self.myQMenuBar = QtWidgets.QMenuBar(self)
 
@@ -55,7 +58,7 @@ class FormWidget(QtWidgets.QWidget):
         self.initializeMenuBar()
 
         # set Window Title
-        self.setWindowTitle('Fahrplananzeige')
+        self.setWindowTitle(self.settings.LanguageStrings.windowTitle_Text)
         # set default error Message
         self.errorMsg = 'Keine Information  vorhanden'
         # create empty list for station Ids
@@ -66,8 +69,6 @@ class FormWidget(QtWidgets.QWidget):
         self.filterActive = False
         # initialize Widget for map
         self.mapWidget = QMapWidget()
-
-        self.settings = RequestSettings('configs/config.txt')
 
         # create HorizontalBoxLayout as overall Widget layout
         layout = QtWidgets.QHBoxLayout(self)
@@ -95,24 +96,24 @@ class FormWidget(QtWidgets.QWidget):
         """
 
         # create Menu for changing Colors
-        colorMenu = self.myQMenuBar.addMenu('Farben')
+        colorMenu = self.myQMenuBar.addMenu(self.settings.LanguageStrings.colour_Text)
         # create Action for changing Path color
-        colorPathAction = QtWidgets.QAction('Pfad-Farbe ändern', self)
+        colorPathAction = QtWidgets.QAction(self.settings.LanguageStrings.change_Path_Colour_Text, self)
         # connect Action with method
         colorPathAction.triggered.connect(self.changePathColor)
         # add Action to Menu
         colorMenu.addAction(colorPathAction)
         # create Action for changing Marker Color
-        colorMarkerAction = QtWidgets.QAction('Marker-Farbe ändern', self)
+        colorMarkerAction = QtWidgets.QAction(self.settings.LanguageStrings.change_Marker_Colour_Text, self)
         # connect Action with method
         colorMarkerAction.triggered.connect(self.changeMarkerColor)
         # add Action to Menu
         colorMenu.addAction(colorMarkerAction)
 
         # create Menu for application
-        exitMenu = self.myQMenuBar.addMenu('Anwendung')
+        exitMenu = self.myQMenuBar.addMenu(self.settings.LanguageStrings.application_Text)
         # create Action for closing application
-        exitAction = QtWidgets.QAction('Beenden', self)
+        exitAction = QtWidgets.QAction(self.settings.LanguageStrings.quit_Text, self)
         # connect Action with method
         exitAction.triggered.connect(QtWidgets.qApp.quit)
         # add Action to Menu
@@ -134,7 +135,7 @@ class FormWidget(QtWidgets.QWidget):
         # input field for user input
         self.inp = QtWidgets.QLineEdit()
         # button for getting stations
-        self.chooseStation = QtWidgets.QPushButton('Bahnhof wählen')
+        self.chooseStation = QtWidgets.QPushButton(self.settings.LanguageStrings.chooseStation_Text)
         self.chooseStation.clicked.connect(self.getStations)
 
         # group input and button in input_layout1
@@ -156,10 +157,10 @@ class FormWidget(QtWidgets.QWidget):
         self.date_chooser = QtWidgets.QCalendarWidget()
 
         # buttons for getting all connections with System Time
-        self.request_now = QtWidgets.QPushButton('Jetzt')
+        self.request_now = QtWidgets.QPushButton(self.settings.LanguageStrings.now_Text)
         self.request_now.clicked.connect(self.getConnectionsNow)
         # button for getting connections with chosen Time
-        self.request_chosenTime = QtWidgets.QPushButton('Anfragen')
+        self.request_chosenTime = QtWidgets.QPushButton(self.settings.LanguageStrings.request_Text)
         self.request_chosenTime.clicked.connect(self.getConnectionsWithTime)
 
         # group time_chooser and request in request_layout
@@ -168,8 +169,8 @@ class FormWidget(QtWidgets.QWidget):
         request_layout.addWidget(self.request_chosenTime)
 
         # create RadioButtons for departure/arrival selection
-        self.depart = QtWidgets.QRadioButton('Abfahrten')
-        self.arriv = QtWidgets.QRadioButton('Ankünfte')
+        self.depart = QtWidgets.QRadioButton(self.settings.LanguageStrings.departure_Text)
+        self.arriv = QtWidgets.QRadioButton(self.settings.LanguageStrings.arrival_Text)
         # group RadioButtons
         radioButton_layout = QtWidgets.QHBoxLayout()
         radioButton_layout.addWidget(self.depart)
@@ -228,8 +229,8 @@ class FormWidget(QtWidgets.QWidget):
 
         # create buttons for getting connections earlier/later and group them
         requestEarlierLater_layout = QtWidgets.QHBoxLayout()
-        self.earlier = QtWidgets.QPushButton('Früher')
-        self.later = QtWidgets.QPushButton('Später')
+        self.earlier = QtWidgets.QPushButton(self.settings.LanguageStrings.earlier_Text)
+        self.later = QtWidgets.QPushButton(self.settings.LanguageStrings.later_Text)
         self.later.clicked.connect(self.getConnectionsLater)
         self.earlier.clicked.connect(self.getConnectionsEarlier)
         requestEarlierLater_layout.addWidget(self.earlier)
@@ -268,13 +269,13 @@ class FormWidget(QtWidgets.QWidget):
         self.connectionTable.clicked.connect(self.getDetails)
 
         # button for navigating
-        self.prev = QtWidgets.QPushButton('Vorherige')
+        self.prev = QtWidgets.QPushButton(self.settings.LanguageStrings.previous_Text)
         self.prev.clicked.connect(self.showPreviousPage)
         # button for refreshing the page using new filter
-        self.reload = QtWidgets.QPushButton('Aktualisieren')
+        self.reload = QtWidgets.QPushButton(self.settings.LanguageStrings.refresh_Text)
         self.reload.clicked.connect(self.refreshPage)
         # button for navigating
-        self.next = QtWidgets.QPushButton('Nächste')
+        self.next = QtWidgets.QPushButton(self.settings.LanguageStrings.next_Text)
         self.next.clicked.connect(self.showNextPage)
 
         # layout for navigation
@@ -789,7 +790,7 @@ class FormWidget(QtWidgets.QWidget):
         # create ColorDialog
         colorDialog = QtWidgets.QColorDialog()
         # get the color
-        newColor = colorDialog.getColor(QtGui.QColor(), self, 'Pfad-Farbe wählen')
+        newColor = colorDialog.getColor(QtGui.QColor(), self, self.settings.LanguageStrings.select_Path_Colour_Text)
         # check for invalid color
         if newColor.isValid():
             self.settings.setPathColor(newColor)
@@ -804,7 +805,7 @@ class FormWidget(QtWidgets.QWidget):
         # create ColorDialog
         colorDialog = QtWidgets.QColorDialog()
         # get the color
-        newColor = colorDialog.getColor(QtGui.QColor(), self, 'Marker-Farbe wählen')
+        newColor = colorDialog.getColor(QtGui.QColor(), self, self.settings.LanguageStrings.select_Marker_Colour_Text)
         # check for invalid color
         if newColor.isValid():
             self.settings.setMarkerColor(newColor)

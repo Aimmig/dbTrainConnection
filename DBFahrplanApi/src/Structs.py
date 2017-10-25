@@ -26,6 +26,46 @@ import os
 from pathlib import Path
 
 
+def constructAbsPath(fileName: str):
+    # get absolute current path
+    file_path = os.path.dirname(os.path.abspath(__file__))
+    # go to parent directory and add local path
+    absPath = Path(file_path).parent.joinpath(fileName)
+    return absPath
+
+
+class LanguageStrings:
+
+
+    def __init__(self, fileName: str):
+
+        # create parser and read file
+        parser = configparser.ConfigParser()
+        parser.read(constructAbsPath(fileName))
+
+        widget = 'Widgets'
+        self.windowTitle_Text = parser[widget]['windowTitle']
+        self.chooseStation_Text = parser[widget]['chooseStation']
+        self.departure_Text = parser[widget]['departure']
+        self.arrival_Text = parser[widget]['arrival']
+        self.earlier_Text = parser[widget]['earlier']
+        self.later_Text = parser[widget]['later']
+        self.now_Text = parser[widget]['now']
+        self.request_Text = parser[widget]['request']
+        self.refresh_Text = parser[widget]['refresh']
+        self.next_Text = parser[widget]['next']
+        self.previous_Text = parser[widget]['previous']
+
+        menu = 'Menu'
+        self.colour_Text = parser[menu]['colour']
+        self.application_Text = parser[menu]['application']
+        self.quit_Text = parser[menu]['quit']
+        self.change_Path_Colour_Text = parser[menu]['change_path']
+        self.change_Marker_Colour_Text = parser[menu]['change_marker']
+        self.select_Path_Colour_Text= parser[menu]['select_path']
+        self.select_Marker_Colour_Text = parser[menu]['select_marker']
+
+
 class RequestSettings:
     """
     Class that encapsulates Request-settings.
@@ -45,7 +85,7 @@ class RequestSettings:
 
         # create parser and read file
         parser = configparser.ConfigParser()
-        parser.read(RequestSettings.constructAbsPath(fileName))
+        parser.read(constructAbsPath(fileName))
 
         # read keys
         keys = 'Keys'
@@ -55,6 +95,9 @@ class RequestSettings:
         default = 'Default'
         # read language
         self.LANGUAGE = parser[default]['language']
+        languageFileName = 'configs/'+self.LANGUAGE+'.txt'
+        # construct langaguageStrings object
+        self.LanguageStrings = LanguageStrings(languageFileName)
 
         # read date/timeformat
         self.dateFormat = parser[default]['dateFormat']
@@ -88,13 +131,6 @@ class RequestSettings:
         self.detailsBaseString = 'Zugverlauf von '
         self.generalBaseString = 'Fahrplantabelle für '
         self.datePrefix = ' am '
-
-    def constructAbsPath(fileName: str):
-        # get absolute current path
-        file_path = os.path.dirname(os.path.abspath(__file__))
-        # go to parent directory and add local path
-        absPath = Path(file_path).parent.joinpath(fileName)
-        return absPath
 
     def getOffSet(self) -> int:
         """

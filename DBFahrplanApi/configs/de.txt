@@ -1,0 +1,25 @@
+# Language file for DE
+[Widgets]
+windowTitle = Fahrplananzeige
+chooseStation = Bahnhohf wählen
+departure = Departure
+arrival = Arrival
+earlier = Füher
+later = Später
+now = Jetzt
+request = Anfragen
+refresh = Aktualisieren
+previous = Vorherige
+next = Nächste
+
+[Menu]
+colour = Farbe
+application = Anwendung
+quit = Beenden
+change_Path = Pfad-Farbe ändern
+change_Marker = Marker-Farbe ändern
+select_Path = Pfad-Farbe wählen
+select_Marker = Marker-Farbe wählen
+
+
+

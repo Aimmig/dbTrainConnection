@@ -1,0 +1,24 @@
+# Language file for DE
+[Widgets]
+windowTitle = Timetable
+chooseStation = Choose Station
+departure = Departure
+arrival = Arrival
+earlier = Earlier
+later = Later
+now = Now
+request = Request
+refresh = Refresh
+previous = Previous
+next = Next
+
+[Menu]
+colour = Colour
+application = Application
+quit = Quit
+change_Path = Change Path-Colour
+change_Marker = Change Marker-Colour
+select_Path = Select Path-Colour
+select_Marker = Select Marker-Colour
+
+
