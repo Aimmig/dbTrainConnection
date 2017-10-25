@@ -67,7 +67,7 @@ class FormWidget(QtWidgets.QWidget):
         # initialize Widget for map
         self.mapWidget = QMapWidget()
 
-        self.settings = RequestSettings('../config.txt')
+        self.settings = RequestSettings('configs/config.txt')
 
         # create HorizontalBoxLayout as overall Widget layout
         layout = QtWidgets.QHBoxLayout(self)

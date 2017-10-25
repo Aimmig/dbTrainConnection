@@ -22,6 +22,8 @@
 
 from PyQt5 import QtCore, QtGui
 import configparser
+import os
+from pathlib import Path
 
 
 class RequestSettings:
@@ -38,11 +40,12 @@ class RequestSettings:
         Construct RequestSettings object, that holds all
         possible settings. Read these from given file.
         :type fileName str
+
         """
 
         # create parser and read file
         parser = configparser.ConfigParser()
-        parser.read(fileName)
+        parser.read(RequestSettings.constructAbsPath(fileName))
 
         # read keys
         keys = 'Keys'
@@ -85,6 +88,13 @@ class RequestSettings:
         self.detailsBaseString = 'Zugverlauf von '
         self.generalBaseString = 'Fahrplantabelle für '
         self.datePrefix = ' am '
+
+    def constructAbsPath(fileName: str):
+        # get absolute current path
+        file_path = os.path.dirname(os.path.abspath(__file__))
+        # go to parent directory and add local path
+        absPath = Path(file_path).parent.joinpath(fileName)
+        return absPath
 
     def getOffSet(self) -> int:
         """
