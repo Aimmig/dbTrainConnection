@@ -174,7 +174,7 @@ class Request:
         """
 
         result = Request.DB_BASE_URL + Request.UrlLocationName + Request.UrlAuthKey + settings.DBKey
-        result += Request.UrlLanguage + settings.LANGUAGE + Request.UrlInput+ parse.quote(loc.replace(" ", ""))
+        result += Request.UrlLanguage + settings.LANGUAGE + Request.UrlInput + parse.quote(loc.replace(" ", ""))
         return result
 
     @staticmethod
@@ -212,7 +212,7 @@ class Request:
             res += Request.UrlColor + settings.formatColor() + Request.UrlSeparator
             # add string of all coordinates for markers
             res += Request.createFullCoordinateString(coordinates)
-        # add maptye
+        # add maptype
         res += Request.UrlMapType + settings.MAPTYPE
         # add google map key
         res += Request.UrlKey + settings.GoogleMapsKey

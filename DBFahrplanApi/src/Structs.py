@@ -31,7 +31,7 @@ def constructAbsPath(fileName: str):
     file_path = os.path.dirname(os.path.abspath(__file__))
     # go to parent directory and add local path
     absPath = Path(file_path).parent.joinpath(fileName)
-    return absPath
+    return str(absPath)
 
 
 class LanguageStrings:
@@ -81,6 +81,7 @@ class RequestSettings:
     Holds the offset used when requesting later/earlier.
     """
 
+    # noinspection SpellCheckingInspection
     def __init__(self, fileName: str):
         """
         Construct RequestSettings object, that holds all

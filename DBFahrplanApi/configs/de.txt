@@ -1,10 +1,10 @@
 # Language file for DE
 [Widgets]
 windowTitle = Fahrplananzeige
-chooseStation = Bahnhohf wählen
+chooseStation = Bahnhof wählen
 departure = Abfahrt
 arrival = Ankunft
-earlier = Füher
+earlier = Früher
 later = Später
 now = Jetzt
 request = Anfragen
