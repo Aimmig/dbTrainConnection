@@ -1,6 +1,7 @@
 # Language file for DE
 [Widgets]
 windowTitle = Timetable
+
 chooseStation = Choose Station
 departure = Departure
 arrival = Arrival
@@ -15,9 +16,17 @@ showMap = Show Map
 width = Width
 height = Height
 hours = Hours
+
 ICE = ICE/TGV
 IC = IC/EC
 other = Other
+
+from = From
+to = To
+time = Time
+name = Name
+track = Track
+stop = Location
 
 [Menu]
 colour = Colour
@@ -27,5 +36,11 @@ change_Path = Change Path-Colour
 change_Marker = Change Marker-Colour
 select_Path = Select Path-Colour
 select_Marker = Select Marker-Colour
+
+[Labels]
+on = on
+for = for
+off = off
+route = Travel Route
 
 

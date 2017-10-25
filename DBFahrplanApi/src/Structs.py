@@ -36,11 +36,16 @@ def constructAbsPath(fileName: str):
 
 class LanguageStrings:
 
+    defaultLanguageFile = 'configs/de.txt'
+
     def __init__(self, fileName: str):
 
         # create parser and read file
         parser = configparser.ConfigParser()
-        parser.read(constructAbsPath(fileName))
+        languageFile = constructAbsPath(fileName)
+        if not os.path.isfile(languageFile):
+            languageFile = constructAbsPath(LanguageStrings.defaultLanguageFile)
+        parser.read(languageFile)
 
         widget = 'Widgets'
         self.windowTitle_Text = parser[widget]['windowTitle']
@@ -62,6 +67,13 @@ class LanguageStrings:
         self.height_Text = parser[widget]['height']
         self.hours_Text = parser[widget]['hours']
 
+        self.from_Text = parser[widget]['from']
+        self.to_Text = parser[widget]['to']
+        self.track_Text = parser[widget]['track']
+        self.time_Text = parser[widget]['time']
+        self.name_Text = parser[widget]['name']
+        self.stop_Text = parser[widget]['stop']
+
         menu = 'Menu'
         self.colour_Text = parser[menu]['colour']
         self.application_Text = parser[menu]['application']
@@ -70,6 +82,13 @@ class LanguageStrings:
         self.change_Marker_Colour_Text = parser[menu]['change_marker']
         self.select_Path_Colour_Text = parser[menu]['select_path']
         self.select_Marker_Colour_Text = parser[menu]['select_marker']
+
+        labels = 'Labels'
+
+        self.route_Text = parser[labels]['route']
+        self.on_Text = parser[labels]['on']
+        self.off_Text = parser[labels]['off']
+        self.for_Text = parser[labels]['for']
 
 
 class RequestSettings:
@@ -133,11 +152,11 @@ class RequestSettings:
         self.maxSize = int(parser[default]['maxSize'])
 
         # string constants for toStringMethods
-        self.departureString = ' (Abfahrt) '
-        self.arrivalString = ' (Ankunft) '
-        self.detailsBaseString = 'Zugverlauf von '
-        self.generalBaseString = 'Fahrplantabelle für '
-        self.datePrefix = ' am '
+        self.departureString = ' (' + self.LanguageStrings.departure_Text + ') '
+        self.arrivalString = ' (' + self.LanguageStrings.arrival_Text + ') '
+        self.detailsBaseString = self.LanguageStrings.route_Text + ' ' + self.LanguageStrings.off_Text + ' '
+        self.generalBaseString = self.LanguageStrings.windowTitle_Text + ' ' + self.LanguageStrings.for_Text + ' '
+        self.datePrefix = ' ' + self.LanguageStrings.on_Text + ' '
 
     def getOffSet(self) -> int:
         """
@@ -306,15 +325,15 @@ class Connection:
         res += settings.datePrefix + self.dateToString(settings)
         return res
 
-    def toString(self, settings: RequestSettings) -> str:
-        """
-        Returns a string representation of the connection
-        :rtype str
-        """
-        if self.direction:
-            return self.name + ' nach ' + self.direction + ', ' + self.timeToString(settings) + ', Gleis ' + self.track
-        elif self.origin:
-            return self.name + ' von ' + self.origin + ', ' + self.timeToString(settings) + ', Gleis ' + self.track
+    # def toString(self, settings: RequestSettings) -> str:
+    #    """
+    #    Returns a string representation of the connection
+    #    :rtype str
+    #    """
+    #    if self.direction:
+    #        return self.name + ' nach ' + self.direction + ', ' + self.timeToString(settings) + ', Gleis ' + self.track
+    #    elif self.origin:
+    #        return self.name + ' von ' + self.origin + ', ' + self.timeToString(settings) + ', Gleis ' + self.track
 
 
 class Stop:
@@ -369,21 +388,21 @@ class Stop:
 
         return self.depTime.toString(settings.timeFormat)
 
-    def toString(self, settings: RequestSettings) -> str:
-        """
-        String representation of Stop
-        :rtype str
-        :
-        """
-
-        timeString = self.depTimeToString(settings)
-        if not timeString:
-            timeString = self.arrTimeToString(settings)
-        if self.track:
-            track = ', Gleis ' + self.track
-        else:
-            track = ''
-        return self.name + ', ' + timeString + track
+    # def toString(self, settings: RequestSettings) -> str:
+    #    """
+    #    String representation of Stop
+    #    :rtype str
+    #    :
+    #    """
+    #
+    #    timeString = self.depTimeToString(settings)
+    #    if not timeString:
+    #        timeString = self.arrTimeToString(settings)
+    #   if self.track:
+    #        track = ', Gleis ' + self.track
+    #    else:
+    #        track = ''
+    #    return self.name + ', ' + timeString + track
 
 
 class ConnectionsList:

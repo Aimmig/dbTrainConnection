@@ -1,6 +1,7 @@
 # Language file for DE
 [Widgets]
 windowTitle = Fahrplananzeige
+
 chooseStation = Bahnhof wählen
 departure = Abfahrt
 arrival = Ankunft
@@ -15,9 +16,17 @@ showMap = Karte anzeigen
 width = Breite
 height = Höhe
 hours = Stunden
+
 ICE = ICE/TGV
 IC = IC/EC
 other = Other
+
+from = Von
+to = Nach
+time = Uhrzeit
+name = Zugnummer
+track = Gleis
+stop = Ort
 
 [Menu]
 colour = Farbe
@@ -27,6 +36,12 @@ change_Path = Pfad-Farbe ändern
 change_Marker = Marker-Farbe ändern
 select_Path = Pfad-Farbe wählen
 select_Marker = Marker-Farbe wählen
+
+[Labels]
+on = am
+for = für
+off = von
+route = Zugverlauf
 
 
 

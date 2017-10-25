@@ -36,7 +36,7 @@ class QConnectionTable(QtWidgets.QTableWidget):
     to_Index = 2
     time_Index = 3
     track_Index = 4
-    header_list = ['Zugnummer', 'von', 'nach', 'Uhrzeit', 'Gleis']
+
     minimumWidth = 420
     minimumHeight = 320
 
@@ -52,10 +52,19 @@ class QConnectionTable(QtWidgets.QTableWidget):
         super(QConnectionTable, self).__init__()
         # set mainWidget to main
         self.mainWidget = main
+        # initialize header list
+        self.header_list = ['']*5
+        # fill header list
+        self.header_list[QConnectionTable.from_Index] = self.mainWidget.settings.LanguageStrings.from_Text
+        self.header_list[QConnectionTable.to_Index] = self.mainWidget.settings.LanguageStrings.to_Text
+        self.header_list[QConnectionTable.time_Index] = self.mainWidget.settings.LanguageStrings.time_Text
+        self.header_list[QConnectionTable.name_Index] = self.mainWidget.settings.LanguageStrings.name_Text
+        self.header_list[QConnectionTable.track_Index] = self.mainWidget.settings.LanguageStrings.track_Text
+
         # set columnCount to number of entries in header list
-        self.setColumnCount(len(QConnectionTable.header_list))
+        self.setColumnCount(len(self.header_list))
         # set Horizontal Header for QTableWidget
-        self.setHorizontalHeaderLabels(QConnectionTable.header_list)
+        self.setHorizontalHeaderLabels(self.header_list)
         # make table not editable
         self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         # only make rows selectable
@@ -114,7 +123,7 @@ class QDetailsTable(QtWidgets.QTableWidget):
     arr_Index = 1
     dep_Index = 2
     track_Index = 3
-    header_list = ['Halt', 'Ankunft', 'Abfahrt', 'Gleis']
+
     minimumWidth = 420
     minimumHeight = 320
 
@@ -130,6 +139,11 @@ class QDetailsTable(QtWidgets.QTableWidget):
         super(QDetailsTable, self).__init__()
         # set mainWidget to main
         self.mainWidget = main
+        self.header_list = ['']*4
+        self.header_list[QDetailsTable.stop_Index] = self.mainWidget.settings.LanguageStrings.stop_Text
+        self.header_list[QDetailsTable.arr_Index] = self.mainWidget.settings.LanguageStrings.arrival_Text
+        self.header_list[QDetailsTable.dep_Index] = self.mainWidget.settings.LanguageStrings.departure_Text
+        self.header_list[QDetailsTable.track_Index] = self.mainWidget.settings.LanguageStrings.track_Text
         # make table not editable
         self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         # make only rows selectable
@@ -137,9 +151,9 @@ class QDetailsTable(QtWidgets.QTableWidget):
         # make only one row selectable at a time
         self.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         # set numberColumnCount to length of header
-        self.setColumnCount(len(QDetailsTable.header_list))
+        self.setColumnCount(len(self.header_list))
         # set Horizontal Headers
-        self.setHorizontalHeaderLabels(QDetailsTable.header_list)
+        self.setHorizontalHeaderLabels(self.header_list)
         header = self.horizontalHeader()
         # only stretch column with stop, resize other columns to contents
         header.setSectionResizeMode(QDetailsTable.stop_Index, QtWidgets.QHeaderView.Stretch)

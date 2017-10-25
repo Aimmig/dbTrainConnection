@@ -155,6 +155,7 @@ class FormWidget(QtWidgets.QWidget):
 
         # calendar for selecting date
         self.date_chooser = QtWidgets.QCalendarWidget()
+        self.date_chooser.setLocale(QtCore.QLocale(self.settings.LANGUAGE))
 
         # buttons for getting all connections with System Time
         self.request_now = QtWidgets.QPushButton(self.settings.LanguageStrings.now_Text)
