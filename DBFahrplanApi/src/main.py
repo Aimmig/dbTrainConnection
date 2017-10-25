@@ -183,9 +183,9 @@ class FormWidget(QtWidgets.QWidget):
         # create Horizontal Layout for filtering
         filterLayout = QtWidgets.QHBoxLayout()
         # create CheckBoxes for choosing filters
-        self.checkICE = QtWidgets.QCheckBox(' ICE/TGV ')
-        self.checkIC = QtWidgets.QCheckBox(' IC/EC ')
-        self.checkOther = QtWidgets.QCheckBox(' andere ')
+        self.checkICE = QtWidgets.QCheckBox(self.settings.LanguageStrings.ICE_Text)
+        self.checkIC = QtWidgets.QCheckBox(self.settings.LanguageStrings.IC_Text)
+        self.checkOther = QtWidgets.QCheckBox(self.settings.LanguageStrings.other_Text)
         # add checkboxes to filterLayout
         filterLayout.addWidget(self.checkICE)
         filterLayout.addWidget(self.checkIC)
@@ -194,7 +194,7 @@ class FormWidget(QtWidgets.QWidget):
         # create Layout for activating map
         mapLayout = QtWidgets.QHBoxLayout()
         # create CheckBox for en/disabling map
-        self.mapActive = QtWidgets.QCheckBox(' Karte anzeigen ')
+        self.mapActive = QtWidgets.QCheckBox(self.settings.LanguageStrings.showMap_Text)
         # add checkbox to layout
         mapLayout.addWidget(self.mapActive)
 
@@ -209,9 +209,9 @@ class FormWidget(QtWidgets.QWidget):
         # add description label and line Edits to layout
         mapHeightLayout = QtWidgets.QVBoxLayout()
         mapWidthLayout = QtWidgets.QVBoxLayout()
-        mapWidthLayout.addWidget(QtWidgets.QLabel(' Breite: '))
+        mapWidthLayout.addWidget(QtWidgets.QLabel(self.settings.LanguageStrings.width_Text + ':'))
         mapWidthLayout.addWidget(self.mapWidth)
-        mapHeightLayout.addWidget(QtWidgets.QLabel(' Höhe: '))
+        mapHeightLayout.addWidget(QtWidgets.QLabel(self.settings.LanguageStrings.height_Text + ':'))
         mapHeightLayout.addWidget(self.mapHeight)
 
         propertiesLayout.addLayout(mapHeightLayout)
@@ -220,8 +220,7 @@ class FormWidget(QtWidgets.QWidget):
         # create lne edit for offset with default value
         offsetLayout = QtWidgets.QVBoxLayout()
         self.offsetField = QtWidgets.QLineEdit(str(self.settings.defaultOffSet))
-        label = QtWidgets.QLabel(' Stunden ')
-
+        label = QtWidgets.QLabel(self.settings.LanguageStrings.hours_Text)
         offsetLayout.addWidget(label)
         offsetLayout.addWidget(self.offsetField)
 

@@ -36,7 +36,6 @@ def constructAbsPath(fileName: str):
 
 class LanguageStrings:
 
-
     def __init__(self, fileName: str):
 
         # create parser and read file
@@ -55,6 +54,13 @@ class LanguageStrings:
         self.refresh_Text = parser[widget]['refresh']
         self.next_Text = parser[widget]['next']
         self.previous_Text = parser[widget]['previous']
+        self.ICE_Text = parser[widget]['ICE']
+        self.IC_Text = parser[widget]['IC']
+        self.other_Text = parser[widget]['other']
+        self.showMap_Text = parser[widget]['showMap']
+        self.width_Text = parser[widget]['width']
+        self.height_Text = parser[widget]['height']
+        self.hours_Text = parser[widget]['hours']
 
         menu = 'Menu'
         self.colour_Text = parser[menu]['colour']
@@ -62,7 +68,7 @@ class LanguageStrings:
         self.quit_Text = parser[menu]['quit']
         self.change_Path_Colour_Text = parser[menu]['change_path']
         self.change_Marker_Colour_Text = parser[menu]['change_marker']
-        self.select_Path_Colour_Text= parser[menu]['select_path']
+        self.select_Path_Colour_Text = parser[menu]['select_path']
         self.select_Marker_Colour_Text = parser[menu]['select_marker']
 
 
@@ -103,7 +109,7 @@ class RequestSettings:
         self.dateFormat = parser[default]['dateFormat']
         self.timeFormat = parser[default]['timeFormat']
 
-        # read mapytpe used
+        # read mapType used
         self.MAPTYPE = parser[default]['MapType']
 
         # read default color values and sizes

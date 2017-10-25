@@ -2,8 +2,8 @@
 [Widgets]
 windowTitle = Fahrplananzeige
 chooseStation = Bahnhohf wählen
-departure = Departure
-arrival = Arrival
+departure = Abfahrt
+arrival = Ankunft
 earlier = Füher
 later = Später
 now = Jetzt
@@ -11,6 +11,13 @@ request = Anfragen
 refresh = Aktualisieren
 previous = Vorherige
 next = Nächste
+showMap = Karte anzeigen
+width = Breite
+height = Höhe
+hours = Stunden
+ICE = ICE/TGV
+IC = IC/EC
+other = Other
 
 [Menu]
 colour = Farbe

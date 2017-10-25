@@ -11,6 +11,13 @@ request = Request
 refresh = Refresh
 previous = Previous
 next = Next
+showMap = Show Map
+width = Width
+height = Height
+hours = Hours
+ICE = ICE/TGV
+IC = IC/EC
+other = Other
 
 [Menu]
 colour = Colour
