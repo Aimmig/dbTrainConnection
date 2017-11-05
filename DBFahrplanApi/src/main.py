@@ -134,19 +134,22 @@ class FormWidget(QtWidgets.QWidget):
 
         # input field for user input
         self.inp = QtWidgets.QLineEdit()
+        self.inp.textEdited.connect(self.getCompletionContent)
+        
         # button for getting stations
-        self.chooseStation = QtWidgets.QPushButton(self.settings.LanguageStrings.chooseStation_Text)
-        self.chooseStation.clicked.connect(self.getStations)
+        # self.chooseStation = QtWidgets.QPushButton(self.settings.LanguageStrings.chooseStation_Text)
+        # self.chooseStation.clicked.connect(self.getStations)
 
         # group input and button in input_layout1
         input1_layout = QtWidgets.QHBoxLayout()
         input1_layout.addWidget(self.inp)
-        input1_layout.addWidget(self.chooseStation)
+        # input1_layout.addWidget(self.chooseStation)
 
         # comboBox for all Stations
         self.railStations = QtWidgets.QComboBox()
         # time chooser for selecting time
         self.time_chooser = QtWidgets.QTimeEdit()
+        self.time_chooser.setTime(QtCore.QTime.currentTime())
 
         # group combo box and time picker in input_layout2
         input2_layout = QtWidgets.QHBoxLayout()
@@ -155,19 +158,22 @@ class FormWidget(QtWidgets.QWidget):
 
         # calendar for selecting date
         self.date_chooser = QtWidgets.QCalendarWidget()
+        # set language for calender
         self.date_chooser.setLocale(QtCore.QLocale(self.settings.LANGUAGE))
+        # initialize Calender with current date
+        self.date_chooser.setSelectedDate(QtCore.QDate.currentDate())
 
         # buttons for getting all connections with System Time
-        self.request_now = QtWidgets.QPushButton(self.settings.LanguageStrings.now_Text)
-        self.request_now.clicked.connect(self.getConnectionsNow)
+        # self.request_now = QtWidgets.QPushButton(self.settings.LanguageStrings.now_Text)
+        # self.request_now.clicked.connect(self.getConnectionsNow)
         # button for getting connections with chosen Time
-        self.request_chosenTime = QtWidgets.QPushButton(self.settings.LanguageStrings.request_Text)
-        self.request_chosenTime.clicked.connect(self.getConnectionsWithTime)
+        self.request = QtWidgets.QPushButton(self.settings.LanguageStrings.request_Text)
+        self.request.clicked.connect(self.getConnectionsWithTime)
 
         # group time_chooser and request in request_layout
         request_layout = QtWidgets.QHBoxLayout()
-        request_layout.addWidget(self.request_now)
-        request_layout.addWidget(self.request_chosenTime)
+        # request_layout.addWidget(self.request_now)
+        request_layout.addWidget(self.request)
 
         # create RadioButtons for departure/arrival selection
         self.depart = QtWidgets.QRadioButton(self.settings.LanguageStrings.departure_Text)
@@ -631,13 +637,13 @@ class FormWidget(QtWidgets.QWidget):
                 # display new station-names
                 self.railStations.addItems(newStations)
 
-    def getConnectionsNow(self):
-        """
-        Encapsulation for requesting connections with system time/date from button.
-        Calls getConnectionFromInput with isNow=True.
-        """
-
-        self.getConnectionsFromInput(True)
+    # def getConnectionsNow(self):
+    #    """
+    #    Encapsulation for requesting connections with system time/date from button.
+    #    Calls getConnectionFromInput with isNow=True.
+    #    """
+    #    
+    #    self.getConnectionsFromInput(True)
 
     def getConnectionsWithTime(self):
         """
@@ -712,6 +718,9 @@ class FormWidget(QtWidgets.QWidget):
             # request new connections
             self.getConnections(date, newTime, identifier, isDeparture)
 
+    def getCompletionContent(self):
+        self.getStations()
+
     def getConnectionsFromInput(self, isNow: bool):
         """
         If isNow is set True gets the current time and date.
@@ -725,6 +734,7 @@ class FormWidget(QtWidgets.QWidget):
 
         # get selected Index from ComboBox
         index = self.railStations.currentIndex()
+        
         # check invalid Index
         if index < 0:
             return
@@ -825,7 +835,7 @@ class FormWidget(QtWidgets.QWidget):
             if not self.stationId:
                 self.getStations()
             else:
-                self.getConnectionsNow()
+                self.getConnectionsWithTime()
         elif e.key() == QtCore.Qt.Key_F5:
             self.refreshPage()
         # pass to the super keyPressEvent

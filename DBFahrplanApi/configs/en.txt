@@ -1,4 +1,4 @@
-# Language file for DE
+# Language file for EN
 [Widgets]
 windowTitle = Timetable
 

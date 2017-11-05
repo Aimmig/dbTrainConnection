@@ -3,6 +3,6 @@
 -If possible make colums resizable and auto-streched on resize
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
 -Add functionality to (re)-request map if maptype, or markerColor, pathColor
--Fix PyCharm to Work with file-reading from config
--Implement translation files for de/en (etc?) like config
--Use translated text for user-interaction/output
+-Remove button for requesting now, instead set actual time and day in calenderPicker/timePicker (DONE!)
+-Refactor code accordingly and remove functions that are no longer needed
+
