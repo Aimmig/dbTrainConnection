@@ -3,6 +3,3 @@
 -If possible make colums resizable and auto-streched on resize
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
 -Add functionality to (re)-request map if maptype, or markerColor, pathColor
--Remove button for requesting now, instead set actual time and day in calenderPicker/timePicker (DONE!)
--Refactor code accordingly and remove functions that are no longer needed
-

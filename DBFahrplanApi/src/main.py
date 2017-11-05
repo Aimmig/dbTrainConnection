@@ -134,11 +134,7 @@ class FormWidget(QtWidgets.QWidget):
 
         # input field for user input
         self.inp = QtWidgets.QLineEdit()
-        self.inp.textEdited.connect(self.getCompletionContent)
-        
-        # button for getting stations
-        # self.chooseStation = QtWidgets.QPushButton(self.settings.LanguageStrings.chooseStation_Text)
-        # self.chooseStation.clicked.connect(self.getStations)
+        self.inp.textEdited.connect(self.getStations)
 
         # group input and button in input_layout1
         input1_layout = QtWidgets.QHBoxLayout()
@@ -163,12 +159,9 @@ class FormWidget(QtWidgets.QWidget):
         # initialize Calender with current date
         self.date_chooser.setSelectedDate(QtCore.QDate.currentDate())
 
-        # buttons for getting all connections with System Time
-        # self.request_now = QtWidgets.QPushButton(self.settings.LanguageStrings.now_Text)
-        # self.request_now.clicked.connect(self.getConnectionsNow)
-        # button for getting connections with chosen Time
+        # button for getting connections
         self.request = QtWidgets.QPushButton(self.settings.LanguageStrings.request_Text)
-        self.request.clicked.connect(self.getConnectionsWithTime)
+        self.request.clicked.connect(self.getConnectionsByTime)
 
         # group time_chooser and request in request_layout
         request_layout = QtWidgets.QHBoxLayout()
@@ -637,22 +630,6 @@ class FormWidget(QtWidgets.QWidget):
                 # display new station-names
                 self.railStations.addItems(newStations)
 
-    # def getConnectionsNow(self):
-    #    """
-    #    Encapsulation for requesting connections with system time/date from button.
-    #    Calls getConnectionFromInput with isNow=True.
-    #    """
-    #    
-    #    self.getConnectionsFromInput(True)
-
-    def getConnectionsWithTime(self):
-        """
-        Encapsulation for requesting connections with chosen time from button.
-        Calls getConnectionFromInput with isNow=False.
-        """
-
-        self.getConnectionsFromInput(False)
-
     def getConnectionsEarlier(self):
         """
         Encapsulation of getting connections with shifted time.
@@ -718,10 +695,7 @@ class FormWidget(QtWidgets.QWidget):
             # request new connections
             self.getConnections(date, newTime, identifier, isDeparture)
 
-    def getCompletionContent(self):
-        self.getStations()
-
-    def getConnectionsFromInput(self, isNow: bool):
+    def getConnectionsByTime(self):
         """
         If isNow is set True gets the current time and date.
         Otherwise reads time and date from userInput.
@@ -738,16 +712,8 @@ class FormWidget(QtWidgets.QWidget):
         # check invalid Index
         if index < 0:
             return
-        # use System-Time
-        if isNow:
-            # noinspection PyArgumentList
-            date = QtCore.QDate.currentDate()
-            # noinspection PyArgumentList
-            time = QtCore.QTime.currentTime()
-        # use selected time from gui
-        else:
-            time = self.time_chooser.time()
-            date = self.date_chooser.selectedDate()
+        time = self.time_chooser.time()
+        date = self.date_chooser.selectedDate()
         # get id to selected station
         identifier = self.stationId[index]
         # arrival or departure checked
@@ -835,7 +801,7 @@ class FormWidget(QtWidgets.QWidget):
             if not self.stationId:
                 self.getStations()
             else:
-                self.getConnectionsWithTime()
+                self.getConnectionsByTime()
         elif e.key() == QtCore.Qt.Key_F5:
             self.refreshPage()
         # pass to the super keyPressEvent
