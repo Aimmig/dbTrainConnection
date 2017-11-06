@@ -42,6 +42,7 @@ on = am
 for = für
 off = von
 route = Zugverlauf
+errorMsg = Keine Information  vorhanden
 
 
 

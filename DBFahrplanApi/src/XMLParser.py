@@ -52,6 +52,8 @@ class XMLParser:
     DATE_FORMAT = 'yyyy-MM-dd'
     TIME_FORMAT = 'hh:mm'
 
+    empty = ''
+
     @staticmethod
     def getStationsFromXMLString(xmlString: str)->([int], [str]):
         """
@@ -96,7 +98,7 @@ class XMLParser:
                     typ = con.attrib[XMLParser.TYPE]
                 # avoid spelling mistake in xml
                 else:
-                    typ = ''
+                    typ = XMLParser.empty
                 # stop, id and time, date are mandatory
                 stopId = int(con.attrib[XMLParser.StopId])
                 stopName = con.attrib[XMLParser.Stop]
@@ -109,24 +111,24 @@ class XMLParser:
                 if isDeparture and XMLParser.DIRECTION in con.attrib:
                     # set direction
                     direction = con.attrib[XMLParser.DIRECTION]
-                    origin = ''
+                    origin = XMLParser.empty
                 # read origin if is not departure and origin exits
                 elif not isDeparture and XMLParser.ORIGIN in con.attrib:
                     # set origin
                     origin = con.attrib[XMLParser.ORIGIN]
-                    direction = ''
+                    direction = XMLParser.empty
                 # invalid case might happen
                 else:
                     # set both attributes to ""
-                    origin = ''
-                    direction = ''
+                    origin = XMLParser.empty
+                    direction = XMLParser.empty
                 # track might not be set in xml
                 if XMLParser.TRACK in con.attrib:
                     track = con.attrib[XMLParser.TRACK]
                 else:
-                    track = ''
+                    track = XMLParser.empty
                 # read reference link
-                ref = ''
+                ref = XMLParser.empty
                 for details in con:
                     if XMLParser.REF in details.attrib:
                         ref = details.attrib[XMLParser.REF]
@@ -195,7 +197,7 @@ class XMLParser:
                         if XMLParser.TRACK in child.attrib:
                             track = child.attrib[XMLParser.TRACK]
                         else:
-                            track = ''
+                            track = XMLParser.empty
                         # longitude, latitude are mandatory
                         lon = float(child.attrib[XMLParser.LON])
                         lat = float(child.attrib[XMLParser.LAT])

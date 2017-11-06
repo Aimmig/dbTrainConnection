@@ -42,5 +42,6 @@ on = on
 for = for
 off = off
 route = Travel Route
+errorMsg = No information found
 
 

@@ -36,6 +36,7 @@ class QConnectionTable(QtWidgets.QTableWidget):
     to_Index = 2
     time_Index = 3
     track_Index = 4
+    header_list_length = 5
 
     minimumWidth = 420
     minimumHeight = 320
@@ -53,7 +54,7 @@ class QConnectionTable(QtWidgets.QTableWidget):
         # set mainWidget to main
         self.mainWidget = main
         # initialize header list
-        self.header_list = ['']*5
+        self.header_list = ['']*QConnectionTable.header_list_length
         # fill header list
         self.header_list[QConnectionTable.from_Index] = self.mainWidget.settings.LanguageStrings.from_Text
         self.header_list[QConnectionTable.to_Index] = self.mainWidget.settings.LanguageStrings.to_Text
@@ -123,6 +124,7 @@ class QDetailsTable(QtWidgets.QTableWidget):
     arr_Index = 1
     dep_Index = 2
     track_Index = 3
+    header_list_length = 4
 
     minimumWidth = 420
     minimumHeight = 320
@@ -139,7 +141,7 @@ class QDetailsTable(QtWidgets.QTableWidget):
         super(QDetailsTable, self).__init__()
         # set mainWidget to main
         self.mainWidget = main
-        self.header_list = ['']*4
+        self.header_list = ['']*QDetailsTable.header_list_length
         self.header_list[QDetailsTable.stop_Index] = self.mainWidget.settings.LanguageStrings.stop_Text
         self.header_list[QDetailsTable.arr_Index] = self.mainWidget.settings.LanguageStrings.arrival_Text
         self.header_list[QDetailsTable.dep_Index] = self.mainWidget.settings.LanguageStrings.departure_Text
@@ -205,6 +207,8 @@ class QMapWidget(QtWidgets.QWidget):
         mapLayout = QtWidgets.QVBoxLayout()
         mapLayout.addWidget(self.mapLabel)
         self.setLayout(mapLayout)
+        # make widget not resizable
+        self.layout().setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
 
     def showMap(self, imageData: QtCore.QByteArray(), windowTitle: str):
         """

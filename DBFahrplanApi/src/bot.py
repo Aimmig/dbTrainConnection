@@ -10,6 +10,10 @@ import urllib.error as err
 
 settings = RequestSettings('configs/config.txt')
 connections = []
+departure = ('/' + settings.LanguageStrings.departure_Text).lower()
+arrival = ('/' + settings.LanguageStrings.arrival_Text).lower()
+dep_for = settings.LanguageStrings.departure_Text + ' ' + settings.LanguageStrings.for_Text + ' '
+arr_for = settings.LanguageStrings.arrival_Text + ' ' + settings.LanguageStrings.for_Text + ' '
 
 
 def getStationId(loc: str) -> (int, str):
@@ -69,9 +73,9 @@ def getConnections(identifier, isDeparture, current_time=QtCore.QTime.currentTim
 def sendConnections(chat_id, isDeparture, name):
     global connections
     if isDeparture:
-        conn_string = 'Abfahrten für ' + name + '\n'
+        conn_string = dep_for + name + '\n'
     else:
-        conn_string = 'Ankunften für ' + name + '\n'
+        conn_string = arr_for + name + '\n'
     i = 1
     for c in connections:
             conn_string = conn_string + str(i) + ': ' + c.toString(settings) + '\n'
@@ -103,9 +107,9 @@ def handle(msg):
             if split_msg[0].lower() == '/info':
                 sendDetails(chat_id, split_msg[1])
                 return
-            if split_msg[0].lower() == '/departure':
+            if split_msg[0].lower() == departure:
                 isDeparture = True
-            elif split_msg[0].lower() == '/arrival':
+            elif split_msg[0].lower() == arrival:
                 isDeparture = False
             else:
                 return
@@ -115,9 +119,9 @@ def handle(msg):
                 sendConnections(chat_id, isDeparture, name)
                 return
         if len(split_msg) == 3:
-            if split_msg[0].lower() == '/departure':
+            if split_msg[0].lower() == departure:
                 isDeparture = True
-            elif split_msg[0].lower() == '/arrival':
+            elif split_msg[0].lower() == arrival:
                 isDeparture = False
             else:
                 return
@@ -128,9 +132,9 @@ def handle(msg):
                 sendConnections(chat_id, isDeparture, name)
                 return
         if len(split_msg) == 4:
-            if split_msg[0].lower() == '/departure':
+            if split_msg[0].lower() == departure:
                 isDeparture = True
-            elif split_msg[0].lower() == '/arrival':
+            elif split_msg[0].lower() == arrival:
                 isDeparture = False
             else:
                 return

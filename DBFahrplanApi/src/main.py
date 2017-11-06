@@ -59,8 +59,7 @@ class FormWidget(QtWidgets.QWidget):
 
         # set Window Title
         self.setWindowTitle(self.settings.LanguageStrings.windowTitle_Text)
-        # set default error Message
-        self.errorMsg = 'Keine Information  vorhanden'
+
         # create empty list for station Ids
         self.stationId = []
         # initialize ConnectionList
@@ -381,10 +380,12 @@ class FormWidget(QtWidgets.QWidget):
             except err.HTTPError as e:
                 print('The server couldn\'t fulfill the request.')
                 print('Error code: ', e.code)
+                self.details_label.setText(e.code)
                 return
             except err.URLError as e:
                 print('We failed to reach a server.')
                 print('Reason: ', e.reason)
+                self.details_label.setText(str(e.reason))
                 return
             stopList = XMLParser.getStopListFromXMLString(xmlString)
             if stopList:
@@ -392,7 +393,7 @@ class FormWidget(QtWidgets.QWidget):
                 connection.stopList = stopList
             else:
                 self.clearDetailsTable()
-                self.details_label.setText(self.errorMsg)
+                self.details_label.setText(self.settings.LanguageStrings.errorMsg)
                 return
         coordinates, markerIndex = self.addAllStopsToDetails(connection, index)
         self.RequestAndShowMap(connection, coordinates, markerIndex)
@@ -613,10 +614,14 @@ class FormWidget(QtWidgets.QWidget):
             except err.HTTPError as e:
                 print('The server couldn\'t fulfill the request.')
                 print('Error code: ', e.code)
+                self.railStations.clear()
+                self.railStations.addItem(e.code)
                 return
             except err.URLError as e:
                 print('We failed to reach a server.')
                 print('Reason: ', e.reason)
+                self.railStations.clear()
+                self.railStations.addItem(str(e.reason))
                 return
             (newStations, newStationsId) = XMLParser.getStationsFromXMLString(xmlString)
             # if something was actually found replace everything
@@ -734,10 +739,12 @@ class FormWidget(QtWidgets.QWidget):
         except err.HTTPError as e:
             print('The server couldn\'t fulfill the request.')
             print('Error code: ', e.code)
+            self.connection_label.setText(e.code)
             return
         except err.URLError as e:
             print('We failed to reach a server.')
             print('Reason: ', e.reason)
+            self.connection_label.setText(str(e.reason))
             return
         connections = XMLParser.getConnectionsFromXMLString(xmlString, isDeparture)
         self.clearConnectionTable()
@@ -746,7 +753,7 @@ class FormWidget(QtWidgets.QWidget):
             # if not set index to last entry of pages so this page can never be reached again
             self.conList.setDisplayedIndex(self.conList.getPageCount() - 1)
             # set connection label to error Message
-            self.connection_label.setText(self.errorMsg)
+            self.connection_label.setText(self.settings.LanguageStrings.errorMsg)
         else:
             self.addConnections(connections)
             # Add list of connections to pages
