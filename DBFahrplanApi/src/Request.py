@@ -23,7 +23,7 @@
 from PyQt5 import QtCore
 import urllib.request as url_req
 import urllib.parse as parse
-from Structs import Coordinate, RequestSettings
+from Structs import Coordinate, RequestSettings, MapType
 
 
 class Request:
@@ -213,7 +213,7 @@ class Request:
             # add string of all coordinates for markers
             res += Request.createFullCoordinateString(coordinates)
         # add maptype
-        res += Request.UrlMapType + settings.MAPTYPE
+        res += Request.UrlMapType + MapType(settings.MAPTYPE).name
         # add google map key
         res += Request.UrlKey + settings.GoogleMapsKey
         return res

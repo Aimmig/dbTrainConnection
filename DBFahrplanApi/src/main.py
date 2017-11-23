@@ -23,7 +23,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Widgets import QConnectionTable, QDetailsTable, QMapWidget
 from Request import Request
-from Structs import Connection, ConnectionsList, Stop, Filter, Coordinate, RequestSettings
+from Structs import Connection, ConnectionsList, Stop, Filter, Coordinate, RequestSettings, MapType
 from XMLParser import XMLParser
 import sys
 import urllib.error as err
@@ -95,7 +95,10 @@ class FormWidget(QtWidgets.QWidget):
         """
 
         # create Menu for changing Colors
-        colorMenu = self.myQMenuBar.addMenu(self.settings.LanguageStrings.colour_Text)
+        mapMenu = self.myQMenuBar.addMenu("Map")
+
+        # create Menu for changing Colors
+        colorMenu = mapMenu.addMenu(self.settings.LanguageStrings.colour_Text)
         # create Action for changing Path color
         colorPathAction = QtWidgets.QAction(self.settings.LanguageStrings.change_Path_Colour_Text, self)
         # connect Action with method
@@ -108,6 +111,25 @@ class FormWidget(QtWidgets.QWidget):
         colorMarkerAction.triggered.connect(self.changeMarkerColor)
         # add Action to Menu
         colorMenu.addAction(colorMarkerAction)
+
+        # add Menu for changing MapType
+        mapTypeMenu = mapMenu.addMenu("Type")
+
+        roadmapAction = QtWidgets.QAction(MapType.roadmap.name, self)
+        roadmapAction.triggered.connect(self.setMapType_roadmap)
+        mapTypeMenu.addAction(roadmapAction)
+
+        satelliteAction = QtWidgets.QAction(MapType.satellite.name, self)
+        satelliteAction.triggered.connect(self.setMapType_satellite)
+        mapTypeMenu.addAction(satelliteAction)
+
+        hybridAction = QtWidgets.QAction(MapType.hybrid.name, self)
+        hybridAction.triggered.connect(self.setMapType_hybrid)
+        mapTypeMenu.addAction(hybridAction)
+
+        terrainAction = QtWidgets.QAction(MapType.terrain.name, self)
+        terrainAction.triggered.connect(self.setMapType_terrain)
+        mapTypeMenu.addAction(terrainAction)
 
         # create Menu for application
         exitMenu = self.myQMenuBar.addMenu(self.settings.LanguageStrings.application_Text)
@@ -437,11 +459,12 @@ class FormWidget(QtWidgets.QWidget):
         """
 
         # check if imageData is empty and if map is selected
-        if connection.imageData.isEmpty() and self.mapActive.isChecked():
+        if (connection.imageData.isEmpty() or self.settings.MAPTYPE != connection.mapType) and self.mapActive.isChecked():
             # request imageData and create QByteArray and set imageData
             # noinspection PyArgumentList
             connection.imageData = QtCore.QByteArray(
                 Request.getMapWithLocations(coordinates, markerIndex, self.settings))
+            connection.mapType = self.settings.MAPTYPE
         # display requested map-Data
         if self.mapActive.isChecked():
             self.mapWidget.showMap(connection.imageData, connection.toStringDetails(self.settings))
@@ -792,6 +815,18 @@ class FormWidget(QtWidgets.QWidget):
         # check for invalid color
         if newColor.isValid():
             self.settings.setMarkerColor(newColor)
+
+    def setMapType_roadmap(self):
+        self.settings.MAPTYPE = MapType.roadmap.value
+
+    def setMapType_satellite(self):
+        self.settings.MAPTYPE = MapType.satellite.value
+
+    def setMapType_hybrid(self):
+        self.settings.MAPTYPE = MapType.hybrid.value
+
+    def setMapType_terrain(self):
+        self.settings.MAPTYPE = MapType.terrain.value
 
     def keyPressEvent(self, e):
         """

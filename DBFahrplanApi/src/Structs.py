@@ -24,6 +24,7 @@ from PyQt5 import QtCore, QtGui
 import configparser
 import os
 from pathlib import Path
+from enum import Enum
 
 
 def constructAbsPath(fileName: str):
@@ -92,6 +93,13 @@ class LanguageStrings:
         self.errorMsg = parser[labels]['errorMsg']
 
 
+class MapType(Enum):
+    roadmap = 1
+    terrain = 2
+    satellite = 3
+    hybrid = 4
+
+
 class RequestSettings:
     """
     Class that encapsulates Request-settings.
@@ -131,7 +139,7 @@ class RequestSettings:
         self.timeFormat = parser[default]['timeFormat']
 
         # read mapType used
-        self.MAPTYPE = parser[default]['MapType']
+        self.MAPTYPE = MapType[parser[default]['MapType']].value
 
         # read default color values and sizes
         self.PATH_COLOR = QtGui.QColor(parser[default]['PathColor'])
@@ -284,6 +292,8 @@ class Connection:
         self.stopList = []
         # construct connection with empty imageData
         self.imageData = QtCore.QByteArray()
+        # save mapType coresponding to imageData
+        self.mapType = 0
 
     def timeToString(self, settings: RequestSettings) -> str:
         """
