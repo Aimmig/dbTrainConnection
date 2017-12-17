@@ -50,6 +50,11 @@ class Request:
     UrlInput = '&input='
 
     # API-Properties key-words for Google-Maps static API
+    UrlScale = '&scale='
+    UrlScaleValue = str(1)
+    UrlSensor = '&sensor='
+    UrlSensorValue = 'False'
+    UrlPathColor = '&path=color:'
     UrlColor = '|color:'
     UrlKey = '&key='
     UrlMarkerSize = '&markers=size:'
@@ -192,10 +197,9 @@ class Request:
         """
 
         # add width and height and language of map to base url
-        res = Request.GOOGLE_MAPS_BASE_URL + '&scale=1' + Request.UrlSize + str(settings.width) + 'x' + str(
-            settings.height) + Request.UrlLanguage + settings.LANGUAGE
+        res = Request.GOOGLE_MAPS_BASE_URL + Request.UrlScale + Request.UrlScaleValue + Request.UrlSize + str(settings.width) + 'x' + str(settings.height) + Request.UrlLanguage + settings.LANGUAGE
         # add path color and size to url
-        res += '&sensor=false&path=color:' + settings.formatPathColor() + Request.UrlWeight + settings.PATH_SIZE
+        res += Request.UrlSensor + Request.UrlSensorValue + Request.UrlPathColor + settings.formatPathColor() + Request.UrlWeight + settings.PATH_SIZE
         # add string of all coordinates for path
         res += Request.createFullCoordinateString(coordinates)
         # check for valid markerIndex

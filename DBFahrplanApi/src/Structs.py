@@ -27,7 +27,12 @@ from pathlib import Path
 from enum import Enum
 
 
-def constructAbsPath(fileName: str):
+def constructAbsPath(fileName: str) -> str:
+    """
+    Constructs absolute path to file with given fileName.
+    :param fileName str
+    :rtype str
+    """
     # get absolute current path
     file_path = os.path.dirname(os.path.abspath(__file__))
     # go to parent directory and add local path
@@ -36,6 +41,9 @@ def constructAbsPath(fileName: str):
 
 
 class LanguageStrings:
+    """
+    Class for reading/storing all translated information from language file
+    """
 
     defaultLanguageFile = 'configs/de.txt'
 
@@ -94,6 +102,9 @@ class LanguageStrings:
 
 
 class MapType(Enum):
+    """
+    Enum type for MapType.
+    """
     roadmap = 1
     terrain = 2
     satellite = 3
@@ -245,6 +256,17 @@ class RequestSettings:
             self.offSet = s
 
 
+class TrainType(Enum):
+    """
+    Enum type for TrainType.
+    """
+    ICE = 1
+    TGV = 2
+    IC = 3
+    EC = 4
+    Other = 5
+
+
 class Connection:
     """
     Class for encapsulation of a single train-connection.
@@ -270,8 +292,8 @@ class Connection:
 
         # Name e.g. IC10250,ICE516, etc
         self.name = name
-        # Typ: IC,ICE, EC,..
-        self.type = typ
+        # type number of enum TrainType
+        self.type = TrainType[typ]
         # id of the station which the connection was requested from
         self.stopId = stopId
         # name of station which the connection was requested from
@@ -292,7 +314,7 @@ class Connection:
         self.stopList = []
         # construct connection with empty imageData
         self.imageData = QtCore.QByteArray()
-        # save mapType coresponding to imageData
+        # save mapType corresponding to imageData
         self.mapType = 0
 
     def timeToString(self, settings: RequestSettings) -> str:
@@ -544,12 +566,6 @@ class Filter:
     are types that should be included after filtering.
     """
 
-    # define train type names
-    ICE = 'ICE'
-    IC = 'IC'
-    TGV = 'TGV'
-    EC = 'EC'
-
     def __init__(self, ICE: bool = False, IC: bool = False, other: bool = False):
         """
         Constructs a filter with the given bool flags
@@ -573,7 +589,7 @@ class Filter:
         :rtype bool
         """
 
-        return con.type == Filter.ICE or Filter.ICE in con.name
+        return con.type == TrainType.ICE or TrainType.ICE.name in con.name
 
     @staticmethod
     def filterIC(con: Connection) -> bool:
@@ -584,7 +600,7 @@ class Filter:
         """
 
         # be sure to exclude ICE here
-        return (con.type == Filter.IC or Filter.IC in con.name) and not Filter.filterICE(con)
+        return (con.type == TrainType.IC or TrainType.IC.name in con.name) and not Filter.filterICE(con)
 
     @staticmethod
     def filterEC(con: Connection) -> bool:
@@ -594,7 +610,7 @@ class Filter:
         :rtype bool
         """
 
-        return con.type == Filter.EC or Filter.EC in con.name
+        return con.type == TrainType.EC or TrainType.EC.name in con.name
 
     @staticmethod
     def filterTGV(con: Connection) -> bool:
@@ -604,7 +620,7 @@ class Filter:
         :rtype bool
         """
 
-        return con.type == Filter.TGV or Filter.TGV in con.name
+        return con.type == TrainType.TGV or TrainType.TGV.name in con.name
 
     @staticmethod
     def filterOther(con: Connection) -> bool:

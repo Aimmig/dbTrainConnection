@@ -467,7 +467,7 @@ class FormWidget(QtWidgets.QWidget):
             connection.mapType = self.settings.MAPTYPE
         # display requested map-Data
         if self.mapActive.isChecked():
-            self.mapWidget.showMap(connection.imageData, connection.toStringDetails(self.settings))
+            self.mapWidget.showMap(connection.imageData, connection.toStringDetails(self.settings) + ' (' + MapType(connection.mapType).name + ')')
 
     def showPreviousPage(self):
         """
