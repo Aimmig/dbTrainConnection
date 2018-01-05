@@ -68,7 +68,7 @@ class FormWidget(QtWidgets.QWidget):
         self.filterActive = False
         # initialize Widget for map
         self.mapWidget = QMapWidget()
-
+        
         # create HorizontalBoxLayout as overall Widget layout
         layout = QtWidgets.QHBoxLayout(self)
 
@@ -136,7 +136,7 @@ class FormWidget(QtWidgets.QWidget):
         # create Action for closing application
         exitAction = QtWidgets.QAction(self.settings.LanguageStrings.quit_Text, self)
         # connect Action with method
-        exitAction.triggered.connect(QtWidgets.qApp.quit)
+        exitAction.triggered.connect(self.closeEvent)
         # add Action to Menu
         exitMenu.addAction(exitAction)
 
@@ -384,6 +384,9 @@ class FormWidget(QtWidgets.QWidget):
 
         self.savesSettings()
         self.showSettings()
+        
+        #close map
+        self.mapWidget.close()
 
         # get the selected Index
         index = self.connectionTable.currentRow()
@@ -868,6 +871,13 @@ class FormWidget(QtWidgets.QWidget):
         self.mapHeight.setText(str(self.settings.height))
         self.mapWidth.setText(str(self.settings.width))
         self.offsetField.setText(str(self.settings.offSet))
+    
+    # Quit Action
+    def closeEvent(self, evt):
+        # close MapWidget
+        self.mapWidget.close()
+        # close Formwidget
+        super(FormWidget, self).close()
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
