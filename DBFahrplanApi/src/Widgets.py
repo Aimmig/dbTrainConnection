@@ -88,7 +88,7 @@ class QConnectionTable(QtWidgets.QTableWidget):
         self.setMinimumSize(QtCore.QSize(QConnectionTable.minimumWidth, QConnectionTable.minimumHeight))
         # set Size Policy to MinimumExpanding
         self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        header.sectionClicked.connect(self.sort)
+        header.sectionDoubleClicked.connect(self.sort)
 
     def keyPressEvent(self, e):
         """
@@ -112,7 +112,8 @@ class QConnectionTable(QtWidgets.QTableWidget):
             super(QConnectionTable, self).keyPressEvent(e)
 
     def sort(self, index):
-        self.sortItems(index)
+        if index != QConnectionTable.track_Index:
+            self.sortItems(index)
 
 
 class QDetailsTable(QtWidgets.QTableWidget):
@@ -172,7 +173,7 @@ class QDetailsTable(QtWidgets.QTableWidget):
         self.setMinimumSize(QtCore.QSize(QDetailsTable.minimumWidth, QDetailsTable.minimumHeight))
         # set size policy to minimalExpanding
         self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        header.sectionClicked.connect(self.sort)
+        header.sectionDoubleClicked.connect(self.sort)
 
     def keyPressEvent(self, e):
         """
@@ -188,8 +189,9 @@ class QDetailsTable(QtWidgets.QTableWidget):
         else:
             super(QDetailsTable, self).keyPressEvent(e)
 
-    def sort(self,index):
-        self.sortItems(index)
+    def sort(self, index):
+        if index != QDetailsTable.track_Index:
+            self.sortItems(index)
 
 
 class QMapWidget(QtWidgets.QWidget):

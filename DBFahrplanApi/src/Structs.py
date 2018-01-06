@@ -293,7 +293,10 @@ class Connection:
         # Name e.g. IC10250,ICE516, etc
         self.name = name
         # type number of enum TrainType
-        self.type = TrainType[typ]
+        if typ in {'ICE', 'IC', 'EC', 'EC', 'EN', 'TGV'}:
+            self.type = TrainType[typ]
+        else:
+            self.type = 5
         # id of the station which the connection was requested from
         self.stopId = stopId
         # name of station which the connection was requested from
