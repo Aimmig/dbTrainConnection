@@ -3,3 +3,7 @@
 -If possible make colums resizable and auto-streched on resize
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
 -Add functionality to (re)-request map if maptype, or markerColor, pathColor
+-Remove size of map in gui, instead configure this in config + option to increase/decrease a fixed percentage from menu
+-remove hour offset from gui, instead use config + option to increase/decrease from menu
+
+-Fix menu bar using QMainWindow (initialize Menu BAr correctly)

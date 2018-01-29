@@ -28,8 +28,8 @@ from XMLParser import XMLParser
 import sys
 import urllib.error as err
 
-
-class FormWidget(QtWidgets.QWidget):
+#class FormWidget(QtWidgets.QWidget):
+class FormWidget(QtWidgets.QMainWindow):
     """
     Main Gui consist of three parts.
     Part 1 for user input,
@@ -51,12 +51,9 @@ class FormWidget(QtWidgets.QWidget):
         # read all settings information from file including language data
         self.settings = RequestSettings('configs/config.txt')
 
-        # create MenuBar with self as parent
-        self.myQMenuBar = QtWidgets.QMenuBar(self)
-
         # create MenuBars
         self.initializeMenuBar()
-
+        
         # set Window Title
         self.setWindowTitle(self.settings.LanguageStrings.windowTitle_Text)
 
@@ -70,7 +67,7 @@ class FormWidget(QtWidgets.QWidget):
         self.mapWidget = QMapWidget()
         
         # create HorizontalBoxLayout as overall Widget layout
-        layout = QtWidgets.QHBoxLayout(self)
+        layout = QtWidgets.QHBoxLayout()
 
         # initialize three main layout parts
         box1 = self.initializeUserInputLayout()
@@ -81,18 +78,28 @@ class FormWidget(QtWidgets.QWidget):
         layout.addLayout(box1)
         layout.addLayout(box2)
         layout.addLayout(box3)
-
-        # set formLayout
-        self.setLayout(layout)
+        layout.setContentsMargins(10,20,10,10)
+        
+        #set formLayout
+        #self.setLayout(layout)
+        
+        # create central widget and set layout
+        centralWidget = QtWidgets.QWidget()
+        centralWidget.setLayout(layout)
+        self.setCentralWidget(centralWidget)
+        
         # create empty Filter
         self.typeFilter = Filter()
 
+    # NEEDS TO BE REWORKED IN ORDER TO WORK WITH QMAINWINDOW
     # noinspection PyUnresolvedReferences
     def initializeMenuBar(self):
         """
         Initializes QMenuBar.
         Adds action for choosing path and marker color.
         """
+        
+        self.myQMenuBar = QtWidgets.QMenuBar(self)
 
         # create Menu for changing Colors
         mapMenu = self.myQMenuBar.addMenu("Map")
