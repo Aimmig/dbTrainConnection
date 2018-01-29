@@ -52,10 +52,6 @@ class FormWidget(QtWidgets.QMainWindow):
         # read all settings information from file including language data
         self.settings = RequestSettings('configs/config.txt')
 
-        self.myQMenuBar = QtWidgets.QMenuBar(self)
-        # create MenuBars
-        self.initializeMenuBar()
-
         # set Window Title
         self.setWindowTitle(self.settings.LanguageStrings.windowTitle_Text)
 
@@ -80,14 +76,8 @@ class FormWidget(QtWidgets.QMainWindow):
         layout.addLayout(box1)
         layout.addLayout(box2)
         layout.addLayout(box3)
-        layout.setContentsMargins(10, 20, 10, 10)
-
-        # old version used this
-        # set formLayout
-        # self.setLayout(layout)
 
         # create central widget and set layout
-        # noinspection PyArgumentList
         centralWidget = QtWidgets.QWidget()
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
@@ -95,53 +85,60 @@ class FormWidget(QtWidgets.QMainWindow):
         # create empty Filter
         self.typeFilter = Filter()
 
-    # NEEDS TO BE REWORKED IN ORDER TO WORK WITH QMAINWINDOW
+        # init Menus
+        self.initMenuBar()
+
     # noinspection PyUnresolvedReferences
-    def initializeMenuBar(self):
+    def initMenuBar(self):
         """
         Initializes QMenuBar.
         Adds action for choosing path and marker color.
         """
 
-        # create Menu for changing Colors
-        mapMenu = self.myQMenuBar.addMenu("Map")
+        # get MenuBar
+        menuBar = self.menuBar()
 
-        # create Menu for changing Colors
+        # create Menu for Map
+        mapMenu = menuBar.addMenu("Map")
+
+        # create Submenu for changing colors
         colorMenu = mapMenu.addMenu(self.settings.LanguageStrings.colour_Text)
-        # create Action for changing Path color
+
+        # submenu entry for changing path colors
         colorPathAction = QtWidgets.QAction(self.settings.LanguageStrings.change_Path_Colour_Text, self)
-        # connect Action with method
         colorPathAction.triggered.connect(self.changePathColor)
-        # add Action to Menu
         colorMenu.addAction(colorPathAction)
-        # create Action for changing Marker Color
+
+        # submenu entry for changing marker colors
         colorMarkerAction = QtWidgets.QAction(self.settings.LanguageStrings.change_Marker_Colour_Text, self)
-        # connect Action with method
         colorMarkerAction.triggered.connect(self.changeMarkerColor)
-        # add Action to Menu
         colorMenu.addAction(colorMarkerAction)
 
-        # add Menu for changing MapType
+        # add Submenu for changing MapType
         mapTypeMenu = mapMenu.addMenu("Type")
 
+        # submenu entry for setting roadmap
         roadmapAction = QtWidgets.QAction(MapType.roadmap.name, self)
         roadmapAction.triggered.connect(self.setMapType_roadmap)
         mapTypeMenu.addAction(roadmapAction)
 
+        # submenu entry for setting sattelitemap
         satelliteAction = QtWidgets.QAction(MapType.satellite.name, self)
         satelliteAction.triggered.connect(self.setMapType_satellite)
         mapTypeMenu.addAction(satelliteAction)
 
+        # submenu entry for hybridmap
         hybridAction = QtWidgets.QAction(MapType.hybrid.name, self)
         hybridAction.triggered.connect(self.setMapType_hybrid)
         mapTypeMenu.addAction(hybridAction)
 
+        # submenu entry for terrainmap
         terrainAction = QtWidgets.QAction(MapType.terrain.name, self)
         terrainAction.triggered.connect(self.setMapType_terrain)
         mapTypeMenu.addAction(terrainAction)
 
         # create Menu for application
-        exitMenu = self.myQMenuBar.addMenu(self.settings.LanguageStrings.application_Text)
+        exitMenu = menuBar.addMenu(self.settings.LanguageStrings.application_Text)
         # create Action for closing application
         exitAction = QtWidgets.QAction(self.settings.LanguageStrings.quit_Text, self)
         # connect Action with method
@@ -443,7 +440,7 @@ class FormWidget(QtWidgets.QMainWindow):
         if (connection.imageData.isEmpty() or self.settings.MAPTYPE != connection.mapType) \
                 and self.mapActive.isChecked():
             # request imageData and create QByteArray and set imageData
-            # noinspection PyArgumentList
+            # noinspection PyArgumentList,PyTypeChecker
             connection.imageData = QtCore.QByteArray(
                 Request.getMapWithLocations(coordinates, markerIndex, self.settings))
             connection.mapType = self.settings.MAPTYPE

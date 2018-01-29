@@ -6,5 +6,3 @@
 -Remove size of map in gui, instead configure this in config + option to increase/decrease a fixed percentage from menu
 -remove hour offset from gui, instead use config + option to increase/decrease from menu 
 -Already removed this, but stil need to reimplement the change with menu
-
--Fix menu bar using QMainWindow (initialize Menu BAr correctly)
