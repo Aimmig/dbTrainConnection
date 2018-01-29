@@ -28,7 +28,8 @@ from XMLParser import XMLParser
 import sys
 import urllib.error as err
 
-#class FormWidget(QtWidgets.QWidget):
+
+# class FormWidget(QtWidgets.QWidget):
 class FormWidget(QtWidgets.QMainWindow):
     """
     Main Gui consist of three parts.
@@ -51,9 +52,10 @@ class FormWidget(QtWidgets.QMainWindow):
         # read all settings information from file including language data
         self.settings = RequestSettings('configs/config.txt')
 
+        self.myQMenuBar = QtWidgets.QMenuBar(self)
         # create MenuBars
         self.initializeMenuBar()
-        
+
         # set Window Title
         self.setWindowTitle(self.settings.LanguageStrings.windowTitle_Text)
 
@@ -65,7 +67,7 @@ class FormWidget(QtWidgets.QMainWindow):
         self.filterActive = False
         # initialize Widget for map
         self.mapWidget = QMapWidget()
-        
+
         # create HorizontalBoxLayout as overall Widget layout
         layout = QtWidgets.QHBoxLayout()
 
@@ -78,16 +80,18 @@ class FormWidget(QtWidgets.QMainWindow):
         layout.addLayout(box1)
         layout.addLayout(box2)
         layout.addLayout(box3)
-        layout.setContentsMargins(10,20,10,10)
-        
-        #set formLayout
-        #self.setLayout(layout)
-        
+        layout.setContentsMargins(10, 20, 10, 10)
+
+        # old version used this
+        # set formLayout
+        # self.setLayout(layout)
+
         # create central widget and set layout
+        # noinspection PyArgumentList
         centralWidget = QtWidgets.QWidget()
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
-        
+
         # create empty Filter
         self.typeFilter = Filter()
 
@@ -98,8 +102,6 @@ class FormWidget(QtWidgets.QMainWindow):
         Initializes QMenuBar.
         Adds action for choosing path and marker color.
         """
-        
-        self.myQMenuBar = QtWidgets.QMenuBar(self)
 
         # create Menu for changing Colors
         mapMenu = self.myQMenuBar.addMenu("Map")
@@ -229,31 +231,6 @@ class FormWidget(QtWidgets.QMainWindow):
         # create global Layout
         propertiesLayout = QtWidgets.QHBoxLayout()
 
-        # create line edits for width/height with default values
-        self.mapWidth = QtWidgets.QLineEdit(str(self.settings.defaultSize))
-        self.mapHeight = QtWidgets.QLineEdit(str(self.settings.defaultSize))
-
-        # layout for map height width
-        # add description label and line Edits to layout
-        mapHeightLayout = QtWidgets.QVBoxLayout()
-        mapWidthLayout = QtWidgets.QVBoxLayout()
-        mapWidthLayout.addWidget(QtWidgets.QLabel(self.settings.LanguageStrings.width_Text + ':'))
-        mapWidthLayout.addWidget(self.mapWidth)
-        mapHeightLayout.addWidget(QtWidgets.QLabel(self.settings.LanguageStrings.height_Text + ':'))
-        mapHeightLayout.addWidget(self.mapHeight)
-
-        propertiesLayout.addLayout(mapHeightLayout)
-        propertiesLayout.addLayout(mapWidthLayout)
-
-        # create lne edit for offset with default value
-        offsetLayout = QtWidgets.QVBoxLayout()
-        self.offsetField = QtWidgets.QLineEdit(str(self.settings.defaultOffSet))
-        label = QtWidgets.QLabel(self.settings.LanguageStrings.hours_Text)
-        offsetLayout.addWidget(label)
-        offsetLayout.addWidget(self.offsetField)
-
-        propertiesLayout.addLayout(offsetLayout)
-
         # create buttons for getting connections earlier/later and group them
         requestEarlierLater_layout = QtWidgets.QHBoxLayout()
         self.earlier = QtWidgets.QPushButton(self.settings.LanguageStrings.earlier_Text)
@@ -351,9 +328,6 @@ class FormWidget(QtWidgets.QMainWindow):
         Calls getConnections with the parameters read from this row.
         """
 
-        self.savesSettings()
-        self.showSettings()
-
         # get selected Row in connection details
         row = self.detailsTable.currentRow()
         # avoid error if nothing is selected
@@ -389,10 +363,7 @@ class FormWidget(QtWidgets.QMainWindow):
         Displays this detailed information in DetailsTable.
         """
 
-        self.savesSettings()
-        self.showSettings()
-        
-        #close map
+        # close map
         self.mapWidget.close()
 
         # get the selected Index
@@ -469,7 +440,8 @@ class FormWidget(QtWidgets.QMainWindow):
         """
 
         # check if imageData is empty and if map is selected
-        if (connection.imageData.isEmpty() or self.settings.MAPTYPE != connection.mapType) and self.mapActive.isChecked():
+        if (connection.imageData.isEmpty() or self.settings.MAPTYPE != connection.mapType) \
+                and self.mapActive.isChecked():
             # request imageData and create QByteArray and set imageData
             # noinspection PyArgumentList
             connection.imageData = QtCore.QByteArray(
@@ -477,16 +449,14 @@ class FormWidget(QtWidgets.QMainWindow):
             connection.mapType = self.settings.MAPTYPE
         # display requested map-Data
         if self.mapActive.isChecked():
-            self.mapWidget.showMap(connection.imageData, connection.toStringDetails(self.settings) + ' (' + MapType(connection.mapType).name + ')')
+            self.mapWidget.showMap(connection.imageData, connection.toStringDetails(self.settings) + ' (' + MapType(
+                connection.mapType).name + ')')
 
     def showPreviousPage(self):
         """
         Display previous page of requested connections.
         Does not have an effect on first page.
         """
-
-        self.savesSettings()
-        self.showSettings()
 
         if self.conList.getDisplayedIndex() > 0:
             self.conList.setDisplayedIndex(self.conList.getDisplayedIndex() - 1)
@@ -503,9 +473,6 @@ class FormWidget(QtWidgets.QMainWindow):
         Applies changed filter to original data
         and displays new results.
         """
-
-        self.savesSettings()
-        self.showSettings()
 
         index = self.conList.getDisplayedIndex()
         if index >= 0:
@@ -524,9 +491,6 @@ class FormWidget(QtWidgets.QMainWindow):
         Displays next page of requested connections.
         Does not have an effect on last page.
         """
-
-        self.savesSettings()
-        self.showSettings()
 
         if self.conList.getDisplayedIndex() < self.conList.getPageCount() - 1:
             self.conList.setDisplayedIndex(self.conList.getDisplayedIndex() + 1)
@@ -633,11 +597,6 @@ class FormWidget(QtWidgets.QMainWindow):
         the user input and displays names in corresponding combo-box.
         """
 
-        # first try to save settings
-        self.savesSettings()
-        # load settings
-        self.showSettings()
-
         loc = self.inp.text()
         # check for empty input
         if loc.strip():
@@ -675,9 +634,6 @@ class FormWidget(QtWidgets.QMainWindow):
         the shift from the previous time.
         """
 
-        self.savesSettings()
-        self.showSettings()
-
         secShift = self.settings.getOffSet()
         self.getConnectionsWithShiftedTime(False, secShift)
 
@@ -687,9 +643,6 @@ class FormWidget(QtWidgets.QMainWindow):
         True indicates later. Requesting later means add
         the shift to the previous time.
         """
-
-        self.savesSettings()
-        self.showSettings()
 
         secShift = self.settings.getOffSet()
         self.getConnectionsWithShiftedTime(True, secShift)
@@ -741,12 +694,9 @@ class FormWidget(QtWidgets.QMainWindow):
         Calls getConnection with these parameters.
         """
 
-        self.savesSettings()
-        self.showSettings()
-
         # get selected Index from ComboBox
         index = self.railStations.currentIndex()
-        
+
         # check invalid Index
         if index < 0:
             return
@@ -860,31 +810,13 @@ class FormWidget(QtWidgets.QMainWindow):
         else:
             super(FormWidget, self).keyPressEvent(e)
 
-    def savesSettings(self):
-        try:
-            height = int(self.mapHeight.text())
-            width = int(self.mapWidth.text())
-            self.settings.setHeight(height)
-            self.settings.setWidth(width)
-        except ValueError:
-            pass
-        try:
-            offset = int(self.offsetField.text())
-            self.settings.setOffSet(offset)
-        except ValueError:
-            pass
-
-    def showSettings(self):
-        self.mapHeight.setText(str(self.settings.height))
-        self.mapWidth.setText(str(self.settings.width))
-        self.offsetField.setText(str(self.settings.offSet))
-    
     # Quit Action
     def closeEvent(self, evt):
         # close MapWidget
         self.mapWidget.close()
         # close Formwidget
         super(FormWidget, self).close()
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
