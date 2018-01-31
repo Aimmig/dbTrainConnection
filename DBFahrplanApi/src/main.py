@@ -78,6 +78,7 @@ class FormWidget(QtWidgets.QMainWindow):
         layout.addLayout(box3)
 
         # create central widget and set layout
+        # noinspection PyArgumentList
         centralWidget = QtWidgets.QWidget()
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
@@ -102,17 +103,17 @@ class FormWidget(QtWidgets.QMainWindow):
         mapMenu = menuBar.addMenu("Map")
 
         # create Submenu for changing colors
-        colorMenu = mapMenu.addMenu(self.settings.LanguageStrings.colour_Text)
+        mapcolorMenu = mapMenu.addMenu(self.settings.LanguageStrings.colour_Text)
 
         # submenu entry for changing path colors
         colorPathAction = QtWidgets.QAction(self.settings.LanguageStrings.change_Path_Colour_Text, self)
         colorPathAction.triggered.connect(self.changePathColor)
-        colorMenu.addAction(colorPathAction)
+        mapcolorMenu.addAction(colorPathAction)
 
         # submenu entry for changing marker colors
         colorMarkerAction = QtWidgets.QAction(self.settings.LanguageStrings.change_Marker_Colour_Text, self)
         colorMarkerAction.triggered.connect(self.changeMarkerColor)
-        colorMenu.addAction(colorMarkerAction)
+        mapcolorMenu.addAction(colorMarkerAction)
 
         # add Submenu for changing MapType
         mapTypeMenu = mapMenu.addMenu("Type")
@@ -136,6 +137,37 @@ class FormWidget(QtWidgets.QMainWindow):
         terrainAction = QtWidgets.QAction(MapType.terrain.name, self)
         terrainAction.triggered.connect(self.setMapType_terrain)
         mapTypeMenu.addAction(terrainAction)
+
+        mapSizeMenu = mapMenu.addMenu("Size")
+
+        increaseAction = QtWidgets.QAction("Increase", self)
+        increaseAction.triggered.connect(self.increaseMapSize)
+        mapSizeMenu.addAction(increaseAction)
+
+        decreaseAction = QtWidgets.QAction("Decrease", self)
+        decreaseAction.triggered.connect(self.decreaseMapSize)
+        mapSizeMenu.addAction(decreaseAction)
+
+        settingsMenu = menuBar.addMenu("Settings")
+
+        filterMenu = settingsMenu.addMenu("Filter")
+
+        activateFilterAction = QtWidgets.QAction('Aktivieren', self)
+        activateFilterAction.triggered.connect(self.setFilterActive)
+        filterMenu.addAction(activateFilterAction)
+
+        deactiveFilterAction = QtWidgets.QAction("Deaktivieren", self)
+        deactiveFilterAction.triggered.connect(self.setFilterInactive)
+        filterMenu.addAction(deactiveFilterAction)
+
+        searchOffsetMenu = settingsMenu.addMenu("Offset")
+        increaseOffsetAction = QtWidgets.QAction("Increase", self)
+        increaseOffsetAction.triggered.connect(self.increaseOffset)
+        searchOffsetMenu.addAction(increaseOffsetAction)
+
+        increaseOffsetAction = QtWidgets.QAction("Decrease", self)
+        increaseOffsetAction.triggered.connect(self.decreaseOffset)
+        searchOffsetMenu.addAction(increaseOffsetAction)
 
         # create Menu for application
         exitMenu = menuBar.addMenu(self.settings.LanguageStrings.application_Text)
@@ -772,6 +804,24 @@ class FormWidget(QtWidgets.QMainWindow):
         # check for invalid color
         if newColor.isValid():
             self.settings.setMarkerColor(newColor)
+
+    def increaseMapSize(self):
+        print("INC")
+
+    def decreaseMapSize(self):
+        print("DEC")
+
+    def increaseOffset(self):
+        print("INC")
+
+    def decreaseOffset(self):
+        print("DEC")
+
+    def setFilterActive(self):
+        print("ACT")
+
+    def setFilterInactive(self):
+        print("DEAC")
 
     def setMapType_roadmap(self):
         self.settings.MAPTYPE = MapType.roadmap.value
