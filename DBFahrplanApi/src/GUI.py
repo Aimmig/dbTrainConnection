@@ -25,12 +25,10 @@ from Widgets import QConnectionTable, QDetailsTable, QMapWidget
 from Request import Request
 from Structs import Connection, ConnectionsList, Stop, Filter, Coordinate, RequestSettings, MapType
 from XMLParser import XMLParser
-import sys
 import urllib.error as err
 
 
-# class FormWidget(QtWidgets.QWidget):
-class FormWidget(QtWidgets.QMainWindow):
+class GUI(QtWidgets.QMainWindow):
     """
     Main Gui consist of three parts.
     Part 1 for user input,
@@ -47,7 +45,7 @@ class FormWidget(QtWidgets.QMainWindow):
 
         # super constructor
         # noinspection PyArgumentList
-        super(FormWidget, self).__init__()
+        super(GUI, self).__init__()
 
         # read all settings information from file including language data
         self.settings = RequestSettings('configs/config.txt')
@@ -855,18 +853,11 @@ class FormWidget(QtWidgets.QMainWindow):
             self.refreshPage()
         # pass to the super keyPressEvent
         else:
-            super(FormWidget, self).keyPressEvent(e)
+            super(GUI, self).keyPressEvent(e)
 
     # Quit Action
     def closeEvent(self, evt):
         # close MapWidget
         self.mapWidget.close()
         # close Formwidget
-        super(FormWidget, self).close()
-
-
-if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
-    application = FormWidget()
-    application.show()
-    sys.exit(app.exec_())
+        super(GUI, self).close()
