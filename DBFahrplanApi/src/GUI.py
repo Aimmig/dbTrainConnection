@@ -116,25 +116,31 @@ class GUI(QtWidgets.QMainWindow):
         # add Submenu for changing MapType
         mapTypeMenu = mapMenu.addMenu("Type")
 
+        # create groupAction
+        mapGroupAction = QtWidgets.QActionGroup(self)
+
         # submenu entry for setting roadmap
-        roadmapAction = QtWidgets.QAction(MapType.roadmap.name, self)
+        roadmapAction = QtWidgets.QAction(MapType.roadmap.name, mapGroupAction)
+        roadmapAction.setCheckable(True)
         roadmapAction.triggered.connect(self.setMapType_roadmap)
-        mapTypeMenu.addAction(roadmapAction)
 
         # submenu entry for setting sattelitemap
-        satelliteAction = QtWidgets.QAction(MapType.satellite.name, self)
+        satelliteAction = QtWidgets.QAction(MapType.satellite.name, mapGroupAction)
+        satelliteAction.setCheckable(True)
         satelliteAction.triggered.connect(self.setMapType_satellite)
-        mapTypeMenu.addAction(satelliteAction)
 
         # submenu entry for hybridmap
-        hybridAction = QtWidgets.QAction(MapType.hybrid.name, self)
+        hybridAction = QtWidgets.QAction(MapType.hybrid.name, mapGroupAction)
+        hybridAction.setCheckable(True)
         hybridAction.triggered.connect(self.setMapType_hybrid)
-        mapTypeMenu.addAction(hybridAction)
 
         # submenu entry for terrainmap
-        terrainAction = QtWidgets.QAction(MapType.terrain.name, self)
+        terrainAction = QtWidgets.QAction(MapType.terrain.name, mapGroupAction)
+        terrainAction.setCheckable(True)
         terrainAction.triggered.connect(self.setMapType_terrain)
-        mapTypeMenu.addAction(terrainAction)
+
+        # add all Actions of group
+        mapTypeMenu.addActions(mapGroupAction.actions())
 
         mapSizeMenu = mapMenu.addMenu("Size")
 
@@ -146,17 +152,28 @@ class GUI(QtWidgets.QMainWindow):
         decreaseAction.triggered.connect(self.decreaseMapSize)
         mapSizeMenu.addAction(decreaseAction)
 
+        # action for checking Map
+        # noinspection PyAttributeOutsideInit
+        self.mapActive = QtWidgets.QAction("Anzeigen", self)
+        self.mapActive.setCheckable(True)
+        self.mapActive.setChecked(True)
+
+        mapMenu.addAction(self.mapActive)
+
         settingsMenu = menuBar.addMenu("Settings")
 
         filterMenu = settingsMenu.addMenu("Filter")
+        filterGroupAction = QtWidgets.QActionGroup(self)
 
-        activateFilterAction = QtWidgets.QAction('Aktivieren', self)
+        activateFilterAction = QtWidgets.QAction('Aktivieren', filterGroupAction)
+        activateFilterAction.setCheckable(True)
         activateFilterAction.triggered.connect(self.setFilterActive)
-        filterMenu.addAction(activateFilterAction)
 
-        deactiveFilterAction = QtWidgets.QAction("Deaktivieren", self)
+        deactiveFilterAction = QtWidgets.QAction('Deaktivieren', filterGroupAction)
+        deactiveFilterAction.setCheckable(True)
         deactiveFilterAction.triggered.connect(self.setFilterInactive)
-        filterMenu.addAction(deactiveFilterAction)
+
+        filterMenu.addActions(filterGroupAction.actions())
 
         searchOffsetMenu = settingsMenu.addMenu("Offset")
         increaseOffsetAction = QtWidgets.QAction("Increase", self)
@@ -248,13 +265,6 @@ class GUI(QtWidgets.QMainWindow):
         filterLayout.addWidget(self.checkIC)
         filterLayout.addWidget(self.checkOther)
 
-        # create Layout for activating map
-        mapLayout = QtWidgets.QHBoxLayout()
-        # create CheckBox for en/disabling map
-        self.mapActive = QtWidgets.QCheckBox(self.settings.LanguageStrings.showMap_Text)
-        # add checkbox to layout
-        mapLayout.addWidget(self.mapActive)
-
         # create global Layout
         propertiesLayout = QtWidgets.QHBoxLayout()
 
@@ -273,7 +283,6 @@ class GUI(QtWidgets.QMainWindow):
         layout.addWidget(self.date_chooser)
         layout.addLayout(radioButton_layout)
         layout.addLayout(filterLayout)
-        layout.addLayout(mapLayout)
         layout.addLayout(propertiesLayout)
         layout.addLayout(requestEarlierLater_layout)
         layout.addLayout(request_layout)
@@ -816,10 +825,17 @@ class GUI(QtWidgets.QMainWindow):
         print("DEC")
 
     def setFilterActive(self):
-        print("ACT")
+        self.checkICE.setCheckable(True)
+        self.checkIC.setCheckable(True)
+        self.checkOther.setCheckable(True)
 
     def setFilterInactive(self):
-        print("DEAC")
+        self.checkICE.setChecked(False)
+        self.checkICE.setCheckable(False)
+        self.checkIC.setChecked(False)
+        self.checkIC.setCheckable(False)
+        self.checkOther.setChecked(False)
+        self.checkOther.setCheckable(False)
 
     def setMapType_roadmap(self):
         self.settings.MAPTYPE = MapType.roadmap.value
