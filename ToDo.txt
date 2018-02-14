@@ -5,4 +5,4 @@
 -Add functionality to (re)-request map if maptype, or markerColor, pathColor
 -Remove size of map in gui, instead configure this in config + option to increase/decrease a fixed percentage from menu
 -remove hour offset from gui, instead use config + option to increase/decrease from menu 
--Already removed this, but stil need to reimplement the change with menu
+-inserte proper icons for increase/decrease

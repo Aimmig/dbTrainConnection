@@ -39,7 +39,7 @@ class GUI(QtWidgets.QMainWindow):
 
     def __init__(self):
         """
-        Constructor initializes main gui.
+        Initializes main gui.
         Initializes settings- and mapWidget.
         """
 
@@ -76,13 +76,16 @@ class GUI(QtWidgets.QMainWindow):
         layout.addLayout(box3)
 
         # create central widget and set layout
-        # noinspection PyArgumentList
         centralWidget = QtWidgets.QWidget()
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
 
         # create empty Filter
         self.typeFilter = Filter()
+
+        # intialize stuff for default icon
+        self.stdicon = self.style().standardIcon
+        self.style = QtWidgets.QStyle
 
         # init Menus
         self.initMenuBar()
@@ -91,7 +94,7 @@ class GUI(QtWidgets.QMainWindow):
     def initMenuBar(self):
         """
         Initializes QMenuBar.
-        Adds action for choosing path and marker color.
+        Adds all needed action for choosing path and marker color etc.
         """
 
         # get MenuBar
@@ -104,12 +107,14 @@ class GUI(QtWidgets.QMainWindow):
         mapcolorMenu = mapMenu.addMenu(self.settings.LanguageStrings.colour_Text)
 
         # submenu entry for changing path colors
-        colorPathAction = QtWidgets.QAction(self.settings.LanguageStrings.change_Path_Colour_Text, self)
+        colorPathAction = QtWidgets.QAction(self.stdicon(self.style.SP_DialogOpenButton),
+                                            self.settings.LanguageStrings.change_Path_Colour_Text, self)
         colorPathAction.triggered.connect(self.changePathColor)
         mapcolorMenu.addAction(colorPathAction)
 
         # submenu entry for changing marker colors
-        colorMarkerAction = QtWidgets.QAction(self.settings.LanguageStrings.change_Marker_Colour_Text, self)
+        colorMarkerAction = QtWidgets.QAction(self.stdicon(self.style.SP_DialogOpenButton),
+                                              self.settings.LanguageStrings.change_Marker_Colour_Text, self)
         colorMarkerAction.triggered.connect(self.changeMarkerColor)
         mapcolorMenu.addAction(colorMarkerAction)
 
@@ -139,16 +144,25 @@ class GUI(QtWidgets.QMainWindow):
         terrainAction.setCheckable(True)
         terrainAction.triggered.connect(self.setMapType_terrain)
 
-        # add all Actions of group
+        # try to check default maptype specified in config
+        try:
+            mapActionDict = {MapType.roadmap: roadmapAction, MapType.satellite: satelliteAction,
+                             MapType.hybrid: hybridAction, MapType.terrain: terrainAction}
+            mapActionDict[MapType(self.settings.MAPTYPE)].setChecked(True)
+        except KeyError:
+            pass
+
+        # add all actions from group to menu
         mapTypeMenu.addActions(mapGroupAction.actions())
 
+        # create
         mapSizeMenu = mapMenu.addMenu("Size")
 
-        increaseAction = QtWidgets.QAction("Increase", self)
+        increaseAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowUp), "Increase", self)
         increaseAction.triggered.connect(self.increaseMapSize)
         mapSizeMenu.addAction(increaseAction)
 
-        decreaseAction = QtWidgets.QAction("Decrease", self)
+        decreaseAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowDown), "Decrease", self)
         decreaseAction.triggered.connect(self.decreaseMapSize)
         mapSizeMenu.addAction(decreaseAction)
 
@@ -158,36 +172,49 @@ class GUI(QtWidgets.QMainWindow):
         self.mapActive.setCheckable(True)
         self.mapActive.setChecked(True)
 
+        # add map action to menu
         mapMenu.addAction(self.mapActive)
 
+        # create menu for settings
         settingsMenu = menuBar.addMenu("Settings")
 
+        # create submenu for filter
         filterMenu = settingsMenu.addMenu("Filter")
+        # create actionGroup for filter
         filterGroupAction = QtWidgets.QActionGroup(self)
 
+        # add action for active filter
         activateFilterAction = QtWidgets.QAction('Aktivieren', filterGroupAction)
         activateFilterAction.setCheckable(True)
+        activateFilterAction.setChecked(True)
         activateFilterAction.triggered.connect(self.setFilterActive)
 
+        # add action for inactive filter
         deactiveFilterAction = QtWidgets.QAction('Deaktivieren', filterGroupAction)
         deactiveFilterAction.setCheckable(True)
         deactiveFilterAction.triggered.connect(self.setFilterInactive)
 
+        # add all actions from Fitergroup to menu
         filterMenu.addActions(filterGroupAction.actions())
 
+        # create submenu for offset changing
         searchOffsetMenu = settingsMenu.addMenu("Offset")
-        increaseOffsetAction = QtWidgets.QAction("Increase", self)
+
+        # add action for increase of submenu
+        increaseOffsetAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowUp), "Increase", self)
         increaseOffsetAction.triggered.connect(self.increaseOffset)
         searchOffsetMenu.addAction(increaseOffsetAction)
 
-        increaseOffsetAction = QtWidgets.QAction("Decrease", self)
+        # add action for decrease of submenu
+        increaseOffsetAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowDown), "Decrease", self)
         increaseOffsetAction.triggered.connect(self.decreaseOffset)
         searchOffsetMenu.addAction(increaseOffsetAction)
 
         # create Menu for application
         exitMenu = menuBar.addMenu(self.settings.LanguageStrings.application_Text)
         # create Action for closing application
-        exitAction = QtWidgets.QAction(self.settings.LanguageStrings.quit_Text, self)
+        exitAction = QtWidgets.QAction(self.stdicon(self.style.SP_DialogCancelButton),
+                                       self.settings.LanguageStrings.quit_Text, self)
         # connect Action with method
         exitAction.triggered.connect(self.closeEvent)
         # add Action to Menu
@@ -813,23 +840,41 @@ class GUI(QtWidgets.QMainWindow):
             self.settings.setMarkerColor(newColor)
 
     def increaseMapSize(self):
-        print("INC")
+        """
+        TO-DO
+        """
+        print("INC-MAP")
 
     def decreaseMapSize(self):
-        print("DEC")
+        """
+        TO-DO
+        """
+        print("DEC-MAP")
 
     def increaseOffset(self):
-        print("INC")
+        """
+        TO-DO
+        """
+        print("INC-OFFSET")
 
     def decreaseOffset(self):
-        print("DEC")
+        """
+        TO-DO
+        """
+        print("DEC-OFFSET")
 
     def setFilterActive(self):
+        """
+        Make all Filters checkable
+        """
         self.checkICE.setCheckable(True)
         self.checkIC.setCheckable(True)
         self.checkOther.setCheckable(True)
 
     def setFilterInactive(self):
+        """
+        Deselect all Filters and make them not checkable
+        """
         self.checkICE.setChecked(False)
         self.checkICE.setCheckable(False)
         self.checkIC.setChecked(False)
@@ -838,15 +883,27 @@ class GUI(QtWidgets.QMainWindow):
         self.checkOther.setCheckable(False)
 
     def setMapType_roadmap(self):
+        """
+        Set Maptype value to roadmap
+        """
         self.settings.MAPTYPE = MapType.roadmap.value
 
     def setMapType_satellite(self):
+        """
+        Set Maptype value to satelitte
+        """
         self.settings.MAPTYPE = MapType.satellite.value
 
     def setMapType_hybrid(self):
+        """
+        Set Maptype to hybrid
+        """
         self.settings.MAPTYPE = MapType.hybrid.value
 
     def setMapType_terrain(self):
+        """
+        Set Mapytpe to terrain
+        """
         self.settings.MAPTYPE = MapType.terrain.value
 
     def keyPressEvent(self, e):

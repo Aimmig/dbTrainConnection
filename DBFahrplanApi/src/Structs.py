@@ -150,7 +150,11 @@ class RequestSettings:
         self.timeFormat = parser[default]['timeFormat']
 
         # read mapType used
-        self.MAPTYPE = MapType[parser[default]['MapType']].value
+        try:
+            self.MAPTYPE = MapType[parser[default]['MapType']].value
+        # forced default value
+        except KeyError:
+            self.MAPTYPE = 1
 
         # read default color values and sizes
         self.PATH_COLOR = QtGui.QColor(parser[default]['PathColor'])
