@@ -546,7 +546,15 @@ class GUI(QtWidgets.QMainWindow):
         index = self.conList.getDisplayedIndex()
         if index >= 0:
             self.clearConnectionTable()
-            self.addConnections(self.conList.getConnectionPage(index))
+            con = self.conList.getSingleConnection(self.conList.getDisplayedIndex(), 0)
+            # check if current gui selection differs from current connection
+            isDeparture = con.isDeparture()
+            if not self.depart.isChecked() == isDeparture:
+                isDeparture = not isDeparture
+                xmlString, url = Request.regetXMLStringConnectionRequest(con.url, isDeparture)
+                self.parseAndShowConnections(xmlString, isDeparture, url)
+            else:
+                self.addConnections(self.conList.getConnectionPage(index))
 
     def clearConnectionTable(self):
         """
@@ -733,11 +741,12 @@ class GUI(QtWidgets.QMainWindow):
             identifier = con.stopId
             date = con.date
             time = con.time
-            # default set departure
-            isDeparture = True
-            # direction is not set means it is a arrival
-            if con.direction == "":
-                isDeparture = False
+            # use default value from current connection
+            isDeparture = con.isDeparture()
+            # check if current gui selection differs from current connection
+            if not self.depart.isChecked() == isDeparture:
+                # if so switch
+                isDeparture = not isDeparture
             # calculate shift (positive or negative depending on isShiftPositive-Flag)
             # calculate possible dayShift
             if isShiftPositive:
@@ -787,7 +796,7 @@ class GUI(QtWidgets.QMainWindow):
          If request was successful displays requested connection on ConnectionTabel.
          """
         try:
-            xmlString = Request.getXMLStringConnectionRequest(date, time, identifier, isDeparture, self.settings)
+            xmlString, url = Request.getXMLStringConnectionRequest(date, time, identifier, isDeparture, self.settings)
         except err.HTTPError as e:
             print('The server couldn\'t fulfill the request.')
             print('Error code: ', e.code)
@@ -798,7 +807,11 @@ class GUI(QtWidgets.QMainWindow):
             print('Reason: ', e.reason)
             self.connection_label.setText(str(e.reason))
             return
-        connections = XMLParser.getConnectionsFromXMLString(xmlString, isDeparture)
+
+        self.parseAndShowConnections(xmlString, isDeparture, url)
+
+    def parseAndShowConnections(self, xmlString, isDeparture, url):
+        connections = XMLParser.getConnectionsFromXMLString(xmlString, isDeparture, url)
         self.clearConnectionTable()
         # check if something was actually found
         if not connections:

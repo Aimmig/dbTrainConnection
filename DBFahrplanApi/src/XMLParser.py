@@ -74,14 +74,16 @@ class XMLParser:
         return stations, station_ids
 
     @staticmethod
-    def getConnectionsFromXMLString(xmlString: str, isDeparture: bool)-> [Connection]:
+    def getConnectionsFromXMLString(xmlString: str, isDeparture: bool, url: str)-> [Connection]:
         """
         Parses xmlString and returns list of all connections
         contained in the string.
         Takes a boolean flag isDeparture to ensure departure/arrival.
+        Takes the url which was used to request this connection
         Returns empty string on parsing error.
         :type xmlString str
         :type isDeparture bool
+        :type url str
         :rtype [Connection]
         """
 
@@ -133,7 +135,8 @@ class XMLParser:
                     if XMLParser.REF in details.attrib:
                         ref = details.attrib[XMLParser.REF]
                 # add connection with these information to local list of connections
-                connections.append(Connection(name, typ, stopId, stopName, time, date, direction, origin, track, ref))
+                connections.append(Connection(name, typ, stopId, stopName, time,
+                                              date, direction, origin, track, ref, url))
             return connections
         except ET.ParseError:
             return []

@@ -284,10 +284,10 @@ class Connection:
     """
 
     def __init__(self, name: str, typ: str, stopId: int, stopName: str, time: QtCore.QTime, date: QtCore.QDate,
-                 direction: str, origin: str, track: str, ref: str):
+                 direction: str, origin: str, track: str, ref: str, url: str):
         """
         Constructs a new new connection from name,type,stopId,
-        stopName,time,date,direction,origin,track and reference link.
+        stopName,time,date,direction,origin,track and reference link, and requeste used link
         Initializes empty stop-List and image-Data
         :type name str
         :type typ str
@@ -299,6 +299,7 @@ class Connection:
         :type origin str
         :type track str
         :type ref str
+        :type url str
         """
 
         # Name e.g. IC10250,ICE516, etc
@@ -330,6 +331,12 @@ class Connection:
         self.imageData = QtCore.QByteArray()
         # save mapType corresponding to imageData
         self.mapType = 0
+        # set link used to request connection
+        self.url = url
+
+    def isDeparture(self):
+
+        return not self.direction == ""
 
     def timeToString(self, settings: RequestSettings) -> str:
         """

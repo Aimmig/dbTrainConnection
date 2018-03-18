@@ -124,7 +124,15 @@ class Request:
         """
 
         url = Request.createConnectionRequestURL(date, time, identifier, isDeparture, settings)
-        return Request.getResultFromServer(url)
+        return Request.getResultFromServer(url), url
+
+    @staticmethod
+    def regetXMLStringConnectionRequest(url: str, isDeparture: bool):
+        if isDeparture:
+            new_url = url.replace(Request.UrlArrBoard, Request.UrlDepBoard)
+        else:
+            new_url = url.replace(Request.UrlDepBoard, Request.UrlArrBoard)
+        return Request.getResultFromServer(new_url), new_url
 
     @staticmethod
     def getMapWithLocations(coordinates: [Coordinate], markerIndex: int, settings: RequestSettings) -> str:
@@ -159,14 +167,18 @@ class Request:
         dateString = date.toString(Request.DATE_FORMAT)
         # build and encode timeString
         timeString = time.toString(Request.TIME_FORMAT).replace(":", Request.EncodedSeparator)
+
+        base = '{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}'
         # build last part of url
-        lastPart = Request.UrlAuthKey + settings.DBKey + Request.UrlLang + settings.LANGUAGE + Request.UrlId
-        lastPart = lastPart + str(identifier) + Request.UrlDate + dateString + Request.UrlTime + timeString
+        lastPart = base.format(Request.UrlAuthKey, settings.DBKey, Request.UrlLang, settings.LANGUAGE, Request.UrlId,
+                               str(identifier), Request.UrlDate, dateString, Request.UrlTime, timeString
+                               )
         # build complete url
+        base = '{0}{1}{2}'
         if isDeparture:
-            return Request.DB_BASE_URL + Request.UrlDepBoard + lastPart
+            return base.format(Request.DB_BASE_URL, Request.UrlDepBoard, lastPart)
         else:
-            return Request.DB_BASE_URL + Request.UrlArrBoard + lastPart
+            return base.format(Request.DB_BASE_URL, Request.UrlArrBoard, lastPart)
 
     @staticmethod
     def createStationRequestURL(loc: str, settings: RequestSettings) -> str:
