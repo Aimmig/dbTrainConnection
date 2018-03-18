@@ -188,7 +188,14 @@ class RequestSettings:
         :rtype int
         """
 
-        return self.offSet * 3600
+        return self.getRealOffSet() * 3600
+
+    def getRealOffSet(self)-> int:
+        """
+        Returns the offset to use in hours.
+        """
+
+        return self.offSet
 
     def formatPathColor(self) -> str:
         """

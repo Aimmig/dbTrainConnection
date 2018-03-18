@@ -155,20 +155,24 @@ class GUI(QtWidgets.QMainWindow):
         # add all actions from group to menu
         mapTypeMenu.addActions(mapGroupAction.actions())
 
-        # create
-        mapSizeMenu = mapMenu.addMenu("Size")
+        # create submenu for changing map size
+        # noinspection PyAttributeOutsideInit
+        self.mapSizeMenu = mapMenu.addMenu("")
+        self.updateMapSizeMenuText()
 
         increaseAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowUp), "Increase", self)
         increaseAction.triggered.connect(self.increaseMapSize)
-        mapSizeMenu.addAction(increaseAction)
+        self.mapSizeMenu.addAction(increaseAction)
 
         decreaseAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowDown), "Decrease", self)
         decreaseAction.triggered.connect(self.decreaseMapSize)
-        mapSizeMenu.addAction(decreaseAction)
+        self.mapSizeMenu.addAction(decreaseAction)
 
         # action for checking Map
         # noinspection PyAttributeOutsideInit
         self.mapActive = QtWidgets.QAction("Anzeigen", self)
+        # mabye set shortcut not working atm
+        # self.mapActive.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Left))
         self.mapActive.setCheckable(True)
         self.mapActive.setChecked(True)
 
@@ -198,22 +202,24 @@ class GUI(QtWidgets.QMainWindow):
         filterMenu.addActions(filterGroupAction.actions())
 
         # create submenu for offset changing
-        searchOffsetMenu = settingsMenu.addMenu("Offset")
+        # noinspection PyAttributeOutsideInit
+        self.searchOffsetMenu = settingsMenu.addMenu("")
+        self.updateSearchOffSetMenuText()
 
         # add action for increase of submenu
         increaseOffsetAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowUp), "Increase", self)
         increaseOffsetAction.triggered.connect(self.increaseOffset)
-        searchOffsetMenu.addAction(increaseOffsetAction)
+        self.searchOffsetMenu.addAction(increaseOffsetAction)
 
         # add action for decrease of submenu
         increaseOffsetAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowDown), "Decrease", self)
         increaseOffsetAction.triggered.connect(self.decreaseOffset)
-        searchOffsetMenu.addAction(increaseOffsetAction)
+        self.searchOffsetMenu.addAction(increaseOffsetAction)
 
         # create Menu for application
         exitMenu = menuBar.addMenu(self.settings.LanguageStrings.application_Text)
         # create Action for closing application
-        exitAction = QtWidgets.QAction(self.stdicon(self.style.SP_DialogCancelButton),
+        exitAction = QtWidgets.QAction(self.stdicon(self.style.SP_DialogCloseButton),
                                        self.settings.LanguageStrings.quit_Text, self)
         # connect Action with method
         exitAction.triggered.connect(self.closeEvent)
@@ -841,27 +847,44 @@ class GUI(QtWidgets.QMainWindow):
 
     def increaseMapSize(self):
         """
-        TO-DO
+        Increases Map Size
         """
-        print("INC-MAP")
+
+        self.settings.setWidth(self.settings.width + 100)
+        self.settings.setHeight(self.settings.height + 100)
+        self.updateMapSizeMenuText()
 
     def decreaseMapSize(self):
         """
-        TO-DO
+        Decreases Map Size
         """
-        print("DEC-MAP")
+
+        self.settings.setWidth(self.settings.width - 100)
+        self.settings.setHeight(self.settings.height - 100)
+        self.updateMapSizeMenuText()
+
+    def updateMapSizeMenuText(self):
+        self.mapSizeMenu.setTitle("Size (" + str(self.settings.width) + "x" + str(self.settings.height) +")")
 
     def increaseOffset(self):
         """
-        TO-DO
+        Increases Offset for searching and updates menu
         """
-        print("INC-OFFSET")
+        self.settings.setOffSet(self.settings.getRealOffSet() + 1)
+        self.updateSearchOffSetMenuText()
 
     def decreaseOffset(self):
         """
-        TO-DO
+        Decreases OffSet for searching and updates menu
         """
-        print("DEC-OFFSET")
+        self.settings.setOffSet(self.settings.getRealOffSet() - 1)
+        self.updateSearchOffSetMenuText()
+
+    def updateSearchOffSetMenuText(self):
+        """
+        Updates the value of the currently used offset in corresponding menu
+        """
+        self.searchOffsetMenu.setTitle("Offset (" + str(self.settings.getRealOffSet()) + "h)")
 
     def setFilterActive(self):
         """
