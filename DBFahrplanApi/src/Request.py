@@ -178,9 +178,10 @@ class Request:
         :rtype str
         """
 
-        result = Request.DB_BASE_URL + Request.UrlLocationName + Request.UrlAuthKey + settings.DBKey
-        result += Request.UrlLanguage + settings.LANGUAGE + Request.UrlInput + parse.quote(loc.replace(" ", ""))
-        return result
+        base = '{0}{1}{2}{3}{4}x{5}{6}{7}'
+        return base.format(Request.DB_BASE_URL, Request.UrlLocationName, Request.UrlAuthKey, settings.DBKey,
+                           Request.UrlLanguage, settings.LANGUAGE, Request.UrlInput, parse.quote(loc.replace(" ", ""))
+                           )
 
     @staticmethod
     def createMapURL(coordinates: [Coordinate], markerIndex: int, settings: RequestSettings) -> str:
@@ -203,7 +204,7 @@ class Request:
         # add string of all coordinates for path
         res += Request.createFullCoordinateString(coordinates)
         # check for valid markerIndex
-        if markerIndex > 0:
+        if markerIndex >= 0:
             # add special marker size and color to url
             res += Request.UrlMarkerSize + settings.MARKER_SIZE_SPECIAL
             res += Request.UrlColor + settings.formatSpecialColor()
@@ -211,11 +212,11 @@ class Request:
             res += Request.createCoordinateString(coordinates[markerIndex])
             # delete special element it should not be marked 2 times
             del coordinates[markerIndex]
-            # add marker size and color for normal locations
-            res += Request.UrlMarkerSize + settings.MARKER_SIZE
-            res += Request.UrlColor + settings.formatColor() + Request.UrlSeparator
-            # add string of all coordinates for markers
-            res += Request.createFullCoordinateString(coordinates)
+        # add marker size and color for normal locations
+        res += Request.UrlMarkerSize + settings.MARKER_SIZE
+        res += Request.UrlColor + settings.formatColor() + Request.UrlSeparator
+        # add string of all coordinates for markers
+        res += Request.createFullCoordinateString(coordinates)
         # add maptype
         res += Request.UrlMapType + MapType(settings.MAPTYPE).name
         # add google map key
@@ -231,12 +232,7 @@ class Request:
         :rtype str
         """
 
-        res = ""
-        # iterate over all locations
-        for loc in cords:
-            # add representation for loc
-            res += Request.createCoordinateString(loc)
-        return res
+        return ''.join(map(lambda loc: Request.createCoordinateString(loc), cords))
 
     @staticmethod
     def createCoordinateString(loc: Coordinate) -> str:
@@ -248,4 +244,4 @@ class Request:
         """
 
         # single coordinate is formatted to |lat,lon
-        return Request.UrlSeparator + str(loc.lat) + ',' + str(loc.lon)
+        return '{0}{1},{2}'.format(Request.UrlSeparator, str(loc.lat), str(loc.lon))

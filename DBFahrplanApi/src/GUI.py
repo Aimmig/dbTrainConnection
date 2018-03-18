@@ -864,7 +864,7 @@ class GUI(QtWidgets.QMainWindow):
         self.updateMapSizeMenuText()
 
     def updateMapSizeMenuText(self):
-        self.mapSizeMenu.setTitle("Size (" + str(self.settings.width) + "x" + str(self.settings.height) +")")
+        self.mapSizeMenu.setTitle("Size (" + str(self.settings.width) + "x" + str(self.settings.height) + ")")
 
     def increaseOffset(self):
         """
