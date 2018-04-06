@@ -275,7 +275,8 @@ class TrainType(Enum):
     TGV = 2
     IC = 3
     EC = 4
-    Other = 5
+    EN = 5
+    Other = 6
 
 
 class Connection:
