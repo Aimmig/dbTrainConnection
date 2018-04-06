@@ -127,22 +127,22 @@ class GUI(QtWidgets.QMainWindow):
         # submenu entry for setting roadmap
         roadmapAction = QtWidgets.QAction(MapType.roadmap.name, mapGroupAction)
         roadmapAction.setCheckable(True)
-        roadmapAction.triggered.connect(self.setMapType_roadmap)
+        roadmapAction.triggered.connect(lambda: self.setMapType(MapType.hybrid.value))
 
         # submenu entry for setting sattelitemap
         satelliteAction = QtWidgets.QAction(MapType.satellite.name, mapGroupAction)
         satelliteAction.setCheckable(True)
-        satelliteAction.triggered.connect(self.setMapType_satellite)
+        satelliteAction.triggered.connect(lambda: self.setMapType(MapType.satellite.value))
 
         # submenu entry for hybridmap
         hybridAction = QtWidgets.QAction(MapType.hybrid.name, mapGroupAction)
         hybridAction.setCheckable(True)
-        hybridAction.triggered.connect(self.setMapType_hybrid)
+        hybridAction.triggered.connect(lambda: self.setMapType(MapType.hybrid.value))
 
         # submenu entry for terrainmap
         terrainAction = QtWidgets.QAction(MapType.terrain.name, mapGroupAction)
         terrainAction.setCheckable(True)
-        terrainAction.triggered.connect(self.setMapType_terrain)
+        terrainAction.triggered.connect(lambda: self.setMapType(MapType.terrain.value))
 
         # try to check default maptype specified in config
         try:
@@ -293,6 +293,8 @@ class GUI(QtWidgets.QMainWindow):
         self.checkICE = QtWidgets.QCheckBox(self.settings.LanguageStrings.ICE_Text)
         self.checkIC = QtWidgets.QCheckBox(self.settings.LanguageStrings.IC_Text)
         self.checkOther = QtWidgets.QCheckBox(self.settings.LanguageStrings.other_Text)
+        # create a list for shortcut handling
+        self.checkFilters = [self.checkICE, self.checkIC, self.checkOther]
         # add checkboxes to filterLayout
         filterLayout.addWidget(self.checkICE)
         filterLayout.addWidget(self.checkIC)
@@ -903,44 +905,22 @@ class GUI(QtWidgets.QMainWindow):
         """
         Make all Filters checkable
         """
-        self.checkICE.setCheckable(True)
-        self.checkIC.setCheckable(True)
-        self.checkOther.setCheckable(True)
+        for fil in self.checkFilters:
+            fil.setCheckable(True)
 
     def setFilterInactive(self):
         """
         Deselect all Filters and make them not checkable
         """
-        self.checkICE.setChecked(False)
-        self.checkICE.setCheckable(False)
-        self.checkIC.setChecked(False)
-        self.checkIC.setCheckable(False)
-        self.checkOther.setChecked(False)
-        self.checkOther.setCheckable(False)
+        for fil in self.checkFilters:
+            fil.setChecked(False)
+            fil.setCheckable(False)
 
-    def setMapType_roadmap(self):
+    def setMapType(self, type):
         """
-        Set Maptype value to roadmap
+        Set Mapytpe according to given value
         """
-        self.settings.MAPTYPE = MapType.roadmap.value
-
-    def setMapType_satellite(self):
-        """
-        Set Maptype value to satelitte
-        """
-        self.settings.MAPTYPE = MapType.satellite.value
-
-    def setMapType_hybrid(self):
-        """
-        Set Maptype to hybrid
-        """
-        self.settings.MAPTYPE = MapType.hybrid.value
-
-    def setMapType_terrain(self):
-        """
-        Set Mapytpe to terrain
-        """
-        self.settings.MAPTYPE = MapType.terrain.value
+        self.settings.MAPTYPE = type
 
     def keyPressEvent(self, e):
         """
