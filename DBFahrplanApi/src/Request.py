@@ -109,7 +109,7 @@ class Request:
 
     @staticmethod
     def getXMLStringConnectionRequest(date: QtCore.QDate, time: QtCore.QTime, identifier: int,
-                                      isDeparture: bool, settings: RequestSettings) -> str:
+                                      isDeparture: bool, settings: RequestSettings) -> (str, str):
         """
         Creates url for requesting connections from date,time,
         identifier (corresponding to a location) and a boolean departure
@@ -120,7 +120,7 @@ class Request:
         :type identifier int
         :type isDeparture bool
         :type settings RequestSettings
-        :rtype str
+        :rtype (str,str)
         """
 
         url = Request.createConnectionRequestURL(date, time, identifier, isDeparture, settings)
@@ -209,12 +209,12 @@ class Request:
         :rtype str
         """
 
-        # add width and height and language of map to base url
-        res = Request.GOOGLE_MAPS_BASE_URL + Request.UrlScale + Request.UrlScaleValue + Request.UrlSize + str(settings.width) + 'x' + str(settings.height) + Request.UrlLanguage + settings.LANGUAGE
-        # add path color and size to url
-        res += Request.UrlSensor + Request.UrlSensorValue + Request.UrlPathColor + settings.formatPathColor() + Request.UrlWeight + settings.PATH_SIZE
-        # add string of all coordinates for path
-        res += Request.createFullCoordinateString(coordinates)
+        base = '{0}{1}{2}{3}{4}x{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}'
+        res = base.format(Request.GOOGLE_MAPS_BASE_URL, Request.UrlScale, Request.UrlScaleValue, Request.UrlSize,
+                          str(settings.width), 'x', str(settings.height), Request.UrlLanguage, settings.LANGUAGE,
+                          Request.UrlSensor, Request.UrlSensorValue, Request.UrlPathColor, settings.formatPathColor(),
+                          Request.UrlWeight, settings.PATH_SIZE, Request.createFullCoordinateString(coordinates)
+                          )
         # check for valid markerIndex
         if markerIndex >= 0:
             # add special marker size and color to url

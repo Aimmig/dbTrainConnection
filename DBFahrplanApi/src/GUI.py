@@ -161,11 +161,11 @@ class GUI(QtWidgets.QMainWindow):
         self.updateMapSizeMenuText()
 
         increaseAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowUp), "Increase", self)
-        increaseAction.triggered.connect(self.increaseMapSize)
+        increaseAction.triggered.connect(lambda: self.changeMapSize(100, 100))
         self.mapSizeMenu.addAction(increaseAction)
 
         decreaseAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowDown), "Decrease", self)
-        decreaseAction.triggered.connect(self.decreaseMapSize)
+        decreaseAction.triggered.connect(lambda: self.changeMapSize(-100, -100))
         self.mapSizeMenu.addAction(decreaseAction)
 
         # action for checking Map
@@ -208,13 +208,13 @@ class GUI(QtWidgets.QMainWindow):
 
         # add action for increase of submenu
         increaseOffsetAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowUp), "Increase", self)
-        increaseOffsetAction.triggered.connect(self.increaseOffset)
+        increaseOffsetAction.triggered.connect(lambda: self.changeOffset(1))
         self.searchOffsetMenu.addAction(increaseOffsetAction)
 
         # add action for decrease of submenu
-        increaseOffsetAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowDown), "Decrease", self)
-        increaseOffsetAction.triggered.connect(self.decreaseOffset)
-        self.searchOffsetMenu.addAction(increaseOffsetAction)
+        decreaseOffsetAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowDown), "Decrease", self)
+        decreaseOffsetAction.triggered.connect(lambda: self.changeOffset(-1))
+        self.searchOffsetMenu.addAction(decreaseOffsetAction)
 
         # create Menu for application
         exitMenu = menuBar.addMenu(self.settings.LanguageStrings.application_Text)
@@ -307,8 +307,8 @@ class GUI(QtWidgets.QMainWindow):
         requestEarlierLater_layout = QtWidgets.QHBoxLayout()
         self.earlier = QtWidgets.QPushButton(self.settings.LanguageStrings.earlier_Text)
         self.later = QtWidgets.QPushButton(self.settings.LanguageStrings.later_Text)
-        self.later.clicked.connect(self.getConnectionsLater)
-        self.earlier.clicked.connect(self.getConnectionsEarlier)
+        self.later.clicked.connect(lambda: self.getConnectionsWithShiftedTime(True, self.settings.getOffSet()))
+        self.earlier.clicked.connect(lambda: self.getConnectionsWithShiftedTime(False, self.settings.getOffSet()))
         requestEarlierLater_layout.addWidget(self.earlier)
         requestEarlierLater_layout.addWidget(self.later)
 
@@ -706,26 +706,6 @@ class GUI(QtWidgets.QMainWindow):
                 # display new station-names
                 self.railStations.addItems(newStations)
 
-    def getConnectionsEarlier(self):
-        """
-        Encapsulation of getting connections with shifted time.
-        False indicates earlier. Requesting earlier means subtract
-        the shift from the previous time.
-        """
-
-        secShift = self.settings.getOffSet()
-        self.getConnectionsWithShiftedTime(False, secShift)
-
-    def getConnectionsLater(self):
-        """
-        Encapsulation of getting connections with shifted time.
-        True indicates later. Requesting later means add
-        the shift to the previous time.
-        """
-
-        secShift = self.settings.getOffSet()
-        self.getConnectionsWithShiftedTime(True, secShift)
-
     def getConnectionsWithShiftedTime(self, isShiftPositive: bool, secShift: int):
         """
         Requests connections earlier/later.
@@ -860,39 +840,23 @@ class GUI(QtWidgets.QMainWindow):
         if newColor.isValid():
             self.settings.setMarkerColor(newColor)
 
-    def increaseMapSize(self):
+    def changeMapSize(self, delta_width, delta_height):
         """
-        Increases Map Size
-        """
-
-        self.settings.setWidth(self.settings.width + 100)
-        self.settings.setHeight(self.settings.height + 100)
-        self.updateMapSizeMenuText()
-
-    def decreaseMapSize(self):
-        """
-        Decreases Map Size
+        Change Map Size
         """
 
-        self.settings.setWidth(self.settings.width - 100)
-        self.settings.setHeight(self.settings.height - 100)
+        self.settings.setWidth(self.settings.width + delta_width)
+        self.settings.setHeight(self.settings.height + delta_height)
         self.updateMapSizeMenuText()
 
     def updateMapSizeMenuText(self):
         self.mapSizeMenu.setTitle("Size (" + str(self.settings.width) + "x" + str(self.settings.height) + ")")
 
-    def increaseOffset(self):
+    def changeOffset(self, delta):
         """
-        Increases Offset for searching and updates menu
+        Change OffSet for searching and updates menu
         """
-        self.settings.setOffSet(self.settings.getRealOffSet() + 1)
-        self.updateSearchOffSetMenuText()
-
-    def decreaseOffset(self):
-        """
-        Decreases OffSet for searching and updates menu
-        """
-        self.settings.setOffSet(self.settings.getRealOffSet() - 1)
+        self.settings.setOffSet(self.settings.getRealOffSet() + delta)
         self.updateSearchOffSetMenuText()
 
     def updateSearchOffSetMenuText(self):
@@ -916,11 +880,11 @@ class GUI(QtWidgets.QMainWindow):
             fil.setChecked(False)
             fil.setCheckable(False)
 
-    def setMapType(self, type):
+    def setMapType(self, map_type):
         """
         Set Mapytpe according to given value
         """
-        self.settings.MAPTYPE = type
+        self.settings.MAPTYPE = map_type
 
     def keyPressEvent(self, e):
         """
