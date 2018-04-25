@@ -2,7 +2,8 @@
 
 -If possible make colums resizable and auto-streched on resize
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
--Add functionality to (re)-request map if maptype, or markerColor, pathColor
+-Add functionality to (re)-request map if markerColor, pathColor change
 -Remove size of map in gui, instead configure this in config + option to increase/decrease a fixed percentage from menu
--remove hour offset from gui, instead use config + option to increase/decrease from menu 
--inserte proper icons for increase/decrease
+
+-Remove duplicate methods for formatting colors with #, move these methods to class where they are used and pass color as
+argument
