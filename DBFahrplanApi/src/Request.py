@@ -144,7 +144,6 @@ class Request:
         :type settings RequestSettings
         :rtype str
         """
-
         url = Request.createMapURL(coordinates, markerIndex, settings)
         return Request.getResultFromServer(url)
 
@@ -211,7 +210,7 @@ class Request:
 
         base = '{0}{1}{2}{3}{4}x{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}'
         res = base.format(Request.GOOGLE_MAPS_BASE_URL, Request.UrlScale, Request.UrlScaleValue, Request.UrlSize,
-                          str(settings.width), 'x', str(settings.height), Request.UrlLanguage, settings.LANGUAGE,
+                          str(settings.width), str(settings.height), Request.UrlLanguage, settings.LANGUAGE,
                           Request.UrlSensor, Request.UrlSensorValue, Request.UrlPathColor, settings.formatPathColor(),
                           Request.UrlWeight, settings.PATH_SIZE, Request.createFullCoordinateString(coordinates)
                           )
