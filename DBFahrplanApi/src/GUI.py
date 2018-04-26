@@ -156,7 +156,6 @@ class GUI(QtWidgets.QMainWindow):
         mapTypeMenu.addActions(mapGroupAction.actions())
 
         # create submenu for changing map size
-        # noinspection PyAttributeOutsideInit
         self.mapSizeMenu = mapMenu.addMenu("")
         self.updateMapSizeMenuText()
 

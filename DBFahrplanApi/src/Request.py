@@ -69,6 +69,15 @@ class Request:
     TIME_FORMAT = 'h:m'
 
     @staticmethod
+    def formatColor(col):
+        """
+        Formats given color to be able to use it in web-url
+        :param col:
+        :return: str
+        """
+        return col.name().replace('#', '0x')
+
+    @staticmethod
     def getResultFromServer(url: str) -> str:
         """
         Establishes connection to the given url, reads and returns
@@ -211,21 +220,22 @@ class Request:
         base = '{0}{1}{2}{3}{4}x{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}'
         res = base.format(Request.GOOGLE_MAPS_BASE_URL, Request.UrlScale, Request.UrlScaleValue, Request.UrlSize,
                           str(settings.width), str(settings.height), Request.UrlLanguage, settings.LANGUAGE,
-                          Request.UrlSensor, Request.UrlSensorValue, Request.UrlPathColor, settings.formatPathColor(),
-                          Request.UrlWeight, settings.PATH_SIZE, Request.createFullCoordinateString(coordinates)
+                          Request.UrlSensor, Request.UrlSensorValue, Request.UrlPathColor,
+                          Request.formatColor(settings.PATH_COLOR), Request.UrlWeight, settings.PATH_SIZE,
+                          Request.createFullCoordinateString(coordinates)
                           )
         # check for valid markerIndex
         if markerIndex >= 0:
             # add special marker size and color to url
             res += Request.UrlMarkerSize + settings.MARKER_SIZE_SPECIAL
-            res += Request.UrlColor + settings.formatSpecialColor()
+            res += Request.UrlColor + Request.formatColor(settings.MARKER_COLOR_SPECIAL)
             # add String of special coordinate for special marker
             res += Request.createCoordinateString(coordinates[markerIndex])
             # delete special element it should not be marked 2 times
             del coordinates[markerIndex]
         # add marker size and color for normal locations
         res += Request.UrlMarkerSize + settings.MARKER_SIZE
-        res += Request.UrlColor + settings.formatColor() + Request.UrlSeparator
+        res += Request.UrlColor + Request.formatColor(settings.MARKER_COLOR) + Request.UrlSeparator
         # add string of all coordinates for markers
         res += Request.createFullCoordinateString(coordinates)
         # add maptype

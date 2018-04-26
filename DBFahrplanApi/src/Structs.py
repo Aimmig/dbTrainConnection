@@ -197,30 +197,6 @@ class RequestSettings:
 
         return self.offSet
 
-    def formatPathColor(self) -> str:
-        """
-        Returns string representation of the PathColor that can be used in URL.
-        :rtype str
-        """
-
-        return self.PATH_COLOR.name().replace('#', '0x')
-
-    def formatColor(self) -> str:
-        """
-        Returns string representation of the MarkerColor that can be used in URL.
-        :rtype str
-        """
-
-        return self.MARKER_COLOR.name().replace('#', '0x')
-
-    def formatSpecialColor(self) -> str:
-        """
-        Returns string representation of the MarkerColorSpecial that can be used in URL.
-        :rtype str
-        """
-
-        return self.MARKER_COLOR_SPECIAL.name().replace('#', '0x')
-
     def setMarkerColor(self, col: QtGui.QColor):
         """
         Set MarkerColor to given color.
