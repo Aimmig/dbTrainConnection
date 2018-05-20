@@ -59,6 +59,7 @@ class GUI(QtWidgets.QMainWindow):
         self.conList = ConnectionsList()
         # set filter to inactive
         self.filterActive = False
+        self.isFilterActive = True
         # initialize Widget for map
         self.mapWidget = QMapWidget()
 
@@ -193,15 +194,9 @@ class GUI(QtWidgets.QMainWindow):
         filterGroupAction = QtWidgets.QActionGroup(self)
 
         # add action for active filter
-        activateFilterAction = QtWidgets.QAction('Aktivieren', filterGroupAction)
-        activateFilterAction.setCheckable(True)
-        activateFilterAction.setChecked(True)
-        activateFilterAction.triggered.connect(self.setFilterActive)
-
-        # add action for inactive filter
-        deactiveFilterAction = QtWidgets.QAction('Deaktivieren', filterGroupAction)
-        deactiveFilterAction.setCheckable(True)
-        deactiveFilterAction.triggered.connect(self.setFilterInactive)
+        activateFilterAction = QtWidgets.QAction('De/Aktivieren', filterGroupAction)
+        activateFilterAction.setShortcut(QtGui.QKeySequence("SHIFT+F", QtGui.QKeySequence.PortableText))
+        activateFilterAction.triggered.connect(self.setFilter)
 
         # add all actions from Filtergroup to menu
         filterMenu.addActions(filterGroupAction.actions())
@@ -213,12 +208,14 @@ class GUI(QtWidgets.QMainWindow):
 
         # add action for increase of submenu
         increaseOffsetAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowUp), "Increase", self)
+        increaseOffsetAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Up))
         increaseOffsetAction.triggered.connect(lambda: self.changeOffset(1))
         self.searchOffsetMenu.addAction(increaseOffsetAction)
 
         # add action for decrease of submenu
         decreaseOffsetAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowDown), "Decrease", self)
         decreaseOffsetAction.triggered.connect(lambda: self.changeOffset(-1))
+        decreaseOffsetAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Down))
         self.searchOffsetMenu.addAction(decreaseOffsetAction)
 
         # create Menu for application
@@ -870,20 +867,21 @@ class GUI(QtWidgets.QMainWindow):
         """
         self.searchOffsetMenu.setTitle("Offset (" + str(self.settings.getRealOffSet()) + "h)")
 
-    def setFilterActive(self):
+    def setFilter(self):
         """
-        Make all Filters checkable
-        """
-        for fil in self.checkFilters:
-            fil.setCheckable(True)
-
-    def setFilterInactive(self):
-        """
+        Change filter state
+        Make all Filters checkable or
         Deselect all Filters and make them not checkable
         """
-        for fil in self.checkFilters:
-            fil.setChecked(False)
-            fil.setCheckable(False)
+
+        if self.isFilterActive:
+            for fil in self.checkFilters:
+                fil.setChecked(False)
+                fil.setCheckable(False)
+        else:
+            for fil in self.checkFilters:
+                fil.setCheckable(True)
+        self.isFilterActive = not self.isFilterActive
 
     def setMapType(self, map_type):
         """
