@@ -76,6 +76,7 @@ class GUI(QtWidgets.QMainWindow):
         layout.addLayout(box3)
 
         # create central widget and set layout
+        # noinspection PyArgumentList
         centralWidget = QtWidgets.QWidget()
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
@@ -83,7 +84,7 @@ class GUI(QtWidgets.QMainWindow):
         # create empty Filter
         self.typeFilter = Filter()
 
-        # intialize stuff for default icon
+        # initialize stuff for default icon
         self.stdicon = self.style().standardIcon
         self.style = QtWidgets.QStyle
 
@@ -127,25 +128,25 @@ class GUI(QtWidgets.QMainWindow):
         # submenu entry for setting roadmap
         roadmapAction = QtWidgets.QAction(MapType.roadmap.name, mapGroupAction)
         roadmapAction.setCheckable(True)
-        roadmapAction.setShortcut(QtGui.QKeySequence("SHIFT+R", QtGui.QKeySequence.PortableText))
+        roadmapAction.setShortcut(QtGui.QKeySequence("CTRL+R", QtGui.QKeySequence.PortableText))
         roadmapAction.triggered.connect(lambda: self.setMapType(MapType.roadmap.value))
 
         # submenu entry for setting sattelitemap
         satelliteAction = QtWidgets.QAction(MapType.satellite.name, mapGroupAction)
         satelliteAction.setCheckable(True)
-        satelliteAction.setShortcut(QtGui.QKeySequence("SHIFT+S", QtGui.QKeySequence.PortableText))
+        satelliteAction.setShortcut(QtGui.QKeySequence("CTRL+S", QtGui.QKeySequence.PortableText))
         satelliteAction.triggered.connect(lambda: self.setMapType(MapType.satellite.value))
 
         # submenu entry for hybridmap
         hybridAction = QtWidgets.QAction(MapType.hybrid.name, mapGroupAction)
         hybridAction.setCheckable(True)
-        hybridAction.setShortcut(QtGui.QKeySequence("SHIFT+H", QtGui.QKeySequence.PortableText))
+        hybridAction.setShortcut(QtGui.QKeySequence("CTRL+H", QtGui.QKeySequence.PortableText))
         hybridAction.triggered.connect(lambda: self.setMapType(MapType.hybrid.value))
 
         # submenu entry for terrainmap
         terrainAction = QtWidgets.QAction(MapType.terrain.name, mapGroupAction)
         terrainAction.setCheckable(True)
-        terrainAction.setShortcut(QtGui.QKeySequence("SHIFT+T", QtGui.QKeySequence.PortableText))
+        terrainAction.setShortcut(QtGui.QKeySequence("CTRL+T", QtGui.QKeySequence.PortableText))
         terrainAction.triggered.connect(lambda: self.setMapType(MapType.terrain.value))
 
         # try to check default maptype specified in config
@@ -160,24 +161,23 @@ class GUI(QtWidgets.QMainWindow):
         mapTypeMenu.addActions(mapGroupAction.actions())
 
         # create submenu for changing map size
+        # noinspection PyAttributeOutsideInit
         self.mapSizeMenu = mapMenu.addMenu("")
         self.updateMapSizeMenuText()
 
         increaseAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowUp), "Increase", self)
         increaseAction.triggered.connect(lambda: self.changeMapSize(100, 100))
-        increaseAction.setShortcut(QtGui.QKeySequence("CTRL+PLUS", QtGui.QKeySequence.PortableText))
+        increaseAction.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.ZoomIn))
         self.mapSizeMenu.addAction(increaseAction)
 
         decreaseAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowDown), "Decrease", self)
-        decreaseAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Minus))
+        decreaseAction.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.ZoomOut))
         decreaseAction.triggered.connect(lambda: self.changeMapSize(-100, -100))
         self.mapSizeMenu.addAction(decreaseAction)
 
         # action for checking Map
         # noinspection PyAttributeOutsideInit
         self.mapActive = QtWidgets.QAction("Anzeigen", self)
-        # mabye set shortcut not working atm
-        # self.mapActive.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Left))
         self.mapActive.setCheckable(True)
         self.mapActive.setChecked(True)
 
@@ -203,7 +203,7 @@ class GUI(QtWidgets.QMainWindow):
         deactiveFilterAction.setCheckable(True)
         deactiveFilterAction.triggered.connect(self.setFilterInactive)
 
-        # add all actions from Fitergroup to menu
+        # add all actions from Filtergroup to menu
         filterMenu.addActions(filterGroupAction.actions())
 
         # create submenu for offset changing
@@ -887,7 +887,7 @@ class GUI(QtWidgets.QMainWindow):
 
     def setMapType(self, map_type):
         """
-        Set Mapytpe according to given value
+        Set Maptype according to given value
         """
         self.settings.MAPTYPE = map_type
 

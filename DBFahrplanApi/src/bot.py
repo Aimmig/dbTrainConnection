@@ -151,6 +151,7 @@ def handle(msg):
                 sendConnections(chat_id, isDeparture, name)
                 return
 
+
 # noinspection SpellCheckingInspection
 TOKEN = '330294771:AAFJAZ5oyvNZX8nrJiDeqVCSTfrtsiy6IoA'
 bot = telepot.Bot(TOKEN)
