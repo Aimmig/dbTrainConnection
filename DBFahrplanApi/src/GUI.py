@@ -111,12 +111,14 @@ class GUI(QtWidgets.QMainWindow):
         # submenu entry for changing path colors
         colorPathAction = QtWidgets.QAction(self.stdicon(self.style.SP_DialogOpenButton),
                                             self.settings.LanguageStrings.change_Path_Colour_Text, self)
+        colorPathAction.setShortcut(QtGui.QKeySequence("CTRL+P", QtGui.QKeySequence.PortableText))
         colorPathAction.triggered.connect(self.changePathColor)
         mapcolorMenu.addAction(colorPathAction)
 
         # submenu entry for changing marker colors
         colorMarkerAction = QtWidgets.QAction(self.stdicon(self.style.SP_DialogOpenButton),
                                               self.settings.LanguageStrings.change_Marker_Colour_Text, self)
+        colorMarkerAction.setShortcut(QtGui.QKeySequence("CTRL+M", QtGui.QKeySequence.PortableText))
         colorMarkerAction.triggered.connect(self.changeMarkerColor)
         mapcolorMenu.addAction(colorMarkerAction)
 

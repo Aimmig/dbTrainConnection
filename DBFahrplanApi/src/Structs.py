@@ -137,6 +137,10 @@ class RequestSettings:
         keys = 'Keys'
         self.DBKey = parser[keys]['DBKey']
         self.GoogleMapsKey = parser[keys]['GoogleMapsKey']
+        try:
+            self.TelegramBotToken = parser[keys]['TelegramToken']
+        except KeyError:
+            self.TelegramBotToken = None
 
         parser = configparser.ConfigParser()
         parser.read(constructAbsPath(fileName))

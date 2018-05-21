@@ -8,7 +8,13 @@ from Structs import RequestSettings
 from XMLParser import XMLParser as parser
 import urllib.error as err
 
-settings = RequestSettings('configs/config.txt')
+settings = RequestSettings('configs/keys.txt','configs/config.txt')
+settings.setHeight(800)
+settings.setWidth(800)
+TOKEN = settings.TelegramBotToken
+if not TOKEN:
+    print("No telegram bot api key found in keys.txt")
+    exit()
 connections = []
 departure = ('/' + settings.LanguageStrings.departure_Text).lower()
 arrival = ('/' + settings.LanguageStrings.arrival_Text).lower()
@@ -58,7 +64,7 @@ def getConnections(identifier, isDeparture, current_time=QtCore.QTime.currentTim
 
     global connections
     try:
-        xmlString = Request.getXMLStringConnectionRequest(current_date, current_time, identifier, isDeparture, settings)
+        (xmlString, url) = Request.getXMLStringConnectionRequest(current_date, current_time, identifier, isDeparture, settings)
     except err.HTTPError as e:
         print('The server couldn\'t fulfill the request.')
         print('Error code: ', e.code)
@@ -67,7 +73,7 @@ def getConnections(identifier, isDeparture, current_time=QtCore.QTime.currentTim
         print('We failed to reach a server.')
         print('Reason: ', e.reason)
         return
-    connections = parser.getConnectionsFromXMLString(xmlString, isDeparture)
+    connections = parser.getConnectionsFromXMLString(xmlString, isDeparture, url)
 
 
 def sendConnections(chat_id, isDeparture, name):
@@ -92,6 +98,9 @@ def sendDetails(chat_id, index_string):
         for s in stop_details:
             result = result + s.toString(settings) + '\n'
         bot.sendMessage(chat_id, result)
+        img = Request.createMapURL([],-1, settings)
+        print(img)
+        bot.sendPhoto(chat_id, img)
     except ValueError:
         pass
     except IndexError:
@@ -152,8 +161,6 @@ def handle(msg):
                 return
 
 
-# noinspection SpellCheckingInspection
-TOKEN = '330294771:AAFJAZ5oyvNZX8nrJiDeqVCSTfrtsiy6IoA'
 bot = telepot.Bot(TOKEN)
 MessageLoop(bot, handle).run_as_thread()
 # Keep the program running.
