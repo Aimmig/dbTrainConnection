@@ -121,7 +121,7 @@ class RequestSettings:
     """
 
     # noinspection SpellCheckingInspection
-    def __init__(self, fileName: str):
+    def __init__(self, keyFile: str, fileName: str):
         """
         Construct RequestSettings object, that holds all
         possible settings. Read these from given file.
@@ -131,12 +131,15 @@ class RequestSettings:
 
         # create parser and read file
         parser = configparser.ConfigParser()
-        parser.read(constructAbsPath(fileName))
+        parser.read(constructAbsPath(keyFile))
 
         # read keys
         keys = 'Keys'
         self.DBKey = parser[keys]['DBKey']
         self.GoogleMapsKey = parser[keys]['GoogleMapsKey']
+
+        parser = configparser.ConfigParser()
+        parser.read(constructAbsPath(fileName))
 
         default = 'Default'
         # read language

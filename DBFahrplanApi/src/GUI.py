@@ -48,7 +48,7 @@ class GUI(QtWidgets.QMainWindow):
         super(GUI, self).__init__()
 
         # read all settings information from file including language data
-        self.settings = RequestSettings('configs/config.txt')
+        self.settings = RequestSettings('configs/keys.txt','configs/config.txt')
 
         # set Window Title
         self.setWindowTitle(self.settings.LanguageStrings.windowTitle_Text)
