@@ -97,9 +97,18 @@ def sendDetails(chat_id, index_string):
         result = 'Verlauf von ' + connections[index].name + ' am ' + connections[index].dateToString(settings) + '\n'
         for s in stop_details:
             result = result + s.toString(settings) + '\n'
+        coordinates = []
+        markerIndex = -1
+        if not connections[index].stopList:
+            xmlString = Request.getXMLStringConnectionDetails(connections[index].ref)
+            stopList = parser.getStopListFromXMLString(xmlString)
+            connections[index].stopList = stopList
+        for i in range(len(connections[index].stopList)):
+            coordinates.append(connections[index].stopList[i].pos)
+            if connections[index].stopList[i].id == connections[index].stopId:
+                markerIndex = i
         bot.sendMessage(chat_id, result)
-        img = Request.createMapURL([],-1, settings)
-        print(img)
+        img = Request.createMapURL(coordinates, markerIndex, settings)
         bot.sendPhoto(chat_id, img)
     except ValueError:
         pass
