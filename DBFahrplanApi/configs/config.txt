@@ -1,0 +1,35 @@
+# Contains all default application settings
+[Default]
+
+# Application Language
+language = de
+
+# Maptype (may be roadmap, terrain, satellite, hybrid)
+MapType = roadmap
+
+# Output Date Format
+dateFormat = dd.MM.yyyy
+
+# Output Time Format
+timeFormat = hh:mm
+
+# Default Map Size
+defaultSize = 500
+minSize = 200
+maxSize = 800
+
+# Default Time OffSet
+defaultOffSet = 5
+
+# Default path color 
+PathColor = #ff0000
+# Default size of path
+PathSize = 3
+# Default marker color        
+MarkerColor = #5555BB
+# Default size of marker
+MarkerSize = small
+# Default size of extra marker    
+MarkerColorSpecial = #aa339988
+# Default size of special marker
+MarkerSizeSpecial = mid
