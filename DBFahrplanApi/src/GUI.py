@@ -488,21 +488,15 @@ class GUI(QtWidgets.QMainWindow):
         :rtype ([Coordinate],int)
         """
 
-        markerIndex = -1
-        coordinates = []
         # clear detailsTable
         self.clearDetailsTable()
         # for every stop in stopList add it to QTableWidget
         for i in range(len(connection.stopList)):
             self.addStopToDetails(connection.stopList[i])
-            coordinates.append(connection.stopList[i].pos)
-            if connection.stopList[i].id == connection.stopId:
-                markerIndex = i
-        sett = self.settings
         # set details_label text to connection information
-        self.details_label.setText(connection.toStringDetails(sett))
+        self.details_label.setText(connection.toStringDetails(self.settings))
         self.conList.setDisplayedDetailedIndex(self.conList.getDisplayedIndex(), index)
-        return coordinates, markerIndex
+        return connection.getCoordinatesWithMarker()
 
     def RequestAndShowMap(self, connection: Connection, coordinates: [Coordinate], markerIndex: int):
         """

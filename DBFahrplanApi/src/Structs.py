@@ -318,6 +318,20 @@ class Connection:
         # set link used to request connection
         self.url = url
 
+    def getCoordinatesWithMarker(self) -> ([], int):
+        """
+        Calculates list of coordinates of all stops of this connection.
+        Also returns the index of the stop which the connection was requested from
+        :rtype: ([Coordinate], int)
+        """
+        coordinates = []
+        markerIndex = -1
+        for i in range(len(self.stopList)):
+            coordinates.append(self.stopList[i].pos)
+            if self.stopList[i].id == self.stopId:
+                markerIndex = i
+        return coordinates, markerIndex
+
     def isDeparture(self):
 
         return not self.direction == ""

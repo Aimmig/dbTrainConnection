@@ -8,7 +8,7 @@ from Structs import RequestSettings
 from XMLParser import XMLParser as parser
 import urllib.error as err
 
-settings = RequestSettings('configs/keys.txt','configs/config.txt')
+settings = RequestSettings('configs/keys.txt', 'configs/config.txt')
 settings.setHeight(800)
 settings.setWidth(800)
 TOKEN = settings.TelegramBotToken
@@ -64,7 +64,8 @@ def getConnections(identifier, isDeparture, current_time=QtCore.QTime.currentTim
 
     global connections
     try:
-        (xmlString, url) = Request.getXMLStringConnectionRequest(current_date, current_time, identifier, isDeparture, settings)
+        (xmlString, url) = Request.getXMLStringConnectionRequest(current_date, current_time, identifier,
+                                                                 isDeparture, settings)
     except err.HTTPError as e:
         print('The server couldn\'t fulfill the request.')
         print('Error code: ', e.code)
@@ -84,8 +85,8 @@ def sendConnections(chat_id, isDeparture, name):
         conn_string = arr_for + name + '\n'
     i = 1
     for c in connections:
-            conn_string = conn_string + str(i) + ': ' + c.toString(settings) + '\n'
-            i = i + 1
+        conn_string = conn_string + str(i) + ': ' + c.toString(settings) + '\n'
+        i = i + 1
     bot.sendMessage(chat_id, conn_string)
 
 
@@ -97,17 +98,12 @@ def sendDetails(chat_id, index_string):
         result = 'Verlauf von ' + connections[index].name + ' am ' + connections[index].dateToString(settings) + '\n'
         for s in stop_details:
             result = result + s.toString(settings) + '\n'
-        coordinates = []
-        markerIndex = -1
         if not connections[index].stopList:
             xmlString = Request.getXMLStringConnectionDetails(connections[index].ref)
             stopList = parser.getStopListFromXMLString(xmlString)
             connections[index].stopList = stopList
-        for i in range(len(connections[index].stopList)):
-            coordinates.append(connections[index].stopList[i].pos)
-            if connections[index].stopList[i].id == connections[index].stopId:
-                markerIndex = i
         bot.sendMessage(chat_id, result)
+        coordinates, markerIndex = connections[index].getCoordinatesWithMarker()
         img = Request.createMapURL(coordinates, markerIndex, settings)
         bot.sendPhoto(chat_id, img)
     except ValueError:
@@ -164,7 +160,7 @@ def handle(msg):
                     # noinspection PyArgumentList
                     current_date = QtCore.QDate.currentDate()
                     year = current_date.year()
-                    date = QtCore.QDate.fromString(split_msg[3]+'.'+str(year), settings.dateFormat)
+                    date = QtCore.QDate.fromString(split_msg[3] + '.' + str(year), settings.dateFormat)
                 getConnections(identifier, isDeparture, req_time, date)
                 sendConnections(chat_id, isDeparture, name)
                 return
