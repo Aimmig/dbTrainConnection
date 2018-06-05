@@ -1,4 +1,4 @@
 # ignores already compiled Python files
 *.pyc
 .idea/
-DBFahrplanApi/configs/keys.txt
+configs/keys.txt
