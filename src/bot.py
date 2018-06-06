@@ -117,42 +117,44 @@ def handle(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
     if content_type == 'text':
         split_msg = msg['text'].split(' ')
+        command = split_msg[0]
+        param = split_msg[1]
         if len(split_msg) == 2:
-            if split_msg[0].lower() == '/info':
-                sendDetails(chat_id, split_msg[1])
+            if command.lower() == '/info':
+                sendDetails(chat_id, param)
                 return
-            if split_msg[0].lower() == departure:
+            if command.lower() == departure:
                 isDeparture = True
-            elif split_msg[0].lower() == arrival:
+            elif command.lower() == arrival:
                 isDeparture = False
             else:
                 return
-            identifier, name = getStationId(split_msg[1])
+            identifier, name = getStationId(param)
             if name:
                 getConnections(identifier, isDeparture)
                 sendConnections(chat_id, isDeparture, name)
                 return
         if len(split_msg) == 3:
-            if split_msg[0].lower() == departure:
+            if command.lower() == departure:
                 isDeparture = True
-            elif split_msg[0].lower() == arrival:
+            elif command.lower() == arrival:
                 isDeparture = False
             else:
                 return
-            identifier, name = getStationId(split_msg[1])
+            identifier, name = getStationId(param)
             if name:
                 req_time = QtCore.QTime.fromString(split_msg[2], settings.timeFormat)
                 getConnections(identifier, isDeparture, req_time)
                 sendConnections(chat_id, isDeparture, name)
                 return
         if len(split_msg) == 4:
-            if split_msg[0].lower() == departure:
+            if command.lower() == departure:
                 isDeparture = True
-            elif split_msg[0].lower() == arrival:
+            elif command.lower() == arrival:
                 isDeparture = False
             else:
                 return
-            identifier, name = getStationId(split_msg[1])
+            identifier, name = getStationId(param)
             if name:
                 req_time = QtCore.QTime.fromString(split_msg[2], settings.timeFormat)
                 date = QtCore.QDate.fromString(split_msg[3], settings.dateFormat)
