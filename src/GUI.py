@@ -49,6 +49,9 @@ class GUI(QtWidgets.QMainWindow):
 
         # read all settings information from file including language data
         self.settings = RequestSettings('configs/keys.txt','configs/config.txt')
+        if (self.settings.DBKey == None or self.settings.GoogleMapsKey == None):
+            print("Some API-keys are missing in keys.txt")
+            exit()
 
         # set Window Title
         self.setWindowTitle(self.settings.LanguageStrings.windowTitle_Text)

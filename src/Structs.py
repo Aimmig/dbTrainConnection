@@ -135,8 +135,12 @@ class RequestSettings:
 
         # read keys
         keys = 'Keys'
-        self.DBKey = parser[keys]['DBKey']
-        self.GoogleMapsKey = parser[keys]['GoogleMapsKey']
+        try:
+            self.DBKey = parser[keys]['DBKey']
+            self.GoogleMapsKey = parser[keys]['GoogleMapsKey']
+        except KeyError:
+            self.DBKey = None
+            self.GoogleMapsKey = None
         try:
             self.TelegramBotToken = parser[keys]['TelegramToken']
         except KeyError:
