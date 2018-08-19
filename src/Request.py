@@ -21,9 +21,9 @@
 #    ---------------------------------------------------------------------
 
 from PyQt5 import QtCore
-import urllib.request as url_req
 import urllib.parse as parse
 from Structs import Coordinate, RequestSettings, MapType
+import requests
 
 
 class Request:
@@ -86,10 +86,9 @@ class Request:
         :rtype str
         """
 
-        req = url_req.Request(url)
-        response = url_req.urlopen(req)
-        result = response.read()
-        return result
+        hdrs = {'User-Agent': 'Mozilla / 5.0'}
+        resp = requests.get(url, headers=hdrs)
+        return resp.content
 
     @staticmethod
     def getXMLStringConnectionDetails(url: str) -> str:

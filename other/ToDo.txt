@@ -1,5 +1,8 @@
 #To-Do Stuff:
 
+-Either fix signature/google maps api problem or migrate to embedded or normal browser based maps (e.g 
+test.py)
+
 -If possible make colums resizable and auto-streched on resize
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
 -Add functionality to (re)-request map if markerColor, pathColor change
