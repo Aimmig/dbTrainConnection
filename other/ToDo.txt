@@ -7,3 +7,7 @@ test.py)
 -Add specific informations on Error handling, networkConnection, internalServerProblem (no data) etc..
 -Add functionality to (re)-request map if markerColor, pathColor change
 -Remove size of map in gui, instead configure this in config + option to increase/decrease a fixed percentage from menu
+
+
+- GMpas static api restricted to only 1 request per day per api key (so atm not working)
+- Migrate to embedded api (seems more useable atm) , e.g. like in test.py
