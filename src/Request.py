@@ -22,8 +22,8 @@
 
 from PyQt5 import QtCore
 import urllib.parse as parse
-from Structs import Coordinate, RequestSettings, MapType
-import requests
+from Structs import RequestSettings, MapType
+import requests, polyline
 
 
 class Request:
@@ -143,11 +143,11 @@ class Request:
         return Request.getResultFromServer(new_url), new_url
 
     @staticmethod
-    def getMapWithLocations(coordinates: [Coordinate], markerIndex: int, settings: RequestSettings) -> str:
+    def getMapWithLocations(coordinates: [tuple], markerIndex: int, settings: RequestSettings) -> str:
         """
         Creates google-maps url for corresponding map with given coordinates and settings.
         Returns the raw requested data
-        :type coordinates [Coordinate]
+        :type coordinates [tuple]
         :type markerIndex int
         :type settings RequestSettings
         :rtype str
@@ -203,14 +203,14 @@ class Request:
                            )
 
     @staticmethod
-    def createMapURL(coordinates: [Coordinate], markerIndex: int, settings: RequestSettings) -> str:
+    def createMapURL(coordinates: [tuple], markerIndex: int, settings: RequestSettings) -> str:
         """
         Builds and returns the url for requesting the map with coordinates and settings.
         Use size, path- and marker color from settings.
         Create full path with all coordinates, for each coordinate add marker with
         default size except the specified markerIndex, these coordinate gets an other
         color specified in settings
-        :type coordinates [Coordinate]
+        :type coordinates [tuple]
         :type markerIndex int
         :type settings RequestSettings
         :rtype str
@@ -244,19 +244,20 @@ class Request:
         res += Request.UrlKey + settings.GoogleMapsKey
         return res
         '''
-
+        
         endpart = '/auto/{0}x{1}?access_token={2}'.format(str(settings.width),str(settings.height),settings.GoogleMapsKey)
-        res = Request.MAPS_BASE_URL + Request.createFullCoordinateString(coordinates, settings) + endpart
+        path = 'path-5+{0}-1({1}),'.format(Request.formatColor(settings.PATH_COLOR),polyline.encode([(y, x) for x, y in coordinates]))
+        res = Request.MAPS_BASE_URL + path + Request.createFullCoordinateString(coordinates, settings) + endpart
         print(res)
         return res
 
 
     @staticmethod
-    def createFullCoordinateString(cords: [Coordinate], settings) -> str:
+    def createFullCoordinateString(cords: [tuple], settings) -> str:
         """
         Takes a list of geographical locations and returns a string
         that is formatted for use in google-maps request.
-        :type cords [Coordinate]
+        :type cords [tuple]
         :rtype str
         """
         
@@ -264,13 +265,13 @@ class Request:
         return ''.join(map(lambda loc: Request.createCoordinateString(col, 's',loc), cords))[:-1]
 
     @staticmethod
-    def createCoordinateString(col: str, size: str,loc: Coordinate) -> str:
+    def createCoordinateString(col: str, size: str,loc: tuple) -> str:
         """
         Takes a geographical location and returns a string
         that is formatted for use in google-maps request.
-        :type loc Coordinate
+        :type loc tuple
         :rtype str
         """
 
         # single marker formated as pin-size-name+color(lon,lat)
-        return 'pin-{0}+{1}({2},{3}),'.format(size, col,str(loc.lon), str(loc.lat))
+        return 'pin-{0}+{1}{2},'.format(size, col,str(loc).replace(' ',''))

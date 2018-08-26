@@ -326,7 +326,7 @@ class Connection:
         """
         Calculates list of coordinates of all stops of this connection.
         Also returns the index of the stop which the connection was requested from
-        :rtype: ([Coordinate], int)
+        :rtype: ([tuple], int)
         """
         coordinates = []
         markerIndex = -1
@@ -428,7 +428,7 @@ class Stop:
         # Track from which the connection starts
         self.track = track
         # position of the stop
-        self.pos = Coordinate(lon, lat)
+        self.pos = (lon, lat)
 
     def arrTimeToString(self, settings: RequestSettings) -> str:
         """
@@ -564,23 +564,6 @@ class ConnectionsList:
         """
 
         self.displayedDetailedIndex = (pageIndex, row)
-
-
-class Coordinate:
-    """
-    Class for representing a geographical coordinate.
-    """
-
-    def __init__(self, lon: float, lat: float):
-        """
-        Constructs Coordinate from longitude and longitude.
-        :type lon float
-        :type lat float
-        """
-
-        self.lon = lon
-        self.lat = lat
-
 
 class Filter:
     """

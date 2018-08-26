@@ -23,7 +23,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Widgets import QConnectionTable, QDetailsTable, QMapWidget
 from Request import Request
-from Structs import Connection, ConnectionsList, Stop, Filter, Coordinate, RequestSettings, MapType
+from Structs import Connection, ConnectionsList, Stop, Filter, RequestSettings, MapType
 from XMLParser import XMLParser
 import urllib.error as err
 
@@ -479,7 +479,7 @@ class GUI(QtWidgets.QMainWindow):
         coordinates, markerIndex = self.addAllStopsToDetails(connection, index)
         self.RequestAndShowMap(connection, coordinates, markerIndex)
 
-    def addAllStopsToDetails(self, connection: Connection, index: int) -> ([Coordinate], int):
+    def addAllStopsToDetails(self, connection: Connection, index: int) -> ([tuple], int):
         """
         Adds all Stops of the given Connection to DetailsTable.
         Sets the the displayedDetailedIndex to given index.
@@ -488,7 +488,7 @@ class GUI(QtWidgets.QMainWindow):
         and returns this as result.
         :type connection: Connection
         :type index: int
-        :rtype ([Coordinate],int)
+        :rtype ([tuple],int)
         """
 
         # clear detailsTable
@@ -501,13 +501,13 @@ class GUI(QtWidgets.QMainWindow):
         self.conList.setDisplayedDetailedIndex(self.conList.getDisplayedIndex(), index)
         return connection.getCoordinatesWithMarker()
 
-    def RequestAndShowMap(self, connection: Connection, coordinates: [Coordinate], markerIndex: int):
+    def RequestAndShowMap(self, connection: Connection, coordinates: [tuple], markerIndex: int):
         """
         Checks if Map-Data needs to be requested.
         If so request map-Data with coordinates and markerIndex.
         Displays the map-Data.
         :type connection Connection
-        :type coordinates [Coordinate]
+        :type coordinates [tuple]
         :type markerIndex int
         """
 
