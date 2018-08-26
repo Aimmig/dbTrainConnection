@@ -35,8 +35,7 @@ class Request:
     # static member variables
     # API base urls
     DB_BASE_URL = 'https://open-api.bahn.de/bin/rest.exe/'
-    #GOOGLE_MAPS_BASE_URL = 'https://maps.googleapis.com/maps/api/staticmap?'
-    GOOGLE_MAPS_BASE_URL = 'https://api.mapbox.com/styles/v1/mapbox/navigation-guidance-day-v4/static/'
+    MAPS_BASE_URL = 'https://api.mapbox.com/styles/v1/mapbox/{0}/static/'.format('navigation-guidance-day-v4')
     EncodedSeparator = '%3A'
 
     # API-Properties key-words for Deutsche Bahn API
@@ -247,8 +246,8 @@ class Request:
         '''
 
         endpart = '/auto/{0}x{1}?access_token={2}'.format(str(settings.width),str(settings.height),settings.GoogleMapsKey)
-        res = Request.GOOGLE_MAPS_BASE_URL + Request.createFullCoordinateString(coordinates, settings) + endpart
-        #print(res)
+        res = Request.MAPS_BASE_URL + Request.createFullCoordinateString(coordinates, settings) + endpart
+        print(res)
         return res
 
 
@@ -273,6 +272,5 @@ class Request:
         :rtype str
         """
 
-        # single coordinate is formatted to |lat,lon
+        # single marker formated as pin-size-name+color(lon,lat)
         return 'pin-{0}+{1}({2},{3}),'.format(size, col,str(loc.lon), str(loc.lat))
-        #return '{0}{1},{2}'.format(Request.UrlSeparator, str(loc.lat), str(loc.lon))
