@@ -35,7 +35,8 @@ class Request:
     # static member variables
     # API base urls
     DB_BASE_URL = 'https://open-api.bahn.de/bin/rest.exe/'
-    GOOGLE_MAPS_BASE_URL = 'https://maps.googleapis.com/maps/api/staticmap?'
+    #GOOGLE_MAPS_BASE_URL = 'https://maps.googleapis.com/maps/api/staticmap?'
+    GOOGLE_MAPS_BASE_URL = 'https://api.mapbox.com/styles/v1/mapbox/navigation-guidance-day-v4/static/'
     EncodedSeparator = '%3A'
 
     # API-Properties key-words for Deutsche Bahn API
@@ -75,7 +76,7 @@ class Request:
         :param col:
         :return: str
         """
-        return col.name().replace('#', '0x')
+        return col.name().replace('#', '')
 
     @staticmethod
     def getResultFromServer(url: str) -> str:
@@ -216,6 +217,7 @@ class Request:
         :rtype str
         """
 
+        '''
         base = '{0}{1}{2}{3}{4}x{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}'
         res = base.format(Request.GOOGLE_MAPS_BASE_URL, Request.UrlScale, Request.UrlScaleValue, Request.UrlSize,
                           str(settings.width), str(settings.height), Request.UrlLanguage, settings.LANGUAGE,
@@ -242,20 +244,28 @@ class Request:
         # add google map key
         res += Request.UrlKey + settings.GoogleMapsKey
         return res
+        '''
+
+        endpart = '/auto/{0}x{1}?access_token={2}'.format(str(settings.width),str(settings.height),settings.GoogleMapsKey)
+        res = Request.GOOGLE_MAPS_BASE_URL + Request.createFullCoordinateString(coordinates, settings) + endpart
+        #print(res)
+        return res
+
 
     @staticmethod
-    def createFullCoordinateString(cords: [Coordinate]) -> str:
+    def createFullCoordinateString(cords: [Coordinate], settings) -> str:
         """
         Takes a list of geographical locations and returns a string
         that is formatted for use in google-maps request.
         :type cords [Coordinate]
         :rtype str
         """
-
-        return ''.join(map(lambda loc: Request.createCoordinateString(loc), cords))
+        
+        col = Request.formatColor(settings.MARKER_COLOR)
+        return ''.join(map(lambda loc: Request.createCoordinateString(col, 's',loc), cords))[:-1]
 
     @staticmethod
-    def createCoordinateString(loc: Coordinate) -> str:
+    def createCoordinateString(col: str, size: str,loc: Coordinate) -> str:
         """
         Takes a geographical location and returns a string
         that is formatted for use in google-maps request.
@@ -264,4 +274,5 @@ class Request:
         """
 
         # single coordinate is formatted to |lat,lon
-        return '{0}{1},{2}'.format(Request.UrlSeparator, str(loc.lat), str(loc.lon))
+        return 'pin-{0}+{1}({2},{3}),'.format(size, col,str(loc.lon), str(loc.lat))
+        #return '{0}{1},{2}'.format(Request.UrlSeparator, str(loc.lat), str(loc.lon))
