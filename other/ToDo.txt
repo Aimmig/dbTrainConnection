@@ -10,4 +10,4 @@ test.py)
 
 
 - GMpas static api restricted to only 1 request per day per api key (so atm not working)
-- Migrate to embedded api (seems more useable atm) , e.g. like in test.py
+- Migrate to mapbox as described in mapbox.txt
