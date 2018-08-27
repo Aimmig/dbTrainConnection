@@ -107,8 +107,14 @@ class MapType(Enum):
     """
     streets_v10 = 1
     outdoors_v10 = 2
-    satellite_v9 = 3
-    navigation_preview_day_v4 = 4
+    light_v9 = 3
+    dark_v9 = 4
+    satellite_v9 = 5
+    satellite_streets_v10 = 6
+    navigation_preview_day_v4 = 7
+    navigation_preview_night_v4 = 8
+    navigation_guidance_day_v4 = 9
+    navigation_guidance_night_v4 = 10
 
 
 class RequestSettings:
@@ -564,6 +570,7 @@ class ConnectionsList:
         """
 
         self.displayedDetailedIndex = (pageIndex, row)
+
 
 class Filter:
     """

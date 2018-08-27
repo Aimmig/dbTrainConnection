@@ -48,8 +48,8 @@ class GUI(QtWidgets.QMainWindow):
         super(GUI, self).__init__()
 
         # read all settings information from file including language data
-        self.settings = RequestSettings('configs/keys.txt','configs/config.txt')
-        if (self.settings.DBKey == None or self.settings.GoogleMapsKey == None):
+        self.settings = RequestSettings('configs/keys.txt', 'configs/config.txt')
+        if self.settings.DBKey is None or self.settings.GoogleMapsKey is None:
             print("Some API-keys are missing in keys.txt")
             exit()
 
@@ -125,40 +125,32 @@ class GUI(QtWidgets.QMainWindow):
         colorMarkerAction.triggered.connect(self.changeMarkerColor)
         mapcolorMenu.addAction(colorMarkerAction)
 
-        # add Submenu for changing MapType
+        # add Submenu for changing MapType^^
         mapTypeMenu = mapMenu.addMenu("Type")
 
         # create groupAction
         mapGroupAction = QtWidgets.QActionGroup(self)
 
-        # submenu entry for setting roadmap
-        roadmapAction = QtWidgets.QAction(MapType.streets_v10.name, mapGroupAction)
-        roadmapAction.setCheckable(True)
-        roadmapAction.setShortcut(QtGui.QKeySequence("CTRL+R", QtGui.QKeySequence.PortableText))
-        roadmapAction.triggered.connect(lambda: self.setMapType(MapType.streets_v10.value))
-
-        # submenu entry for setting sattelitemap
-        satelliteAction = QtWidgets.QAction(MapType.satellite_v9.name, mapGroupAction)
-        satelliteAction.setCheckable(True)
-        satelliteAction.setShortcut(QtGui.QKeySequence("CTRL+S", QtGui.QKeySequence.PortableText))
-        satelliteAction.triggered.connect(lambda: self.setMapType(MapType.satellite_v9.value))
-
-        # submenu entry for hybridmap
-        hybridAction = QtWidgets.QAction(MapType.navigation_preview_day_v4.name, mapGroupAction)
-        hybridAction.setCheckable(True)
-        hybridAction.setShortcut(QtGui.QKeySequence("CTRL+H", QtGui.QKeySequence.PortableText))
-        hybridAction.triggered.connect(lambda: self.setMapType(MapType.navigation_preview_day_v4.value))
-
-        # submenu entry for terrainmap
-        terrainAction = QtWidgets.QAction(MapType.outdoors_v10.name, mapGroupAction)
-        terrainAction.setCheckable(True)
-        terrainAction.setShortcut(QtGui.QKeySequence("CTRL+T", QtGui.QKeySequence.PortableText))
-        terrainAction.triggered.connect(lambda: self.setMapType(MapType.outdoors_v10.value))
+        streets = self.createMapAction(MapType.streets_v10, mapGroupAction, "CTRL+R")
+        outdoor = self.createMapAction(MapType.outdoors_v10, mapGroupAction, "CTRL+O")
+        light = self.createMapAction(MapType.light_v9, mapGroupAction, "CTRL+L")
+        dark = self.createMapAction(MapType.dark_v9, mapGroupAction, "CTRL+D")
+        satellite = self.createMapAction(MapType.satellite_v9, mapGroupAction, "CTRL+S")
+        satellite_streets = self.createMapAction(MapType.satellite_streets_v10, mapGroupAction)
+        nav_prev_day = self.createMapAction(MapType.navigation_preview_day_v4, mapGroupAction)
+        nav_prev_night = self.createMapAction(MapType.navigation_preview_night_v4, mapGroupAction)
+        nav_guid_day = self.createMapAction(MapType.navigation_guidance_day_v4, mapGroupAction)
+        nav_guid_night = self.createMapAction(MapType.navigation_guidance_night_v4, mapGroupAction)
 
         # try to check default maptype specified in config
         try:
-            mapActionDict = {MapType.streets_v10: roadmapAction, MapType.satellite_v9: satelliteAction,
-                             MapType.navigation_preview_day_v4: hybridAction, MapType.outdoors_v10: terrainAction}
+            mapActionDict = {MapType.streets_v10: streets, MapType.outdoors_v10: outdoor,
+                             MapType.light_v9: light, MapType.dark_v9: dark,
+                             MapType.satellite_v9: satellite, MapType.satellite_streets_v10: satellite_streets,
+                             MapType.navigation_guidance_day_v4: nav_guid_day,
+                             MapType.navigation_guidance_night_v4: nav_guid_night,
+                             MapType.navigation_preview_day_v4: nav_prev_day,
+                             MapType.navigation_preview_night_v4: nav_prev_night}
             mapActionDict[MapType(self.settings.MAPTYPE)].setChecked(True)
         except KeyError:
             pass
@@ -232,6 +224,14 @@ class GUI(QtWidgets.QMainWindow):
         exitAction.triggered.connect(self.closeEvent)
         # add Action to Menu
         exitMenu.addAction(exitAction)
+
+    def createMapAction(self, mapType, group, shortcut=None) -> QtWidgets.QAction:
+        # submenu entry for setting sattelitemap
+        action = QtWidgets.QAction(mapType.name, group)
+        action.setCheckable(True)
+        action.setShortcut(QtGui.QKeySequence(shortcut, QtGui.QKeySequence.PortableText))
+        action.triggered.connect(lambda: self.setMapType(mapType.value))
+        return action
 
     # noinspection PyAttributeOutsideInit,PyArgumentList,PyUnresolvedReferences
     def initializeUserInputLayout(self) -> QtWidgets.QVBoxLayout:

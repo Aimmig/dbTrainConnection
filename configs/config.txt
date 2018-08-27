@@ -16,7 +16,7 @@ timeFormat = hh:mm
 # Default Map Size
 defaultSize = 500
 minSize = 200
-maxSize = 800
+maxSize = 1200
 
 # Default Time OffSet
 defaultOffSet = 5

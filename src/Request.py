@@ -23,7 +23,8 @@
 from PyQt5 import QtCore
 import urllib.parse as parse
 from Structs import RequestSettings, MapType
-import requests, polyline
+import requests
+import polyline
 
 
 class Request:
