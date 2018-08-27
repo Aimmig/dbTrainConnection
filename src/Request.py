@@ -35,7 +35,7 @@ class Request:
     # static member variables
     # API base urls
     DB_BASE_URL = 'https://open-api.bahn.de/bin/rest.exe/'
-    MAPS_BASE_URL = 'https://api.mapbox.com/styles/v1/mapbox/{0}/static/'.format('navigation-guidance-day-v4')
+    MAPS_BASE_URL = 'https://api.mapbox.com/styles/v1/mapbox/{0}/static/'
     EncodedSeparator = '%3A'
 
     # API-Properties key-words for Deutsche Bahn API
@@ -244,10 +244,11 @@ class Request:
         res += Request.UrlKey + settings.GoogleMapsKey
         return res
         '''
-        
+
+
         endpart = '/auto/{0}x{1}?access_token={2}'.format(str(settings.width),str(settings.height),settings.GoogleMapsKey)
         path = 'path-5+{0}-1({1}),'.format(Request.formatColor(settings.PATH_COLOR),polyline.encode([(y, x) for x, y in coordinates]))
-        res = Request.MAPS_BASE_URL + path + Request.createFullCoordinateString(coordinates, settings) + endpart
+        res = Request.MAPS_BASE_URL.format(MapType(settings.MAPTYPE).name).replace('_','-') + path + Request.createFullCoordinateString(coordinates, settings) + endpart
         print(res)
         return res
 

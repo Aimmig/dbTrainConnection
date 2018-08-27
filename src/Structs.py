@@ -105,10 +105,10 @@ class MapType(Enum):
     """
     Enum type for MapType.
     """
-    roadmap = 1
-    terrain = 2
-    satellite = 3
-    hybrid = 4
+    streets_v10 = 1
+    outdoors_v10 = 2
+    satellite_v9 = 3
+    navigation_preview_day_v4 = 4
 
 
 class RequestSettings:

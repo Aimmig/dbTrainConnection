@@ -5,7 +5,7 @@
 language = de
 
 # Maptype (may be roadmap, terrain, satellite, hybrid)
-MapType = roadmap
+MapType = satellite_v9
 
 # Output Date Format
 dateFormat = dd.MM.yyyy

@@ -132,33 +132,33 @@ class GUI(QtWidgets.QMainWindow):
         mapGroupAction = QtWidgets.QActionGroup(self)
 
         # submenu entry for setting roadmap
-        roadmapAction = QtWidgets.QAction(MapType.roadmap.name, mapGroupAction)
+        roadmapAction = QtWidgets.QAction(MapType.streets_v10.name, mapGroupAction)
         roadmapAction.setCheckable(True)
         roadmapAction.setShortcut(QtGui.QKeySequence("CTRL+R", QtGui.QKeySequence.PortableText))
-        roadmapAction.triggered.connect(lambda: self.setMapType(MapType.roadmap.value))
+        roadmapAction.triggered.connect(lambda: self.setMapType(MapType.streets_v10.value))
 
         # submenu entry for setting sattelitemap
-        satelliteAction = QtWidgets.QAction(MapType.satellite.name, mapGroupAction)
+        satelliteAction = QtWidgets.QAction(MapType.satellite_v9.name, mapGroupAction)
         satelliteAction.setCheckable(True)
         satelliteAction.setShortcut(QtGui.QKeySequence("CTRL+S", QtGui.QKeySequence.PortableText))
-        satelliteAction.triggered.connect(lambda: self.setMapType(MapType.satellite.value))
+        satelliteAction.triggered.connect(lambda: self.setMapType(MapType.satellite_v9.value))
 
         # submenu entry for hybridmap
-        hybridAction = QtWidgets.QAction(MapType.hybrid.name, mapGroupAction)
+        hybridAction = QtWidgets.QAction(MapType.navigation_preview_day_v4.name, mapGroupAction)
         hybridAction.setCheckable(True)
         hybridAction.setShortcut(QtGui.QKeySequence("CTRL+H", QtGui.QKeySequence.PortableText))
-        hybridAction.triggered.connect(lambda: self.setMapType(MapType.hybrid.value))
+        hybridAction.triggered.connect(lambda: self.setMapType(MapType.navigation_preview_day_v4.value))
 
         # submenu entry for terrainmap
-        terrainAction = QtWidgets.QAction(MapType.terrain.name, mapGroupAction)
+        terrainAction = QtWidgets.QAction(MapType.outdoors_v10.name, mapGroupAction)
         terrainAction.setCheckable(True)
         terrainAction.setShortcut(QtGui.QKeySequence("CTRL+T", QtGui.QKeySequence.PortableText))
-        terrainAction.triggered.connect(lambda: self.setMapType(MapType.terrain.value))
+        terrainAction.triggered.connect(lambda: self.setMapType(MapType.outdoors_v10.value))
 
         # try to check default maptype specified in config
         try:
-            mapActionDict = {MapType.roadmap: roadmapAction, MapType.satellite: satelliteAction,
-                             MapType.hybrid: hybridAction, MapType.terrain: terrainAction}
+            mapActionDict = {MapType.streets_v10: roadmapAction, MapType.satellite_v9: satelliteAction,
+                             MapType.navigation_preview_day_v4: hybridAction, MapType.outdoors_v10: terrainAction}
             mapActionDict[MapType(self.settings.MAPTYPE)].setChecked(True)
         except KeyError:
             pass
