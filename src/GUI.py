@@ -112,20 +112,13 @@ class GUI(QtWidgets.QMainWindow):
         mapcolorMenu = mapMenu.addMenu(self.settings.LanguageStrings.colour_Text)
 
         # submenu entry for changing path colors
-        colorPathAction = QtWidgets.QAction(self.stdicon(self.style.SP_DialogOpenButton),
-                                            self.settings.LanguageStrings.change_Path_Colour_Text, self)
-        colorPathAction.setShortcut(QtGui.QKeySequence("CTRL+P", QtGui.QKeySequence.PortableText))
-        colorPathAction.triggered.connect(self.changePathColor)
-        mapcolorMenu.addAction(colorPathAction)
-
+        mapcolorMenu.addAction(self.createColorAction(self.settings.LanguageStrings.change_Path_Colour_Text,
+                                                      "CTRL+P", self.changePathColor))
         # submenu entry for changing marker colors
-        colorMarkerAction = QtWidgets.QAction(self.stdicon(self.style.SP_DialogOpenButton),
-                                              self.settings.LanguageStrings.change_Marker_Colour_Text, self)
-        colorMarkerAction.setShortcut(QtGui.QKeySequence("CTRL+M", QtGui.QKeySequence.PortableText))
-        colorMarkerAction.triggered.connect(self.changeMarkerColor)
-        mapcolorMenu.addAction(colorMarkerAction)
+        mapcolorMenu.addAction(self.createColorAction(self.settings.LanguageStrings.change_Marker_Colour_Text,
+                                                      "CTRL+M", self.changeMarkerColor))
 
-        # add Submenu for changing MapType^^
+        # add Submenu for changing MapType
         mapTypeMenu = mapMenu.addMenu("Type")
 
         # create groupAction
@@ -163,16 +156,10 @@ class GUI(QtWidgets.QMainWindow):
         self.mapSizeMenu = mapMenu.addMenu("")
         self.updateMapSizeMenuText()
 
-        increaseAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowUp), "Increase", self)
-        increaseAction.triggered.connect(lambda: self.changeMapSize(100, 100))
-        increaseAction.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.ZoomIn))
-        self.mapSizeMenu.addAction(increaseAction)
-
-        decreaseAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowDown), "Decrease", self)
-        decreaseAction.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.ZoomOut))
-        decreaseAction.triggered.connect(lambda: self.changeMapSize(-100, -100))
-        self.mapSizeMenu.addAction(decreaseAction)
-
+        self.mapSizeMenu.addAction(self.createZoomAction(self.stdicon(self.style.SP_ArrowUp),
+                                                         "Increase", 100, QtGui.QKeySequence.ZoomIn))
+        self.mapSizeMenu.addAction(self.createZoomAction(self.stdicon(self.style.SP_ArrowDown),
+                                                         "Decrease", -100, QtGui.QKeySequence.ZoomOut))
         # action for checking Map
         # noinspection PyAttributeOutsideInit
         self.mapActive = QtWidgets.QAction("Anzeigen", self)
@@ -203,18 +190,10 @@ class GUI(QtWidgets.QMainWindow):
         self.searchOffsetMenu = settingsMenu.addMenu("")
         self.updateSearchOffSetMenuText()
 
-        # add action for increase of submenu
-        increaseOffsetAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowUp), "Increase", self)
-        increaseOffsetAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Up))
-        increaseOffsetAction.triggered.connect(lambda: self.changeOffset(1))
-        self.searchOffsetMenu.addAction(increaseOffsetAction)
-
-        # add action for decrease of submenu
-        decreaseOffsetAction = QtWidgets.QAction(self.stdicon(self.style.SP_ArrowDown), "Decrease", self)
-        decreaseOffsetAction.triggered.connect(lambda: self.changeOffset(-1))
-        decreaseOffsetAction.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Down))
-        self.searchOffsetMenu.addAction(decreaseOffsetAction)
-
+        self.searchOffsetMenu.addAction(self.createOffSetAction(self.stdicon(self.style.SP_ArrowUp),
+                                                                "Increase", 1, QtCore.Qt.Key_Up))
+        self.searchOffsetMenu.addAction(self.createOffSetAction(self.stdicon(self.style.SP_ArrowDown),
+                                                                "Decrease", -1, QtCore.Qt.Key_Down))
         # create Menu for application
         exitMenu = menuBar.addMenu(self.settings.LanguageStrings.application_Text)
         # create Action for closing application
@@ -226,12 +205,30 @@ class GUI(QtWidgets.QMainWindow):
         exitMenu.addAction(exitAction)
 
     def createMapAction(self, mapType, group, shortcut=None) -> QtWidgets.QAction:
-        # submenu entry for setting sattelitemap
         action = QtWidgets.QAction(mapType.name, group)
         action.setCheckable(True)
         action.setShortcut(QtGui.QKeySequence(shortcut, QtGui.QKeySequence.PortableText))
         action.triggered.connect(lambda: self.setMapType(mapType.value))
         return action
+
+    def createColorAction(self, text, shortcut, method):
+        action = QtWidgets.QAction(self.stdicon(self.style.SP_DialogOpenButton), text, self)
+        action.setShortcut(QtGui.QKeySequence(shortcut, QtGui.QKeySequence.PortableText))
+        action.triggered.connect(method)
+        return action
+
+    def createZoomAction(self, icon, text, value, sequence):
+        action = QtWidgets.QAction(icon, text, self)
+        action.setShortcut(QtGui.QKeySequence(sequence))
+        action.triggered.connect(lambda: self.changeMapSize(value,value))
+        return action
+
+    def createOffSetAction(self, icon, text, value, sequence):
+        action = QtWidgets.QAction(icon, text, self)
+        action.setShortcut(QtGui.QKeySequence(sequence))
+        action.triggered.connect(lambda: self.changeOffset(value))
+        return action
+
 
     # noinspection PyAttributeOutsideInit,PyArgumentList,PyUnresolvedReferences
     def initializeUserInputLayout(self) -> QtWidgets.QVBoxLayout:
