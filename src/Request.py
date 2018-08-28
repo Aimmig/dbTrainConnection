@@ -204,9 +204,9 @@ class Request:
 
         res = Request.MAPS_BASE_URL.format(MapType(settings.MAPTYPE).name).replace('_', '-')
         poly = polyline.encode([(y, x) for x, y in coordinates])
-        lineWith = 3
         opacity = 1
-        path = 'path-{0}+{1}-{2}({3}),'.format(lineWith, Request.formatColor(settings.PATH_COLOR), opacity, poly)
+        path = 'path-{0}+{1}-{2}({3}),'.format(settings.PATH_SIZE, Request.formatColor(settings.PATH_COLOR),
+                                               opacity, poly)
         endpart = '/auto/{0}x{1}?access_token={2}'.format(str(settings.width), str(settings.height), settings.MapBoxKey)
         res += path + Request.createFullCoordinateString(markerIndex, coordinates, settings) + endpart
         print(res)
@@ -224,10 +224,10 @@ class Request:
         """
 
         col = Request.formatColor(settings.MARKER_COLOR)
-        res = ''.join(map(lambda loc: Request.createCoordinateString(col, 's', loc),
+        res = ''.join(map(lambda loc: Request.createCoordinateString(col, settings.MARKER_SIZE, loc),
                           cords[:markerIndex] + cords[markerIndex + 1:]))
         return res + (Request.createCoordinateString(Request.formatColor(settings.MARKER_COLOR_SPECIAL),
-                                                     's', cords[markerIndex]))[:-1]
+                                                     settings.MARKER_SIZE_SPECIAL, cords[markerIndex]))[:-1]
 
     @staticmethod
     def createCoordinateString(col: str, size: str, loc: tuple) -> str:

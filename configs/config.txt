@@ -4,7 +4,7 @@
 # Application Language
 language = de
 
-# Maptype (may be roadmap, terrain, satellite, hybrid)
+# Maptype (see mapBox documentation, use '_' instead of '-')
 MapType = satellite_v9
 
 # Output Date Format
@@ -28,8 +28,8 @@ PathSize = 3
 # Default marker color        
 MarkerColor = #5555BB
 # Default size of marker
-MarkerSize = small
+MarkerSize = s
 # Default size of extra marker    
 MarkerColorSpecial = #aa339988
 # Default size of special marker
-MarkerSizeSpecial = mid
+MarkerSizeSpecial = l
