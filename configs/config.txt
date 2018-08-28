@@ -25,6 +25,8 @@ defaultOffSet = 5
 PathColor = #ff0000
 # Default size of path
 PathSize = 3
+# Default opacity of path
+PathOpacity = 0.85
 # Default marker color        
 MarkerColor = #5555BB
 # Default size of marker

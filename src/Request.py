@@ -204,9 +204,8 @@ class Request:
 
         res = Request.MAPS_BASE_URL.format(MapType(settings.MAPTYPE).name).replace('_', '-')
         poly = polyline.encode([(y, x) for x, y in coordinates])
-        opacity = 1
         path = 'path-{0}+{1}-{2}({3}),'.format(settings.PATH_SIZE, Request.formatColor(settings.PATH_COLOR),
-                                               opacity, poly)
+                                               settings.PATH_OPACITY, poly)
         endpart = '/auto/{0}x{1}?access_token={2}'.format(str(settings.width), str(settings.height), settings.MapBoxKey)
         res += path + Request.createFullCoordinateString(markerIndex, coordinates, settings) + endpart
         print(res)

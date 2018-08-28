@@ -176,6 +176,7 @@ class RequestSettings:
         # read default color values and sizes
         self.PATH_COLOR = QtGui.QColor(parser[default]['PathColor'])
         self.PATH_SIZE = parser[default]['PathSize']
+        self.PATH_OPACITY = parser[default]['PathOpacity']
         self.MARKER_COLOR = QtGui.QColor(parser[default]['MarkerColor'])
         self.MARKER_SIZE = parser[default]['MarkerSize']
         self.MARKER_COLOR_SPECIAL = QtGui.QColor(parser[default]['MarkerColorSpecial'])
