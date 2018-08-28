@@ -223,10 +223,31 @@ class Request:
         """
 
         col = Request.formatColor(settings.MARKER_COLOR)
-        res = ''.join(map(lambda loc: Request.createCoordinateString(col, settings.MARKER_SIZE, loc),
-                          cords[:markerIndex] + cords[markerIndex + 1:]))
-        return res + (Request.createCoordinateString(Request.formatColor(settings.MARKER_COLOR_SPECIAL),
-                                                     settings.MARKER_SIZE_SPECIAL, cords[markerIndex]))[:-1]
+        res = ''.join(map(lambda j: Request.createCoordinateStringLabel(col, j + 1, settings.MARKER_SIZE, cords[j]),
+                          [i for i in range(len(cords)) if i != markerIndex]))
+        return res + (Request.createCoordinateStringLabel(Request.formatColor(settings.MARKER_COLOR_SPECIAL),
+                                                          markerIndex + 1, settings.MARKER_SIZE_SPECIAL,
+                                                          cords[markerIndex]))[:-1]
+        # res =  ''.join(map(lambda j: Request.createCoordinateString(col, settings.MARKER_SIZE, cords[j]),
+        #                           [i for i in range(len(cords)) if i != markerIndex]))
+        # return res + (Request.createCoordinateString(Request.formatColor(settings.MARKER_COLOR_SPECIAL),
+        #                                                   settings.MARKER_SIZE_SPECIAL,
+        #                                                   cords[markerIndex]))[:-1]
+
+    @staticmethod
+    def createCoordinateStringLabel(col: str, label: int, size: str, loc: tuple) -> str:
+        """
+        Takes a geographical location and returns a string
+        that is formatted for use in google-maps request.
+        :type col str
+        :type label int
+        :type size: str
+        :type loc tuple
+        :rtype str
+        """
+
+        # single marker formated as pin-size-name+color(lon,lat)
+        return 'pin-{0}-{1}+{2}{3},'.format(size, label, col, str(loc).replace(' ', ''))
 
     @staticmethod
     def createCoordinateString(col: str, size: str, loc: tuple) -> str:
