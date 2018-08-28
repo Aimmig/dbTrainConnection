@@ -143,10 +143,10 @@ class RequestSettings:
         keys = 'Keys'
         try:
             self.DBKey = parser[keys]['DBKey']
-            self.GoogleMapsKey = parser[keys]['GoogleMapsKey']
+            self.MapBoxKey = parser[keys]['GoogleMapsKey']
         except KeyError:
             self.DBKey = None
-            self.GoogleMapsKey = None
+            self.MapBoxKey = None
         try:
             self.TelegramBotToken = parser[keys]['TelegramToken']
         except KeyError:
@@ -281,7 +281,7 @@ class Connection:
                  direction: str, origin: str, track: str, ref: str, url: str):
         """
         Constructs a new new connection from name,type,stopId,
-        stopName,time,date,direction,origin,track and reference link, and requeste used link
+        stopName,time,date,direction,origin,track and reference link, and request used link
         Initializes empty stop-List and image-Data
         :type name str
         :type typ str

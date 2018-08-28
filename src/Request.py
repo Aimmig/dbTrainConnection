@@ -50,21 +50,6 @@ class Request:
     UrlArrBoard = 'arrivalBoard?'
     UrlInput = '&input='
 
-    # API-Properties key-words for Google-Maps static API
-    UrlScale = '&scale='
-    UrlScaleValue = str(1)
-    UrlSensor = '&sensor='
-    UrlSensorValue = 'False'
-    UrlPathColor = '&path=color:'
-    UrlColor = '|color:'
-    UrlKey = '&key='
-    UrlMarkerSize = '&markers=size:'
-    UrlSeparator = '|'
-    UrlLanguage = '&language='
-    UrlSize = '&size='
-    UrlWeight = '|weight:'
-    UrlMapType = '&maptype='
-
     # format strings for time and date
     DATE_FORMAT = 'yyyy-M-d'
     TIME_FORMAT = 'h:m'
@@ -200,7 +185,7 @@ class Request:
 
         base = '{0}{1}{2}{3}{4}x{5}{6}{7}'
         return base.format(Request.DB_BASE_URL, Request.UrlLocationName, Request.UrlAuthKey, settings.DBKey,
-                           Request.UrlLanguage, settings.LANGUAGE, Request.UrlInput, parse.quote(loc.replace(" ", ""))
+                           Request.UrlLang, settings.LANGUAGE, Request.UrlInput, parse.quote(loc.replace(" ", ""))
                            )
 
     @staticmethod
@@ -217,63 +202,43 @@ class Request:
         :rtype str
         """
 
-        '''
-        base = '{0}{1}{2}{3}{4}x{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}'
-        res = base.format(Request.GOOGLE_MAPS_BASE_URL, Request.UrlScale, Request.UrlScaleValue, Request.UrlSize,
-                          str(settings.width), str(settings.height), Request.UrlLanguage, settings.LANGUAGE,
-                          Request.UrlSensor, Request.UrlSensorValue, Request.UrlPathColor,
-                          Request.formatColor(settings.PATH_COLOR), Request.UrlWeight, settings.PATH_SIZE,
-                          Request.createFullCoordinateString(coordinates)
-                          )
-        # check for valid markerIndex
-        if markerIndex >= 0:
-            # add special marker size and color to url
-            res += Request.UrlMarkerSize + settings.MARKER_SIZE_SPECIAL
-            res += Request.UrlColor + Request.formatColor(settings.MARKER_COLOR_SPECIAL)
-            # add String of special coordinate for special marker
-            res += Request.createCoordinateString(coordinates[markerIndex])
-            # delete special element it should not be marked 2 times
-            del coordinates[markerIndex]
-        # add marker size and color for normal locations
-        res += Request.UrlMarkerSize + settings.MARKER_SIZE
-        res += Request.UrlColor + Request.formatColor(settings.MARKER_COLOR) + Request.UrlSeparator
-        # add string of all coordinates for markers
-        res += Request.createFullCoordinateString(coordinates)
-        # add maptype
-        res += Request.UrlMapType + MapType(settings.MAPTYPE).name
-        # add google map key
-        res += Request.UrlKey + settings.GoogleMapsKey
-        return res
-        '''
-
-
-        endpart = '/auto/{0}x{1}?access_token={2}'.format(str(settings.width),str(settings.height),settings.GoogleMapsKey)
-        path = 'path-5+{0}-1({1}),'.format(Request.formatColor(settings.PATH_COLOR),polyline.encode([(y, x) for x, y in coordinates]))
-        res = Request.MAPS_BASE_URL.format(MapType(settings.MAPTYPE).name).replace('_','-') + path + Request.createFullCoordinateString(coordinates, settings) + endpart
+        res = Request.MAPS_BASE_URL.format(MapType(settings.MAPTYPE).name).replace('_', '-')
+        poly = polyline.encode([(y, x) for x, y in coordinates])
+        lineWith = 3
+        opacity = 1
+        path = 'path-{0}+{1}-{2}({3}),'.format(lineWith, Request.formatColor(settings.PATH_COLOR), opacity, poly)
+        endpart = '/auto/{0}x{1}?access_token={2}'.format(str(settings.width), str(settings.height), settings.MapBoxKey)
+        res += path + Request.createFullCoordinateString(markerIndex, coordinates, settings) + endpart
         print(res)
         return res
 
-
     @staticmethod
-    def createFullCoordinateString(cords: [tuple], settings) -> str:
+    def createFullCoordinateString(markerIndex: int, cords: [tuple], settings) -> str:
         """
         Takes a list of geographical locations and returns a string
         that is formatted for use in google-maps request.
+        :type markerIndex int
         :type cords [tuple]
+        :type settings RequestSettings
         :rtype str
         """
-        
+
         col = Request.formatColor(settings.MARKER_COLOR)
-        return ''.join(map(lambda loc: Request.createCoordinateString(col, 's',loc), cords))[:-1]
+        res = ''.join(map(lambda loc: Request.createCoordinateString(col, 's', loc),
+                          cords[:markerIndex] + cords[markerIndex + 1:]))
+        return res + (Request.createCoordinateString(Request.formatColor(settings.MARKER_COLOR_SPECIAL),
+                                                     's', cords[markerIndex]))[:-1]
 
     @staticmethod
-    def createCoordinateString(col: str, size: str,loc: tuple) -> str:
+    def createCoordinateString(col: str, size: str, loc: tuple) -> str:
         """
         Takes a geographical location and returns a string
         that is formatted for use in google-maps request.
+        :type col str
+        :type size: str
         :type loc tuple
         :rtype str
         """
 
         # single marker formated as pin-size-name+color(lon,lat)
-        return 'pin-{0}+{1}{2},'.format(size, col,str(loc).replace(' ',''))
+        return 'pin-{0}+{1}{2},'.format(size, col, str(loc).replace(' ', ''))

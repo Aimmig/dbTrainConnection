@@ -49,7 +49,7 @@ class GUI(QtWidgets.QMainWindow):
 
         # read all settings information from file including language data
         self.settings = RequestSettings('configs/keys.txt', 'configs/config.txt')
-        if self.settings.DBKey is None or self.settings.GoogleMapsKey is None:
+        if self.settings.DBKey is None or self.settings.MapBoxKey is None:
             print("Some API-keys are missing in keys.txt")
             exit()
 
@@ -220,7 +220,7 @@ class GUI(QtWidgets.QMainWindow):
     def createZoomAction(self, icon, text, value, sequence):
         action = QtWidgets.QAction(icon, text, self)
         action.setShortcut(QtGui.QKeySequence(sequence))
-        action.triggered.connect(lambda: self.changeMapSize(value,value))
+        action.triggered.connect(lambda: self.changeMapSize(value, value))
         return action
 
     def createOffSetAction(self, icon, text, value, sequence):
@@ -228,7 +228,6 @@ class GUI(QtWidgets.QMainWindow):
         action.setShortcut(QtGui.QKeySequence(sequence))
         action.triggered.connect(lambda: self.changeOffset(value))
         return action
-
 
     # noinspection PyAttributeOutsideInit,PyArgumentList,PyUnresolvedReferences
     def initializeUserInputLayout(self) -> QtWidgets.QVBoxLayout:
