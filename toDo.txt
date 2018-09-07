@@ -1,0 +1,7 @@
+- Descripe all things needed to run this application (e.g. in readme)
+
+- Describe migration to mapbox in readme
+
+- Implement possibility to numerate (A-Z or 1..n) or none for marker symbols 
+
+- Update comments/variablel names accordind to migration for mapbox
