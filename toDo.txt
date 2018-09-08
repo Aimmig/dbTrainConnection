@@ -2,6 +2,10 @@
 
 - Describe migration to mapbox in readme
 
-- Implement possibility to numerate (A-Z or 1..n) or none for marker symbols 
+- Implement possiblity to choose path width (MapBox strokeWidth) from GUI
+
+- Implement possibilty to choose path opacity (see MapBox) from GUI
+
+- Search for possibilty to use correct language in Map
 
 - Update comments/variablel names accordind to migration for mapbox
