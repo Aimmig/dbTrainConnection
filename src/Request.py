@@ -3,7 +3,7 @@
 #    API of Deutsche Bahn and presents them in an user interface
 #    This file encapsulates the logic for actually requesting the connection and
 #    their details from the API as well as requesting a corresponding map from
-#    Google-Maps-Static API.
+#    MapBox static API.
 #    Copyright (C) 2017  Andre Immig, andreimmig@t-online.de
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -131,7 +131,7 @@ class Request:
     @staticmethod
     def getMapWithLocations(coordinates: [tuple], markerIndex: int, settings: RequestSettings) -> str:
         """
-        Creates google-maps url for corresponding map with given coordinates and settings.
+        Creates MabBox url for corresponding map with given coordinates and settings.
         Returns the raw requested data
         :type coordinates [tuple]
         :type markerIndex int
@@ -215,7 +215,7 @@ class Request:
     def createFullCoordinateString(markerIndex: int, cords: [tuple], settings) -> str:
         """
         Takes a list of geographical locations and returns a string
-        that is formatted for use in google-maps request.
+        that is formatted for use in MabBox static api
         :type markerIndex int
         :type cords [tuple]
         :type settings RequestSettings
@@ -243,7 +243,7 @@ class Request:
     def createCoordinateStringLabel(col: str, label, size: str, loc: tuple) -> str:
         """
         Takes a geographical location and returns a string
-        that is formatted for use in google-maps request.
+        that is formatted for use in MapBox static api request.
         :type col str
         :type label str
         :type size: str
@@ -258,7 +258,7 @@ class Request:
     def createCoordinateString(col: str, size: str, loc: tuple) -> str:
         """
         Takes a geographical location and returns a string
-        that is formatted for use in google-maps request.
+        that is formatted for use in MapBox static api request.
         :type col str
         :type size: str
         :type loc tuple

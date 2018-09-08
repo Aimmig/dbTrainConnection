@@ -143,7 +143,7 @@ class RequestSettings:
         keys = 'Keys'
         try:
             self.DBKey = parser[keys]['DBKey']
-            self.MapBoxKey = parser[keys]['GoogleMapsKey']
+            self.MapBoxKey = parser[keys]['MapBoxKey']
         except KeyError:
             self.DBKey = None
             self.MapBoxKey = None

@@ -32,7 +32,7 @@ Layout of the keys.txt needs to be like this:
 
 DBKey = YOURKEYHERE
 
-GoogleMapsKey = YOURKEYHERE
+MapBoxKey = YOURKEYHERE
 
 Inside the config.txt file one can change some default settings.
 The en.txt and de.txt are some language files. Those are currenlty NOT used everywhere, but
