@@ -4,7 +4,9 @@
 
 This is a project to display train connections from DB (Germany) using their rest-API.
 In adittion the application shows the stops of a train connection on a customizable map
-using MabBox (see https://www.mapbox.com for more infos). 
+using MabBox (see https://www.mapbox.com or https://www.mapbox.com/api-documentation for
+more infos). For more information on dbopendata see https://github.com/dbopendata/openbahn or
+https://github.com/dbopendata/db-fahrplan-api
 
 ### Previous versions ###
 Previous version of this used the Google Maps Static API. But Google recently made it,
