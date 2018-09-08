@@ -151,6 +151,22 @@ class GUI(QtWidgets.QMainWindow):
         # add all actions from group to menu
         mapTypeMenu.addActions(mapGroupAction.actions())
 
+        mapMarkerMenu = mapMenu.addMenu("Marker Label")
+
+        mapMarkerGroupAction = QtWidgets.QActionGroup(self)
+
+        alphabetic = self.createLabelAction(mapMarkerGroupAction, "A-Z", False)
+        numeric = self.createLabelAction(mapMarkerGroupAction, "1,2,3,...", True)
+        noLabels = self.createLabelAction(mapMarkerGroupAction, "Keine", None)
+        if self.settings.isLabelNumeric is None:
+            noLabels.setChecked(True)
+        if self.settings.isLabelNumeric:
+            numeric.setChecked(True)
+        else:
+            alphabetic.setChecked(True)
+
+        mapMarkerMenu.addActions(mapMarkerGroupAction.actions())
+
         # create submenu for changing map size
         # noinspection PyAttributeOutsideInit
         self.mapSizeMenu = mapMenu.addMenu("")
@@ -203,6 +219,12 @@ class GUI(QtWidgets.QMainWindow):
         exitAction.triggered.connect(self.closeEvent)
         # add Action to Menu
         exitMenu.addAction(exitAction)
+
+    def createLabelAction(self, group, text, isNumeric):
+        action = QtWidgets.QAction(text, group)
+        action.setCheckable(True)
+        action.triggered.connect(lambda: self.setMarkerLabel(isNumeric))
+        return action
 
     def createMapAction(self, mapType, group, shortcut=None) -> QtWidgets.QAction:
         action = QtWidgets.QAction(mapType.name, group)
@@ -508,15 +530,15 @@ class GUI(QtWidgets.QMainWindow):
         """
 
         # check if imageData is empty and if map is selected
-        if (connection.imageData.isEmpty() or self.settings.MAPTYPE != connection.mapType) \
-                and self.mapActive.isChecked():
-            # request imageData and create QByteArray and set imageData
-            # noinspection PyArgumentList,PyTypeChecker
-            connection.imageData = QtCore.QByteArray(
-                Request.getMapWithLocations(coordinates, markerIndex, self.settings))
-            connection.mapType = self.settings.MAPTYPE
-        # display requested map-Data
         if self.mapActive.isChecked():
+            if connection.imageData.isEmpty() or self.settings.changed:
+                self.settings.changed = False
+                # request imageData and create QByteArray and set imageData
+                # noinspection PyArgumentList,PyTypeChecker
+                connection.imageData = QtCore.QByteArray(
+                    Request.getMapWithLocations(coordinates, markerIndex, self.settings))
+                connection.mapType = self.settings.MAPTYPE
+            # display requested map-Data
             self.mapWidget.showMap(connection.imageData, connection.toStringDetails(self.settings) + ' (' + MapType(
                 connection.mapType).name + ')')
 
@@ -821,6 +843,7 @@ class GUI(QtWidgets.QMainWindow):
         # check for invalid color
         if newColor.isValid():
             self.settings.setPathColor(newColor)
+            self.settings.changed = True
 
     def changeMarkerColor(self):
         """
@@ -836,6 +859,7 @@ class GUI(QtWidgets.QMainWindow):
         # check for invalid color
         if newColor.isValid():
             self.settings.setMarkerColor(newColor)
+            self.settings.changed = True
 
     def changeMapSize(self, delta_width, delta_height):
         """
@@ -845,6 +869,7 @@ class GUI(QtWidgets.QMainWindow):
         self.settings.setWidth(self.settings.width + delta_width)
         self.settings.setHeight(self.settings.height + delta_height)
         self.updateMapSizeMenuText()
+        self.settings.changed = True
 
     def updateMapSizeMenuText(self):
         self.mapSizeMenu.setTitle("Size (" + str(self.settings.width) + "x" + str(self.settings.height) + ")")
@@ -883,6 +908,11 @@ class GUI(QtWidgets.QMainWindow):
         Set Maptype according to given value
         """
         self.settings.MAPTYPE = map_type
+        self.settings.changed = True
+
+    def setMarkerLabel(self, isNumeric):
+        self.settings.setMarkerLabelType(isNumeric)
+        self.settings.changed = True
 
     def keyPressEvent(self, e):
         """

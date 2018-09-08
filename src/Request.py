@@ -222,20 +222,22 @@ class Request:
         :rtype str
         """
 
-        labels = list(range(1,len(cords)+1))
-        if True:
-            labels = list(map(lambda k: chr(k+96), labels))
         col = Request.formatColor(settings.MARKER_COLOR)
+        if settings.isLabelNumeric is None:
+            res = ''.join(map(lambda j: Request.createCoordinateString(col, settings.MARKER_SIZE, cords[j]),
+                              [i for i in range(len(cords)) if i != markerIndex]))
+            return res + (Request.createCoordinateString(Request.formatColor(settings.MARKER_COLOR_SPECIAL),
+                                                         settings.MARKER_SIZE_SPECIAL,
+                                                         cords[markerIndex]))[:-1]
+        labels = list(range(1, len(cords) + 1))
+        if not settings.isLabelNumeric:
+            offset = 96
+            labels = list(map(lambda k: chr(k + offset), labels))
         res = ''.join(map(lambda j: Request.createCoordinateStringLabel(col, labels[j], settings.MARKER_SIZE, cords[j]),
                           [i for i in range(len(cords)) if i != markerIndex]))
         return res + (Request.createCoordinateStringLabel(Request.formatColor(settings.MARKER_COLOR_SPECIAL),
                                                           labels[markerIndex], settings.MARKER_SIZE_SPECIAL,
                                                           cords[markerIndex]))[:-1]
-        # res =  ''.join(map(lambda j: Request.createCoordinateString(col, settings.MARKER_SIZE, cords[j]),
-        #                           [i for i in range(len(cords)) if i != markerIndex]))
-        # return res + (Request.createCoordinateString(Request.formatColor(settings.MARKER_COLOR_SPECIAL),
-        #                                                   settings.MARKER_SIZE_SPECIAL,
-        #                                                   cords[markerIndex]))[:-1]
 
     @staticmethod
     def createCoordinateStringLabel(col: str, label, size: str, loc: tuple) -> str:
@@ -243,6 +245,7 @@ class Request:
         Takes a geographical location and returns a string
         that is formatted for use in google-maps request.
         :type col str
+        :type label str
         :type size: str
         :type loc tuple
         :rtype str

@@ -193,12 +193,18 @@ class RequestSettings:
         self.minSize = int(parser[default]['minSize'])
         self.maxSize = int(parser[default]['maxSize'])
 
+        self.isLabelNumeric = False
+        self.changed = False
+
         # string constants for toStringMethods
         self.departureString = ' (' + self.LanguageStrings.departure_Text + ') '
         self.arrivalString = ' (' + self.LanguageStrings.arrival_Text + ') '
         self.detailsBaseString = self.LanguageStrings.route_Text + ' ' + self.LanguageStrings.off_Text + ' '
         self.generalBaseString = self.LanguageStrings.windowTitle_Text + ' ' + self.LanguageStrings.for_Text + ' '
         self.datePrefix = ' ' + self.LanguageStrings.on_Text + ' '
+
+    def setMarkerLabelType(self, val: bool):
+        self.isLabelNumeric = val
 
     def getOffSet(self) -> int:
         """
