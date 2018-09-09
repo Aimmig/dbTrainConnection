@@ -1,18 +1,20 @@
-- Descripe all things needed to run this application (e.g. in readme)
+- Describe all things needed to run this application (e.g. in readme)
 
 - Describe migration to mapbox in readme
 
-- Implement possiblity to choose path width (MapBox strokeWidth) from GUI
+- Implement possibility to choose path width (MapBox strokeWidth) from GUI
 
-- Implement possibilty to choose path opacity (see MapBox) from GUI
+- Implement possibility to choose path opacity (see MapBox) from GUI
 
-- Search for possibilty to use correct language in Map
+- Search for possibility to use correct language in Map
 
-- Update comments/variablel names accordind to migration for mapbox
+- Filter methods need some cleanup
 
-- If possible make colums resizable and auto-streched on resize
+- Update comments/variable names according to migration for mapbox
 
-- Add specific informations on Error handling, networkConnection,
+- If possible make columns resizable and auto-stretched on resize
+
+- Add specific information on Error handling, networkConnection,
   internalServerProblem (no data) etc..
 
 - Remove size of map in gui, instead configure this in config & option to

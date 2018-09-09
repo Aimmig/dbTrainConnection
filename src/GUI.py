@@ -198,7 +198,7 @@ class GUI(QtWidgets.QMainWindow):
         activateFilterAction.setShortcut(QtGui.QKeySequence("SHIFT+F", QtGui.QKeySequence.PortableText))
         activateFilterAction.triggered.connect(self.setFilter)
 
-        # add all actions from Filtergroup to menu
+        # add all actions from filter group to menu
         filterMenu.addActions(filterGroupAction.actions())
 
         # create submenu for offset changing
@@ -940,5 +940,5 @@ class GUI(QtWidgets.QMainWindow):
     def closeEvent(self, evt):
         # close MapWidget
         self.mapWidget.close()
-        # close Formwidget
+        # close widget
         super(GUI, self).close()

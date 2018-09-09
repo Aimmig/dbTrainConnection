@@ -72,8 +72,8 @@ class Request:
         :rtype str
         """
 
-        hdrs = {'User-Agent': 'Mozilla / 5.0'}
-        resp = requests.get(url, headers=hdrs)
+        header = {'User-Agent': 'Mozilla / 5.0'}
+        resp = requests.get(url, headers=header)
         return resp.content
 
     @staticmethod
@@ -251,7 +251,7 @@ class Request:
         :rtype str
         """
 
-        # single marker formated as pin-size-name+color(lon,lat)
+        # single marker formatted as pin-size-name+color(lon,lat)
         return 'pin-{0}-{1}+{2}{3},'.format(size, label, col, str(loc).replace(' ', ''))
 
     @staticmethod
@@ -265,5 +265,5 @@ class Request:
         :rtype str
         """
 
-        # single marker formated as pin-size-name+color(lon,lat)
+        # single marker formatted as pin-size-name+color(lon,lat)
         return 'pin-{0}+{1}{2},'.format(size, col, str(loc).replace(' ', ''))

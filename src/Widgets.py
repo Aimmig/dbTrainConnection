@@ -202,7 +202,6 @@ class QMapWidget(QtWidgets.QWidget):
     Constructor encapsulates some basic settings.
     """
 
-    # noinspection PyArgumentList
     def __init__(self):
         """
         Initializes Widget.
