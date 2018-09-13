@@ -22,7 +22,55 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 
-class QConnectionTable(QtWidgets.QTableWidget):
+class Table(QtWidgets.QTableWidget):
+
+    def __init__(self, main, child, header_list):
+        super(Table, self).__init__()
+        self.mainWidget = main
+        # set columnCount to number of entries in header list
+        self.setColumnCount(len(header_list))
+        # set Horizontal Header for QTableWidget
+        self.setHorizontalHeaderLabels(header_list)
+        # make table not editable
+        self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        # make only rows selectable
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        # only one selection at a time is allowed
+        self.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        # do not show grind
+        self.setShowGrid(False)
+        # set minimum Size
+        self.setMinimumSize(QtCore.QSize(child.minimumWidth, child.minimumHeight))
+        # set size policy to minimalExpanding
+        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+
+    def prepareHeader(self, main):
+        raise NotImplementedError("Please Implement this method")
+
+    def resizingHeader(self):
+        raise NotImplementedError("Please Implement this method")
+
+    def sort(self, index):
+        raise NotImplementedError("Please Implement this method")
+
+    @staticmethod
+    def stretchHeader(header, index):
+        header.setSectionResizeMode(index, QtWidgets.QHeaderView.Stretch)
+
+    @staticmethod
+    def resizeHeaderToContents(header, index):
+        header.setSectionResizeMode(index, QtWidgets.QHeaderView.ResizeToContents)
+
+    @staticmethod
+    def setUpHeader(headerList, index, text):
+        headerList[index] = text
+
+    @staticmethod
+    def initHeaderList(length):
+        return ['']*length
+
+
+class QConnectionTable(Table):
     """
     Class QConnection is derived from QTableWidget.
     Used for displaying connections on gui.
@@ -49,46 +97,31 @@ class QConnectionTable(QtWidgets.QTableWidget):
         :type main FormWidget
         """
 
+        header_list = self.prepareHeader(main)
         # call super constructor
-        super(QConnectionTable, self).__init__()
-        # set mainWidget to main
-        self.mainWidget = main
-        # initialize header list
-        self.header_list = ['']*QConnectionTable.header_list_length
-        # fill header list
-        self.header_list[QConnectionTable.from_Index] = self.mainWidget.settings.LanguageStrings.from_Text
-        self.header_list[QConnectionTable.to_Index] = self.mainWidget.settings.LanguageStrings.to_Text
-        self.header_list[QConnectionTable.time_Index] = self.mainWidget.settings.LanguageStrings.time_Text
-        self.header_list[QConnectionTable.name_Index] = self.mainWidget.settings.LanguageStrings.name_Text
-        self.header_list[QConnectionTable.track_Index] = self.mainWidget.settings.LanguageStrings.track_Text
-
-        # set columnCount to number of entries in header list
-        self.setColumnCount(len(self.header_list))
-        # set Horizontal Header for QTableWidget
-        self.setHorizontalHeaderLabels(self.header_list)
-        # make table not editable
-        self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        # only make rows selectable
-        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        # only one selection at a time is allowed
-        self.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        # do not show grind
-        self.setShowGrid(False)
+        super().__init__(main, QConnectionTable, header_list)
         # do not show vertical Header
         self.verticalHeader().setVisible(False)
-        header = self.horizontalHeader()
+        self.resizingHeader()
+        self.horizontalHeader().sectionDoubleClicked.connect(self.sort)
+
+    def prepareHeader(self, main):
+        header_list = Table.initHeaderList(QConnectionTable.header_list_length)
+        Table.setUpHeader(header_list, QConnectionTable.from_Index, main.settings.LanguageStrings.from_Text)
+        Table.setUpHeader(header_list, QConnectionTable.to_Index, main.settings.LanguageStrings.to_Text)
+        Table.setUpHeader(header_list, QConnectionTable.time_Index, main.settings.LanguageStrings.time_Text)
+        Table.setUpHeader(header_list, QConnectionTable.name_Index, main.settings.LanguageStrings.name_Text)
+        Table.setUpHeader(header_list, QConnectionTable.track_Index, main.settings.LanguageStrings.track_Text)
+        return header_list
+
+    def resizingHeader(self):
         # set all Columns to ResizeToContent
         # only columns with stop names are allowed to stretch
-        header.setSectionResizeMode(QConnectionTable.name_Index, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(QConnectionTable.from_Index, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(QConnectionTable.to_Index, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(QConnectionTable.time_Index, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(QConnectionTable.track_Index, QtWidgets.QHeaderView.ResizeToContents)
-        # set MinimumSize
-        self.setMinimumSize(QtCore.QSize(QConnectionTable.minimumWidth, QConnectionTable.minimumHeight))
-        # set Size Policy to MinimumExpanding
-        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        header.sectionDoubleClicked.connect(self.sort)
+        Table.resizeHeaderToContents(self.horizontalHeader(), QConnectionTable.name_Index)
+        Table.stretchHeader(self.horizontalHeader(), QConnectionTable.from_Index)
+        Table.stretchHeader(self.horizontalHeader(), QConnectionTable.to_Index)
+        Table.resizeHeaderToContents(self.horizontalHeader(), QConnectionTable.time_Index)
+        Table.resizeHeaderToContents(self.horizontalHeader(), QConnectionTable.track_Index)
 
     def keyPressEvent(self, e):
         """
@@ -116,7 +149,7 @@ class QConnectionTable(QtWidgets.QTableWidget):
             self.sortItems(index)
 
 
-class QDetailsTable(QtWidgets.QTableWidget):
+class QDetailsTable(Table):
     """
     Class QDetailsTable is derived from QTableWidget.
     Used for displaying connection-details on gui.
@@ -142,38 +175,25 @@ class QDetailsTable(QtWidgets.QTableWidget):
         :type main FormWidget
         """
 
-        # call super constructor
-        super(QDetailsTable, self).__init__()
-        # set mainWidget to main
-        self.mainWidget = main
-        self.header_list = ['']*QDetailsTable.header_list_length
-        self.header_list[QDetailsTable.stop_Index] = self.mainWidget.settings.LanguageStrings.stop_Text
-        self.header_list[QDetailsTable.arr_Index] = self.mainWidget.settings.LanguageStrings.arrival_Text
-        self.header_list[QDetailsTable.dep_Index] = self.mainWidget.settings.LanguageStrings.departure_Text
-        self.header_list[QDetailsTable.track_Index] = self.mainWidget.settings.LanguageStrings.track_Text
-        # make table not editable
-        self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        # make only rows selectable
-        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        # make only one row selectable at a time
-        self.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        # set numberColumnCount to length of header
-        self.setColumnCount(len(self.header_list))
-        # set Horizontal Headers
-        self.setHorizontalHeaderLabels(self.header_list)
-        header = self.horizontalHeader()
+        header_list = self.prepareHeader(main)
+        super().__init__(main, QDetailsTable, header_list)
+        self.resizingHeader()
+        self.horizontalHeader().sectionDoubleClicked.connect(self.sort)
+
+    def prepareHeader(self, main):
+        header_list = Table.initHeaderList(QDetailsTable.header_list_length)
+        Table.setUpHeader(header_list, QDetailsTable.stop_Index, main.settings.LanguageStrings.stop_Text)
+        Table.setUpHeader(header_list, QDetailsTable.arr_Index, main.settings.LanguageStrings.arrival_Text)
+        Table.setUpHeader(header_list, QDetailsTable.dep_Index, main.settings.LanguageStrings.departure_Text)
+        Table.setUpHeader(header_list, QDetailsTable.track_Index, main.settings.LanguageStrings.track_Text)
+        return header_list
+
+    def resizingHeader(self,):
         # only stretch column with stop, resize other columns to contents
-        header.setSectionResizeMode(QDetailsTable.stop_Index, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(QDetailsTable.arr_Index, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(QDetailsTable.dep_Index, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(QDetailsTable.track_Index, QtWidgets.QHeaderView.ResizeToContents)
-        # do not show grid
-        self.setShowGrid(False)
-        # set minimum Size
-        self.setMinimumSize(QtCore.QSize(QDetailsTable.minimumWidth, QDetailsTable.minimumHeight))
-        # set size policy to minimalExpanding
-        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        header.sectionDoubleClicked.connect(self.sort)
+        Table.stretchHeader(self.horizontalHeader(), QDetailsTable.stop_Index)
+        Table.resizeHeaderToContents(self.horizontalHeader(), QDetailsTable.arr_Index)
+        Table.resizeHeaderToContents(self.horizontalHeader(), QDetailsTable.dep_Index)
+        Table.resizeHeaderToContents(self.horizontalHeader(), QDetailsTable.track_Index)
 
     def keyPressEvent(self, e):
         """
@@ -208,7 +228,7 @@ class QMapWidget(QtWidgets.QWidget):
         Sets some properties like layout, etc.
         """
 
-        super(QMapWidget, self).__init__()
+        super().__init__()
         # set label to Widget
         self.mapLabel = QtWidgets.QLabel()
         self.mapLabel.setScaledContents(True)
