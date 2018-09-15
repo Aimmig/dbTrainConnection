@@ -185,8 +185,7 @@ class GUI(QtWidgets.QMainWindow):
         pathOpacitySpinBox.setValue(0.8)
         pathOpacitySpinBox.setSuffix("%")
         pathOpacitySpinBox.setSingleStep(0.1)
-        # TO-DO use right method
-        pathOpacitySpinBox.valueChanged.connect(self.update)
+        pathOpacitySpinBox.valueChanged.connect(self.changePathOpacity)
         pathOpacityWidget = QtWidgets.QWidgetAction(self)
         pathOpacityWidget.setDefaultWidget(pathOpacitySpinBox)
 
@@ -194,11 +193,10 @@ class GUI(QtWidgets.QMainWindow):
         mapPathOpacityMenu.addAction(pathOpacityWidget)
 
         pathWidthSpinBox = QtWidgets.QDoubleSpinBox()
-        pathWidthSpinBox.setRange(1, 4)
+        pathWidthSpinBox.setRange(1, 8)
         pathWidthSpinBox.setValue(2)
         pathWidthSpinBox.setSingleStep(0.25)
-        # TO-DO use right method
-        pathWidthSpinBox.valueChanged.connect(self.update)
+        pathWidthSpinBox.valueChanged.connect(self.changePathSize)
         pathWidthWidget = QtWidgets.QWidgetAction(self)
         pathWidthWidget.setDefaultWidget(pathWidthSpinBox)
 
@@ -891,6 +889,14 @@ class GUI(QtWidgets.QMainWindow):
         Change OffSet for searching and updates menu
         """
         self.settings.setOffSet(value)
+
+    def changePathOpacity(self, val):
+        self.settings.PATH_OPACITY = val
+        self.settings.changed = True
+
+    def changePathSize(self, val):
+        self.settings.PATH_SIZE = val
+        self.settings.changed = True
 
     def setFilter(self):
         """
