@@ -202,14 +202,17 @@ class GUI(QtWidgets.QMainWindow):
         filterMenu.addActions(filterGroupAction.actions())
 
         # create submenu for offset changing
+        searchOffsetSpinBox = QtWidgets.QSpinBox()
+        searchOffsetSpinBox.setRange(1, 12)
+        searchOffsetSpinBox.valueChanged.connect(self.changeOffset)
+        searchOffsetWidget = QtWidgets.QWidgetAction(self)
+        searchOffsetWidget.setDefaultWidget(searchOffsetSpinBox)
+
         # noinspection PyAttributeOutsideInit
         self.searchOffsetMenu = settingsMenu.addMenu("")
         self.updateSearchOffSetMenuText()
+        self.searchOffsetMenu.addAction(searchOffsetWidget)
 
-        self.searchOffsetMenu.addAction(self.createOffSetAction(self.stdicon(self.style.SP_ArrowUp),
-                                                                "Increase", 1, QtCore.Qt.Key_Up))
-        self.searchOffsetMenu.addAction(self.createOffSetAction(self.stdicon(self.style.SP_ArrowDown),
-                                                                "Decrease", -1, QtCore.Qt.Key_Down))
         # create Menu for application
         exitMenu = menuBar.addMenu(self.settings.LanguageStrings.application_Text)
         # create Action for closing application
@@ -243,12 +246,6 @@ class GUI(QtWidgets.QMainWindow):
         action = QtWidgets.QAction(icon, text, self)
         action.setShortcut(QtGui.QKeySequence(sequence))
         action.triggered.connect(lambda: self.changeMapSize(value, value))
-        return action
-
-    def createOffSetAction(self, icon, text, value, sequence):
-        action = QtWidgets.QAction(icon, text, self)
-        action.setShortcut(QtGui.QKeySequence(sequence))
-        action.triggered.connect(lambda: self.changeOffset(value))
         return action
 
     # noinspection PyAttributeOutsideInit,PyArgumentList,PyUnresolvedReferences
@@ -874,11 +871,11 @@ class GUI(QtWidgets.QMainWindow):
     def updateMapSizeMenuText(self):
         self.mapSizeMenu.setTitle("Size (" + str(self.settings.width) + "x" + str(self.settings.height) + ")")
 
-    def changeOffset(self, delta):
+    def changeOffset(self, value):
         """
         Change OffSet for searching and updates menu
         """
-        self.settings.setOffSet(self.settings.getRealOffSet() + delta)
+        self.settings.setOffSet(value)
         self.updateSearchOffSetMenuText()
 
     def updateSearchOffSetMenuText(self):

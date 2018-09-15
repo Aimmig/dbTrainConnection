@@ -1,5 +1,7 @@
 - Describe all things needed to run this application (e.g. in readme)
 
+- Migrate all possible menus to QSpinBoxes/QSlider
+
 - Describe migration to mapbox in readme
 
 - Implement possibility to choose path width (MapBox strokeWidth) from GUI
