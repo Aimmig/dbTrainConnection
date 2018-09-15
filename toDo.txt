@@ -1,6 +1,7 @@
 - Describe all things needed to run this application (e.g. in readme)
 
-- Migrate all possible menus to QSpinBoxes/QSlider
+- Migrate all possible menus to QSpinBoxes/QSlider/QDoubleSpinBox
+- Might use comboxes for some selections
 
 - Describe migration to mapbox in readme
 

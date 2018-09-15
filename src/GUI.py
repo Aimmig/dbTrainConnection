@@ -168,14 +168,18 @@ class GUI(QtWidgets.QMainWindow):
         mapMarkerMenu.addActions(mapMarkerGroupAction.actions())
 
         # create submenu for changing map size
-        # noinspection PyAttributeOutsideInit
-        self.mapSizeMenu = mapMenu.addMenu("")
-        self.updateMapSizeMenuText()
+        mapSizeSpinBox = QtWidgets.QSpinBox()
+        mapSizeSpinBox.setRange(self.settings.minSize, self.settings.maxSize)
+        mapSizeSpinBox.setValue(self.settings.defaultSize)
+        mapSizeSpinBox.setSuffix("Pixel")
+        mapSizeSpinBox.setSingleStep(100)
+        mapSizeSpinBox.valueChanged.connect(self.changeMapSize)
+        mapSizeWidget = QtWidgets.QWidgetAction(self)
+        mapSizeWidget.setDefaultWidget(mapSizeSpinBox)
 
-        self.mapSizeMenu.addAction(self.createZoomAction(self.stdicon(self.style.SP_ArrowUp),
-                                                         "Increase", 100, QtGui.QKeySequence.ZoomIn))
-        self.mapSizeMenu.addAction(self.createZoomAction(self.stdicon(self.style.SP_ArrowDown),
-                                                         "Decrease", -100, QtGui.QKeySequence.ZoomOut))
+        mapSizeMenu = mapMenu.addMenu("Size")
+        mapSizeMenu.addAction(mapSizeWidget)
+
         # action for checking Map
         # noinspection PyAttributeOutsideInit
         self.mapActive = QtWidgets.QAction("Anzeigen", self)
@@ -203,15 +207,15 @@ class GUI(QtWidgets.QMainWindow):
 
         # create submenu for offset changing
         searchOffsetSpinBox = QtWidgets.QSpinBox()
-        searchOffsetSpinBox.setRange(1, 12)
+        searchOffsetSpinBox.setRange(1, 23)
+        searchOffsetSpinBox.setValue(self.settings.defaultOffSet)
+        searchOffsetSpinBox.setSuffix("h")
         searchOffsetSpinBox.valueChanged.connect(self.changeOffset)
         searchOffsetWidget = QtWidgets.QWidgetAction(self)
         searchOffsetWidget.setDefaultWidget(searchOffsetSpinBox)
 
-        # noinspection PyAttributeOutsideInit
-        self.searchOffsetMenu = settingsMenu.addMenu("")
-        self.updateSearchOffSetMenuText()
-        self.searchOffsetMenu.addAction(searchOffsetWidget)
+        searchOffsetMenu = settingsMenu.addMenu("Offset")
+        searchOffsetMenu.addAction(searchOffsetWidget)
 
         # create Menu for application
         exitMenu = menuBar.addMenu(self.settings.LanguageStrings.application_Text)
@@ -240,12 +244,6 @@ class GUI(QtWidgets.QMainWindow):
         action = QtWidgets.QAction(self.stdicon(self.style.SP_DialogOpenButton), text, self)
         action.setShortcut(QtGui.QKeySequence(shortcut, QtGui.QKeySequence.PortableText))
         action.triggered.connect(method)
-        return action
-
-    def createZoomAction(self, icon, text, value, sequence):
-        action = QtWidgets.QAction(icon, text, self)
-        action.setShortcut(QtGui.QKeySequence(sequence))
-        action.triggered.connect(lambda: self.changeMapSize(value, value))
         return action
 
     # noinspection PyAttributeOutsideInit,PyArgumentList,PyUnresolvedReferences
@@ -858,31 +856,20 @@ class GUI(QtWidgets.QMainWindow):
             self.settings.setMarkerColor(newColor)
             self.settings.changed = True
 
-    def changeMapSize(self, delta_width, delta_height):
+    def changeMapSize(self, val):
         """
         Change Map Size
         """
 
-        self.settings.setWidth(self.settings.width + delta_width)
-        self.settings.setHeight(self.settings.height + delta_height)
-        self.updateMapSizeMenuText()
+        self.settings.setWidth(val)
+        self.settings.setHeight(val)
         self.settings.changed = True
-
-    def updateMapSizeMenuText(self):
-        self.mapSizeMenu.setTitle("Size (" + str(self.settings.width) + "x" + str(self.settings.height) + ")")
 
     def changeOffset(self, value):
         """
         Change OffSet for searching and updates menu
         """
         self.settings.setOffSet(value)
-        self.updateSearchOffSetMenuText()
-
-    def updateSearchOffSetMenuText(self):
-        """
-        Updates the value of the currently used offset in corresponding menu
-        """
-        self.searchOffsetMenu.setTitle("Offset (" + str(self.settings.getRealOffSet()) + "h)")
 
     def setFilter(self):
         """
