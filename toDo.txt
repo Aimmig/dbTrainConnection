@@ -8,10 +8,6 @@
 
 - Describe migration to mapbox in readme
 
-- Implement possibility to choose path width (MapBox strokeWidth) from GUI
-
-- Implement possibility to choose path opacity (see MapBox) from GUI
-
 - Search for possibility to use correct language in Map
 
 - Filter methods need some cleanup

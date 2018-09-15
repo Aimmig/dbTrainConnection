@@ -172,7 +172,7 @@ class GUI(QtWidgets.QMainWindow):
         mapSizeSpinBox.setRange(self.settings.minSize, self.settings.maxSize)
         mapSizeSpinBox.setValue(self.settings.defaultSize)
         mapSizeSpinBox.setSuffix("Pixel")
-        mapSizeSpinBox.setSingleStep(100)
+        mapSizeSpinBox.setSingleStep(self.settings.mapIncrement)
         mapSizeSpinBox.valueChanged.connect(self.changeMapSize)
         mapSizeWidget = QtWidgets.QWidgetAction(self)
         mapSizeWidget.setDefaultWidget(mapSizeSpinBox)
@@ -181,10 +181,10 @@ class GUI(QtWidgets.QMainWindow):
         mapSizeMenu.addAction(mapSizeWidget)
 
         pathOpacitySpinBox = QtWidgets.QDoubleSpinBox()
-        pathOpacitySpinBox.setRange(0, 1)
-        pathOpacitySpinBox.setValue(0.8)
+        pathOpacitySpinBox.setRange(self.settings.opacityMin, self.settings.opacityMax)
+        pathOpacitySpinBox.setValue(float(self.settings.PATH_OPACITY))
         pathOpacitySpinBox.setSuffix("%")
-        pathOpacitySpinBox.setSingleStep(0.1)
+        pathOpacitySpinBox.setSingleStep(self.settings.opacityIncrement)
         pathOpacitySpinBox.valueChanged.connect(self.changePathOpacity)
         pathOpacityWidget = QtWidgets.QWidgetAction(self)
         pathOpacityWidget.setDefaultWidget(pathOpacitySpinBox)
@@ -193,9 +193,9 @@ class GUI(QtWidgets.QMainWindow):
         mapPathOpacityMenu.addAction(pathOpacityWidget)
 
         pathWidthSpinBox = QtWidgets.QDoubleSpinBox()
-        pathWidthSpinBox.setRange(1, 8)
-        pathWidthSpinBox.setValue(2)
-        pathWidthSpinBox.setSingleStep(0.25)
+        pathWidthSpinBox.setRange(self.settings.pathMin, self.settings.pathMax)
+        pathWidthSpinBox.setValue(float(self.settings.PATH_SIZE))
+        pathWidthSpinBox.setSingleStep(self.settings.pathIncrement)
         pathWidthSpinBox.valueChanged.connect(self.changePathSize)
         pathWidthWidget = QtWidgets.QWidgetAction(self)
         pathWidthWidget.setDefaultWidget(pathWidthSpinBox)
@@ -207,7 +207,7 @@ class GUI(QtWidgets.QMainWindow):
         # noinspection PyAttributeOutsideInit
         self.mapActive = QtWidgets.QAction("Anzeigen", self)
         self.mapActive.setCheckable(True)
-        self.mapActive.setChecked(True)
+        self.mapActive.setChecked(self.settings.showMapDefault)
 
         # add map action to menu
         mapMenu.addAction(self.mapActive)
@@ -230,7 +230,7 @@ class GUI(QtWidgets.QMainWindow):
         # add action for active filter
         activeFilterAction = QtWidgets.QAction('Filter', self)
         activeFilterAction.setCheckable(True)
-        activeFilterAction.setChecked(True)
+        activeFilterAction.setChecked(self.settings.useFilterDefault)
         activeFilterAction.triggered.connect(self.setFilter)
         settingsMenu.addAction(activeFilterAction)
 

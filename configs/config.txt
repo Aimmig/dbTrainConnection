@@ -15,19 +15,31 @@ timeFormat = hh:mm
 
 # Default Map Size
 defaultSize = 500
-minSize = 200
-maxSize = 1200
+mapMin = 200
+mapMax = 1200
+mapIncrement = 100
+showMapDefault = 1
+
+ActiveFilterDefault = false
 
 # Default Time OffSet
 defaultOffSet = 5
 
-# Default path color 
-PathColor = #ff0000
 # Default size of path
-PathSize = 3
+PathSize = 2
+PathIncrement = 0.1
+pathMin = 0.1
+pathMax = 4
+
 # Default opacity of path
 PathOpacity = 0.85
-# Default marker color        
+opacityIncrement = 0.05
+opacityMin = 0.1
+opacityMax = 1
+
+# Default path color
+PathColor = #ff0000
+# Default marker color
 MarkerColor = #5555BB
 # Default size of marker
 MarkerSize = s

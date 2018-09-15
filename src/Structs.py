@@ -190,8 +190,18 @@ class RequestSettings:
         self.defaultSize = int(parser[default]['defaultSize'])
         self.height = self.defaultSize
         self.width = self.defaultSize
-        self.minSize = int(parser[default]['minSize'])
-        self.maxSize = int(parser[default]['maxSize'])
+        self.minSize = int(parser[default]['mapMin'])
+        self.maxSize = int(parser[default]['mapMax'])
+        self.pathIncrement = float(parser[default]['pathIncrement'])
+        self.pathMin = float(parser[default]['pathMin'])
+        self.pathMax = float(parser[default]['pathMax'])
+        self.opacityMin = float(parser[default]['opacityMin'])
+        self.opacityMax = float(parser[default]['opacityMax'])
+        self.opacityIncrement = float(parser[default]['opacityIncrement'])
+        self.mapIncrement = int(parser[default]['mapIncrement'])
+
+        self.showMapDefault = RequestSettings.convertToBool(parser[default]['showMapDefault'])
+        self.useFilterDefault = RequestSettings.convertToBool(parser[default]['ActiveFilterDefault'])
 
         self.isLabelNumeric = False
         self.changed = False
@@ -202,6 +212,10 @@ class RequestSettings:
         self.detailsBaseString = self.LanguageStrings.route_Text + ' ' + self.LanguageStrings.off_Text + ' '
         self.generalBaseString = self.LanguageStrings.windowTitle_Text + ' ' + self.LanguageStrings.for_Text + ' '
         self.datePrefix = ' ' + self.LanguageStrings.on_Text + ' '
+
+    @staticmethod
+    def convertToBool(val):
+            return val.casefold() in ['true','1']
 
     def setMarkerLabelType(self, val: bool):
         self.isLabelNumeric = val
