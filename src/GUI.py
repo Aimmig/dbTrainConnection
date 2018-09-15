@@ -545,11 +545,28 @@ class GUI(QtWidgets.QMainWindow):
 
         if self.conList.getDisplayedIndex() > 0:
             self.conList.setDisplayedIndex(self.conList.getDisplayedIndex() - 1)
-            # remove old elements from QTableWidget
-            self.clearConnectionTable()
-            # for every connection add connection display it
-            self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()))
-            self.setConnectionLabel()
+            self.showPage()
+
+    def showNextPage(self):
+        """
+        Displays next page of requested connections.
+        Does not have an effect on last page.
+        """
+
+        if self.conList.getDisplayedIndex() < self.conList.getPageCount() - 1:
+            self.conList.setDisplayedIndex(self.conList.getDisplayedIndex() + 1)
+            self.showPage()
+
+    def showPage(self):
+        """
+        Clears page and shows new page.
+        Not checking for valid indices
+        """
+        # remove old elements from QTableWidget
+        self.clearConnectionTable()
+        # for every connection add connection display it
+        self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()))
+        self.setConnectionLabel()
 
     def refreshPage(self):
         """
@@ -578,21 +595,6 @@ class GUI(QtWidgets.QMainWindow):
         """
 
         self.connectionTable.setRowCount(0)
-
-    def showNextPage(self):
-        """
-        Displays next page of requested connections.
-        Does not have an effect on last page.
-        """
-
-        if self.conList.getDisplayedIndex() < self.conList.getPageCount() - 1:
-            self.conList.setDisplayedIndex(self.conList.getDisplayedIndex() + 1)
-            # remove all elements from QTableWidget
-            self.clearConnectionTable()
-            # for every connection add connection display it
-            self.addConnections(self.conList.getConnectionPage(self.conList.getDisplayedIndex()))
-            # resize columns to content
-            self.setConnectionLabel()
 
     def addConnections(self, connections: [Connection]):
         """
