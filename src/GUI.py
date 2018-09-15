@@ -192,19 +192,6 @@ class GUI(QtWidgets.QMainWindow):
         # create menu for settings
         settingsMenu = menuBar.addMenu("Settings")
 
-        # create submenu for filter
-        filterMenu = settingsMenu.addMenu("Filter")
-        # create actionGroup for filter
-        filterGroupAction = QtWidgets.QActionGroup(self)
-
-        # add action for active filter
-        activateFilterAction = QtWidgets.QAction('De/Aktivieren', filterGroupAction)
-        activateFilterAction.setShortcut(QtGui.QKeySequence("SHIFT+F", QtGui.QKeySequence.PortableText))
-        activateFilterAction.triggered.connect(self.setFilter)
-
-        # add all actions from filter group to menu
-        filterMenu.addActions(filterGroupAction.actions())
-
         # create submenu for offset changing
         searchOffsetSpinBox = QtWidgets.QSpinBox()
         searchOffsetSpinBox.setRange(1, 23)
@@ -216,6 +203,13 @@ class GUI(QtWidgets.QMainWindow):
 
         searchOffsetMenu = settingsMenu.addMenu("Offset")
         searchOffsetMenu.addAction(searchOffsetWidget)
+
+        # add action for active filter
+        activeFilterAction = QtWidgets.QAction('Filter', self)
+        activeFilterAction.setCheckable(True)
+        activeFilterAction.setChecked(True)
+        activeFilterAction.triggered.connect(self.setFilter)
+        settingsMenu.addAction(activeFilterAction)
 
         # create Menu for application
         exitMenu = menuBar.addMenu(self.settings.LanguageStrings.application_Text)
