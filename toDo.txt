@@ -2,6 +2,9 @@
 
 - Migrate all possible menus to QSpinBoxes/QSlider/QDoubleSpinBox
 - Might use comboxes for some selections
+- Restructure Map Menu Bar:
+	Marker: Size, Color, Label
+        Path:   Size, Color, Opacity
 
 - Describe migration to mapbox in readme
 
@@ -19,6 +22,3 @@
 
 - Add specific information on Error handling, networkConnection,
   internalServerProblem (no data) etc..
-
-- Remove size of map in gui, instead configure this in config & option to
-  increase/decrease a fixed percentage from menu

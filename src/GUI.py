@@ -180,6 +180,31 @@ class GUI(QtWidgets.QMainWindow):
         mapSizeMenu = mapMenu.addMenu("Size")
         mapSizeMenu.addAction(mapSizeWidget)
 
+        pathOpacitySpinBox = QtWidgets.QDoubleSpinBox()
+        pathOpacitySpinBox.setRange(0, 1)
+        pathOpacitySpinBox.setValue(0.8)
+        pathOpacitySpinBox.setSuffix("%")
+        pathOpacitySpinBox.setSingleStep(0.1)
+        # TO-DO use right method
+        pathOpacitySpinBox.valueChanged.connect(self.update)
+        pathOpacityWidget = QtWidgets.QWidgetAction(self)
+        pathOpacityWidget.setDefaultWidget(pathOpacitySpinBox)
+
+        mapPathOpacityMenu = mapMenu.addMenu("Opacity")
+        mapPathOpacityMenu.addAction(pathOpacityWidget)
+
+        pathWidthSpinBox = QtWidgets.QDoubleSpinBox()
+        pathWidthSpinBox.setRange(1, 4)
+        pathWidthSpinBox.setValue(2)
+        pathWidthSpinBox.setSingleStep(0.25)
+        # TO-DO use right method
+        pathWidthSpinBox.valueChanged.connect(self.update)
+        pathWidthWidget = QtWidgets.QWidgetAction(self)
+        pathWidthWidget.setDefaultWidget(pathWidthSpinBox)
+
+        mapPathWidthMenu = mapMenu.addMenu("Width")
+        mapPathWidthMenu.addAction(pathWidthWidget)
+
         # action for checking Map
         # noinspection PyAttributeOutsideInit
         self.mapActive = QtWidgets.QAction("Anzeigen", self)
