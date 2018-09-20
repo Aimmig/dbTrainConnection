@@ -215,7 +215,7 @@ class RequestSettings:
 
     @staticmethod
     def convertToBool(val):
-            return val.casefold() in ['true','1']
+            return val.casefold() in ['true', '1']
 
     def setMarkerLabelType(self, val: bool):
         self.isLabelNumeric = val
@@ -616,56 +616,21 @@ class Filter:
         self.other = other
 
     @staticmethod
-    def filterICE(con: Connection) -> bool:
+    def filterType(con: Connection, trainType) -> bool:
         """
-        Returns true if the connection con is of type ICE.
+        Returns true if the connection con is of the given type.
         :type con Connection
+        :type trainType type of train (enum)
         :rtype bool
         """
 
-        return con.type == TrainType.ICE or TrainType.ICE.name in con.name
-
-    @staticmethod
-    def filterIC(con: Connection) -> bool:
-        """
-        Returns true if the connection con is of type IC.
-        :type con Connection
-        :rtype bool
-        """
-
-        # be sure to exclude ICE here
-        return (con.type == TrainType.IC or TrainType.IC.name in con.name) and not Filter.filterICE(con)
-
-    @staticmethod
-    def filterEC(con: Connection) -> bool:
-        """
-        Returns true if the connection con is of type EC.
-        :type con Connection
-        :rtype bool
-        """
-
-        return con.type == TrainType.EC or TrainType.EC.name in con.name
-
-    @staticmethod
-    def filterTGV(con: Connection) -> bool:
-        """
-        Returns true if the connection con is of type TGV.
-        :type con Connection
-        :rtype bool
-        """
-
-        return con.type == TrainType.TGV or TrainType.TGV.name in con.name
-
-    @staticmethod
-    def filterOther(con: Connection) -> bool:
-        """
-        Returns true if the connection is not of type filtered before.
-        :type con Connection
-        :rtype bool
-        """
-
-        # connection has train type other if it does not have an above stated train type
-        return not (Filter.filterICE(con) or Filter.filterIC(con) or Filter.filterEC(con) or Filter.filterTGV(con))
+        if trainType in [TrainType.TGV, TrainType.EC, TrainType.ICE]:
+            return con.type == trainType or trainType.name in con.name
+        elif trainType == TrainType.IC:
+            return (con.type == trainType or trainType.name in con.name) and not Filter.filterType(con, TrainType.ICE)
+        else:
+            return not (Filter.filterType(con, TrainType.ICE) or Filter.filterType(con, TrainType.IC) or
+                        Filter.filterType(con, TrainType.EC) or Filter.filterType(con, TrainType.TGV))
 
     def filter(self, connections: [Connection]) -> [int]:
         """
@@ -684,11 +649,13 @@ class Filter:
             selected = False
             # for each selected filter type check if connection has this type
             if self.ICE:
-                selected = Filter.filterICE(connections[i]) or Filter.filterTGV(connections[i])
+                selected = Filter.filterType(connections[i], TrainType.ICE) or Filter.filterType(connections[i],
+                                                                                                 TrainType.TGV)
             if self.IC:
-                selected = selected or Filter.filterIC(connections[i]) or Filter.filterEC(connections[i])
+                selected = selected or Filter.filterType(connections[i], TrainType.IC) or Filter.filterType(
+                    connections[i], TrainType.EC)
             if self.other:
-                selected = selected or Filter.filterOther(connections[i])
+                selected = selected or Filter.filterType(connections[i], TrainType.Other)
             # connection passes filter
             if selected:
                 # add index of connection to list

@@ -1,16 +1,12 @@
 - Describe all things needed to run this application (e.g. in readme)
 
-- Migrate all possible menus to QSpinBoxes/QSlider/QDoubleSpinBox
-- Might use comboxes for some selections
-- Restructure Map Menu Bar:
-	Marker: Size, Color, Label
-        Path:   Size, Color, Opacity
+- Cleanup/Fix QComboBox menus
 
 - Describe migration to mapbox in readme
 
-- Search for possibility to use correct language in Map
+- Migrate all default values to config
 
-- Filter methods need some cleanup
+- Search for possibility to use correct language in Map
 
 - Update comments/variable names according to migration for mapbox
 
