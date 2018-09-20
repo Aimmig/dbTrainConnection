@@ -42,8 +42,10 @@ PathColor = #ff0000
 # Default marker color
 MarkerColor = #5555BB
 # Default size of marker
-MarkerSize = s
+MarkerSize = large
+# Default label type
+labelType = numeric
 # Default size of extra marker    
 MarkerColorSpecial = #aa339988
 # Default size of special marker
-MarkerSizeSpecial = l
+MarkerSizeSpecial = small

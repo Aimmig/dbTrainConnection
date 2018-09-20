@@ -24,6 +24,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from Widgets import QConnectionTable, QDetailsTable, QMapWidget
 from Request import Request
 from Structs import Connection, ConnectionsList, Stop, Filter, RequestSettings, MapType
+from Structs import LabelTypes, LabelTypesIndices, MarkerSizes, MarkerSizesIndices
 from XMLParser import XMLParser
 import urllib.error as err
 
@@ -107,65 +108,45 @@ class GUI(QtWidgets.QMainWindow):
 
         # create Menu for Map
         mapMenu = menuBar.addMenu("Map")
-
-        # create Submenu for changing colors
-        mapcolorMenu = mapMenu.addMenu(self.settings.LanguageStrings.colour_Text)
+        pathMenu = mapMenu.addMenu("Path")
+        markerMenu = mapMenu.addMenu("Marker")
 
         # submenu entry for changing path colors
-        mapcolorMenu.addAction(self.createColorAction(self.settings.LanguageStrings.change_Path_Colour_Text,
-                                                      "CTRL+P", self.changePathColor))
+        pathMenu.addAction(self.createColorAction(self.settings.LanguageStrings.change_Path_Colour_Text,
+                                                  "CTRL+P", self.changePathColor))
         # submenu entry for changing marker colors
-        mapcolorMenu.addAction(self.createColorAction(self.settings.LanguageStrings.change_Marker_Colour_Text,
-                                                      "CTRL+M", self.changeMarkerColor))
+        markerMenu.addAction(self.createColorAction(self.settings.LanguageStrings.change_Marker_Colour_Text,
+                                                    "CTRL+M", self.changeMarkerColor))
 
         # add Submenu for changing MapType
         mapTypeMenu = mapMenu.addMenu("Type")
 
-        # create groupAction
-        mapGroupAction = QtWidgets.QActionGroup(self)
+        mapTypeBox = QtWidgets.QComboBox()
+        mapTypeBox.addItems([t.name for t in MapType])
+        print(self.settings.MAPTYPE)
+        mapTypeBox.setCurrentIndex(self.settings.MAPTYPE)
+        mapTypeBox.currentIndexChanged.connect(self.setMapType)
+        mapTypeWidget = QtWidgets.QWidgetAction(self)
+        mapTypeWidget.setDefaultWidget(mapTypeBox)
+        mapTypeMenu.addAction(mapTypeWidget)
 
-        streets = self.createMapAction(MapType.streets_v10, mapGroupAction, "CTRL+R")
-        outdoor = self.createMapAction(MapType.outdoors_v10, mapGroupAction, "CTRL+O")
-        light = self.createMapAction(MapType.light_v9, mapGroupAction, "CTRL+L")
-        dark = self.createMapAction(MapType.dark_v9, mapGroupAction, "CTRL+D")
-        satellite = self.createMapAction(MapType.satellite_v9, mapGroupAction, "CTRL+S")
-        satellite_streets = self.createMapAction(MapType.satellite_streets_v10, mapGroupAction)
-        nav_prev_day = self.createMapAction(MapType.navigation_preview_day_v4, mapGroupAction)
-        nav_prev_night = self.createMapAction(MapType.navigation_preview_night_v4, mapGroupAction)
-        nav_guid_day = self.createMapAction(MapType.navigation_guidance_day_v4, mapGroupAction)
-        nav_guid_night = self.createMapAction(MapType.navigation_guidance_night_v4, mapGroupAction)
+        mapMarkerLabelMenu = markerMenu.addMenu("Label")
 
-        # try to check default maptype specified in config
-        try:
-            mapActionDict = {MapType.streets_v10: streets, MapType.outdoors_v10: outdoor,
-                             MapType.light_v9: light, MapType.dark_v9: dark,
-                             MapType.satellite_v9: satellite, MapType.satellite_streets_v10: satellite_streets,
-                             MapType.navigation_guidance_day_v4: nav_guid_day,
-                             MapType.navigation_guidance_night_v4: nav_guid_night,
-                             MapType.navigation_preview_day_v4: nav_prev_day,
-                             MapType.navigation_preview_night_v4: nav_prev_night}
-            mapActionDict[MapType(self.settings.MAPTYPE)].setChecked(True)
-        except KeyError:
-            pass
+        mapMarkerLabelBox = QtWidgets.QComboBox()
+        mapMarkerLabelBox.addItems(LabelTypes.values())
+        mapMarkerLabelBox.currentIndexChanged.connect(self.setMarkerLabel)
+        mapMarkerLabelWidget = QtWidgets.QWidgetAction(self)
+        mapMarkerLabelWidget.setDefaultWidget(mapMarkerLabelBox)
+        mapMarkerLabelMenu.addAction(mapMarkerLabelWidget)
 
-        # add all actions from group to menu
-        mapTypeMenu.addActions(mapGroupAction.actions())
+        mapMarkerSizeMenu = markerMenu.addMenu("Size")
 
-        mapMarkerMenu = mapMenu.addMenu("Marker Label")
-
-        mapMarkerGroupAction = QtWidgets.QActionGroup(self)
-
-        alphabetic = self.createLabelAction(mapMarkerGroupAction, "A-Z", False)
-        numeric = self.createLabelAction(mapMarkerGroupAction, "1,2,3,...", True)
-        noLabels = self.createLabelAction(mapMarkerGroupAction, "Keine", None)
-        if self.settings.isLabelNumeric is None:
-            noLabels.setChecked(True)
-        if self.settings.isLabelNumeric:
-            numeric.setChecked(True)
-        else:
-            alphabetic.setChecked(True)
-
-        mapMarkerMenu.addActions(mapMarkerGroupAction.actions())
+        mapMarkerSizeBox = QtWidgets.QComboBox()
+        mapMarkerSizeBox.addItems(MarkerSizes.keys())
+        mapMarkerSizeBox.currentIndexChanged.connect(self.setMarkerSize)
+        mapMarkerSizeWidget = QtWidgets.QWidgetAction(self)
+        mapMarkerSizeWidget.setDefaultWidget(mapMarkerSizeBox)
+        mapMarkerSizeMenu.addAction(mapMarkerSizeWidget)
 
         # create submenu for changing map size
         mapSizeSpinBox = QtWidgets.QSpinBox()
@@ -189,7 +170,7 @@ class GUI(QtWidgets.QMainWindow):
         pathOpacityWidget = QtWidgets.QWidgetAction(self)
         pathOpacityWidget.setDefaultWidget(pathOpacitySpinBox)
 
-        mapPathOpacityMenu = mapMenu.addMenu("Opacity")
+        mapPathOpacityMenu = pathMenu.addMenu("Opacity")
         mapPathOpacityMenu.addAction(pathOpacityWidget)
 
         pathWidthSpinBox = QtWidgets.QDoubleSpinBox()
@@ -200,7 +181,7 @@ class GUI(QtWidgets.QMainWindow):
         pathWidthWidget = QtWidgets.QWidgetAction(self)
         pathWidthWidget.setDefaultWidget(pathWidthSpinBox)
 
-        mapPathWidthMenu = mapMenu.addMenu("Width")
+        mapPathWidthMenu = pathMenu.addMenu("Width")
         mapPathWidthMenu.addAction(pathWidthWidget)
 
         # action for checking Map
@@ -243,19 +224,6 @@ class GUI(QtWidgets.QMainWindow):
         exitAction.triggered.connect(self.closeEvent)
         # add Action to Menu
         exitMenu.addAction(exitAction)
-
-    def createLabelAction(self, group, text, isNumeric):
-        action = QtWidgets.QAction(text, group)
-        action.setCheckable(True)
-        action.triggered.connect(lambda: self.setMarkerLabel(isNumeric))
-        return action
-
-    def createMapAction(self, mapType, group, shortcut=None) -> QtWidgets.QAction:
-        action = QtWidgets.QAction(mapType.name, group)
-        action.setCheckable(True)
-        action.setShortcut(QtGui.QKeySequence(shortcut, QtGui.QKeySequence.PortableText))
-        action.triggered.connect(lambda: self.setMapType(mapType.value))
-        return action
 
     def createColorAction(self, text, shortcut, method):
         action = QtWidgets.QAction(self.stdicon(self.style.SP_DialogOpenButton), text, self)
@@ -921,8 +889,13 @@ class GUI(QtWidgets.QMainWindow):
         self.settings.MAPTYPE = map_type
         self.settings.changed = True
 
-    def setMarkerLabel(self, isNumeric):
-        self.settings.setMarkerLabelType(isNumeric)
+    def setMarkerLabel(self, val):
+        self.settings.labelType = LabelTypesIndices[val]
+        self.settings.changed = True
+
+    def setMarkerSize(self, val):
+        self.settings.MARKER_SIZE = MarkerSizesIndices[val]
+        print(self.settings.MARKER_SIZE)
         self.settings.changed = True
 
     def keyPressEvent(self, e):

@@ -22,7 +22,7 @@
 
 from PyQt5 import QtCore
 import urllib.parse as parse
-from Structs import RequestSettings, MapType
+from Structs import RequestSettings, MapType, MarkerSizes
 import requests
 import polyline
 
@@ -220,20 +220,24 @@ class Request:
         """
 
         col = Request.formatColor(settings.MARKER_COLOR)
-        if settings.isLabelNumeric is None:
-            res = ''.join(map(lambda j: Request.createCoordinateString(col, settings.MARKER_SIZE, cords[j]),
+        if settings.labelType == "None":
+            res = ''.join(map(lambda j:
+                              Request.createCoordinateString(col, MarkerSizes[settings.MARKER_SIZE],
+                                                             cords[j]),
                               [i for i in range(len(cords)) if i != markerIndex]))
             return res + (Request.createCoordinateString(Request.formatColor(settings.MARKER_COLOR_SPECIAL),
-                                                         settings.MARKER_SIZE_SPECIAL,
+                                                         MarkerSizes[settings.MARKER_SIZE_SPECIAL],
                                                          cords[markerIndex]))[:-1]
         labels = list(range(1, len(cords) + 1))
-        if not settings.isLabelNumeric:
+        if settings.labelType == "alphabetic":
             offset = 96
             labels = list(map(lambda k: chr(k + offset), labels))
-        res = ''.join(map(lambda j: Request.createCoordinateStringLabel(col, labels[j], settings.MARKER_SIZE, cords[j]),
-                          [i for i in range(len(cords)) if i != markerIndex]))
+        res = ''.join(map(
+            lambda j: Request.createCoordinateStringLabel(col, labels[j], MarkerSizes[settings.MARKER_SIZE], cords[j]),
+            [i for i in range(len(cords)) if i != markerIndex]))
         return res + (Request.createCoordinateStringLabel(Request.formatColor(settings.MARKER_COLOR_SPECIAL),
-                                                          labels[markerIndex], settings.MARKER_SIZE_SPECIAL,
+                                                          labels[markerIndex],
+                                                          MarkerSizes[settings.MARKER_SIZE_SPECIAL],
                                                           cords[markerIndex]))[:-1]
 
     @staticmethod

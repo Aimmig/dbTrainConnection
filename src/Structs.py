@@ -117,6 +117,13 @@ class MapType(Enum):
     navigation_guidance_night_v4 = 9
 
 
+LabelTypes = {"alphabetic": "A-Z", "numeric": "1,2,3,..", "None": "Keine"}
+LabelTypesIndices = {0: "alphabetic", 1: "numeric", 2: "None"}
+
+MarkerSizes = {"small": "s", "large": "l"}
+MarkerSizesIndices = {0: "small", 1: "large"}
+
+
 class RequestSettings:
     """
     Class that encapsulates Request-settings.
@@ -203,7 +210,7 @@ class RequestSettings:
         self.showMapDefault = RequestSettings.convertToBool(parser[default]['showMapDefault'])
         self.useFilterDefault = RequestSettings.convertToBool(parser[default]['ActiveFilterDefault'])
 
-        self.isLabelNumeric = False
+        self.labelType = parser[default]['labelType']
         self.changed = False
 
         # string constants for toStringMethods
@@ -216,9 +223,6 @@ class RequestSettings:
     @staticmethod
     def convertToBool(val):
             return val.casefold() in ['true', '1']
-
-    def setMarkerLabelType(self, val: bool):
-        self.isLabelNumeric = val
 
     def getOffSet(self) -> int:
         """
