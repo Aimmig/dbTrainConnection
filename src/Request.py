@@ -72,9 +72,7 @@ class Request:
         :rtype str
         """
 
-        header = {'User-Agent': 'Mozilla / 5.0'}
-        resp = requests.get(url, headers=header)
-        return resp.content
+        return requests.get(url).content
 
     @staticmethod
     def getXMLStringConnectionDetails(url: str) -> str:
@@ -208,7 +206,6 @@ class Request:
                                                settings.PATH_OPACITY, poly)
         endpart = '/auto/{0}x{1}?access_token={2}'.format(str(settings.width), str(settings.height), settings.MapBoxKey)
         res += path + Request.createFullCoordinateString(markerIndex, coordinates, settings) + endpart
-        print(res)
         return res
 
     @staticmethod

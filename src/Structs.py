@@ -105,16 +105,16 @@ class MapType(Enum):
     """
     Enum type for MapType.
     """
-    streets_v10 = 1
-    outdoors_v10 = 2
-    light_v9 = 3
-    dark_v9 = 4
-    satellite_v9 = 5
-    satellite_streets_v10 = 6
-    navigation_preview_day_v4 = 7
-    navigation_preview_night_v4 = 8
-    navigation_guidance_day_v4 = 9
-    navigation_guidance_night_v4 = 10
+    streets_v10 = 0
+    outdoors_v10 = 1
+    light_v9 = 2
+    dark_v9 = 3
+    satellite_v9 = 4
+    satellite_streets_v10 = 5
+    navigation_preview_day_v4 = 6
+    navigation_preview_night_v4 = 7
+    navigation_guidance_day_v4 = 8
+    navigation_guidance_night_v4 = 9
 
 
 class RequestSettings:
@@ -171,7 +171,7 @@ class RequestSettings:
             self.MAPTYPE = MapType[parser[default]['MapType']].value
         # forced default value
         except KeyError:
-            self.MAPTYPE = 1
+            self.MAPTYPE = MapType.streets_v10.value
 
         # read default color values and sizes
         self.PATH_COLOR = QtGui.QColor(parser[default]['PathColor'])
@@ -320,10 +320,12 @@ class Connection:
         # Name e.g. IC10250,ICE516, etc
         self.name = name
         # type number of enum TrainType
-        if typ in {'ICE', 'IC', 'EC', 'EC', 'EN', 'TGV'}:
+        nameSet = {t.name for t in TrainType}
+        nameSet.remove(TrainType.Other.name)
+        if typ in nameSet:
             self.type = TrainType[typ]
         else:
-            self.type = 5
+            self.type = TrainType.Other
         # id of the station which the connection was requested from
         self.stopId = stopId
         # name of station which the connection was requested from
