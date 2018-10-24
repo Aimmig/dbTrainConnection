@@ -23,6 +23,7 @@
 from PyQt5 import QtCore, QtGui
 import configparser
 import os
+import json
 from pathlib import Path
 from enum import Enum
 
@@ -101,22 +102,6 @@ class LanguageStrings:
         self.errorMsg = parser[labels]['errorMsg']
 
 
-class MapType(Enum):
-    """
-    Enum type for MapType.
-    """
-    streets_v10 = 0
-    outdoors_v10 = 1
-    light_v9 = 2
-    dark_v9 = 3
-    satellite_v9 = 4
-    satellite_streets_v10 = 5
-    navigation_preview_day_v4 = 6
-    navigation_preview_night_v4 = 7
-    navigation_guidance_day_v4 = 8
-    navigation_guidance_night_v4 = 9
-
-
 LabelTypes = {"alphabetic": "A-Z", "numeric": "1,2,3,..", "None": "Keine"}
 LabelTypesIndices = {0: "alphabetic", 1: "numeric", 2: "None"}
 
@@ -174,11 +159,8 @@ class RequestSettings:
         self.timeFormat = parser[default]['timeFormat']
 
         # read mapType used
-        try:
-            self.MAPTYPE = MapType[parser[default]['MapType']].value
-        # forced default value
-        except KeyError:
-            self.MAPTYPE = MapType.streets_v10.value
+        self.MapTypes = json.loads(parser.get(default, "MapTypes"))
+        self.MAPTYPE = 0
 
         # read default color values and sizes
         self.PATH_COLOR = QtGui.QColor(parser[default]['PathColor'])

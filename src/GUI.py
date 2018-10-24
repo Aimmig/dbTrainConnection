@@ -23,7 +23,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Widgets import QConnectionTable, QDetailsTable, QMapWidget
 from Request import Request
-from Structs import Connection, ConnectionsList, Stop, Filter, RequestSettings, MapType
+from Structs import Connection, ConnectionsList, Stop, Filter, RequestSettings
 from Structs import LabelTypes, LabelTypesIndices, MarkerSizes, MarkerSizesIndices
 from XMLParser import XMLParser
 import urllib.error as err
@@ -122,8 +122,7 @@ class GUI(QtWidgets.QMainWindow):
         mapTypeMenu = mapMenu.addMenu("Type")
 
         mapTypeBox = QtWidgets.QComboBox()
-        mapTypeBox.addItems([t.name for t in MapType])
-        print(self.settings.MAPTYPE)
+        mapTypeBox.addItems([t for t in self.settings.MapTypes])
         mapTypeBox.setCurrentIndex(self.settings.MAPTYPE)
         mapTypeBox.currentIndexChanged.connect(self.setMapType)
         mapTypeWidget = QtWidgets.QWidgetAction(self)
@@ -519,8 +518,8 @@ class GUI(QtWidgets.QMainWindow):
                     Request.getMapWithLocations(coordinates, markerIndex, self.settings))
                 connection.mapType = self.settings.MAPTYPE
             # display requested map-Data
-            self.mapWidget.showMap(connection.imageData, connection.toStringDetails(self.settings) + ' (' + MapType(
-                connection.mapType).name + ')')
+            self.mapWidget.showMap(connection.imageData, connection.toStringDetails(self.settings) + ' (' +
+                                   self.settings.MapTypes[connection.mapType] + ')')
 
     def showPreviousPage(self):
         """
@@ -895,7 +894,6 @@ class GUI(QtWidgets.QMainWindow):
 
     def setMarkerSize(self, val):
         self.settings.MARKER_SIZE = MarkerSizesIndices[val]
-        print(self.settings.MARKER_SIZE)
         self.settings.changed = True
 
     def keyPressEvent(self, e):

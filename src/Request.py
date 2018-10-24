@@ -22,7 +22,7 @@
 
 from PyQt5 import QtCore
 import urllib.parse as parse
-from Structs import RequestSettings, MapType, MarkerSizes
+from Structs import RequestSettings, MarkerSizes
 import requests
 import polyline
 
@@ -200,7 +200,7 @@ class Request:
         :rtype str
         """
 
-        res = Request.MAPS_BASE_URL.format(MapType(settings.MAPTYPE).name).replace('_', '-')
+        res = Request.MAPS_BASE_URL.format(settings.MapTypes[settings.MAPTYPE])
         poly = polyline.encode([(y, x) for x, y in coordinates])
         path = 'path-{0}+{1}-{2}({3}),'.format(settings.PATH_SIZE, Request.formatColor(settings.PATH_COLOR),
                                                settings.PATH_OPACITY, poly)

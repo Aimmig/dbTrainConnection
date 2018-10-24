@@ -4,8 +4,17 @@
 # Application Language
 language = de
 
-# Maptype (see mapBox documentation, use '_' instead of '-')
-MapType = satellite_v9
+# Maptype (see mapBox documentation)
+mapTypes = ["streets-v10",
+            "outdoors-v10",
+            "light-v9",
+            "dark-v9",
+            "satellite-v9",
+            "satellite-streets-v10",
+            "navigation-preview-day-v4",
+            "navigation-preview-night-v4",
+            "navigation-guidance-day-v4",
+            "navigation-guidance-night-v4"]
 
 # Output Date Format
 dateFormat = dd.MM.yyyy
